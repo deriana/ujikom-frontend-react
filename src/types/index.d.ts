@@ -5,6 +5,11 @@ export interface Column<T> {
   className?: string;          
 }
 
+export interface ApiResponse<T> {
+  status: string;
+  message?: string;
+  data: T;
+}
 
 export interface User {
   id: number;
@@ -12,7 +17,7 @@ export interface User {
   email: string;
   is_active: boolean;
   image: string;
-  role: string; // tambahkan ini kalau dipakai di kolom render
+  role: string; 
   projectName: string;
   budget: string;
   status: "Active" | "Pending" | "Cancel";
