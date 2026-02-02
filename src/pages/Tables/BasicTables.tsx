@@ -2,7 +2,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 import BasicTableOne from "../../components/tables/BasicTables/BasicTableOne";
-import UsersTable from "@/components/tables/BasicTables/UsersTable";
+import UsersTable from "@/components/tables/UsersTable";
 
 export default function BasicTables() {
   return (

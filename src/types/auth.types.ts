@@ -1,14 +1,4 @@
-export interface Role {
-  id: number;
-  name: string;
-  permissions: Permissions[];
-  system_reserve: boolean;
-}
-
-export interface Permissions {
-    id: number;
-    name: string;
-}
+import { Role } from "./role.types";
 
 export interface User {
   uuid: string;

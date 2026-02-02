@@ -4,6 +4,7 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+// import placeholderImg from "";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
-import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
@@ -23,6 +22,8 @@ import { useState, useEffect } from "react";
 import Spinner from "./components/ui/loading/Spinner";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import Roles from "./pages/Roles/Index";
+import RolesCreate from "./pages/Roles/Create";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,8 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
               <Route index path="/" element={<Home />} />
+              <Route path="/roles" element={<Roles />} />
+              <Route path="/roles/create" element={<RolesCreate />} />
 
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
@@ -69,8 +72,6 @@ export default function App() {
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />
-          {/* <Route path="/signup" element={<SignUp />} /> */}
-
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

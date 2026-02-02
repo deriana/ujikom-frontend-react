@@ -9,6 +9,7 @@ import {
   PieChartIcon,
   PlugInIcon,
 } from "@/icons";
+import { Database } from "lucide-react";
 
 export type SubItem = {
   name: string;
@@ -29,6 +30,15 @@ export const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     path: "/",
+  },
+  {
+    name: "Master Data",
+    icon: <Database />,
+    subItems: [
+      { name: "Roles", path: "/roles", pro: false },
+      { name: "Users", path: "/users", pro: false },
+      { name: "Divisions", path: "/divisions", pro: false },
+    ],
   },
 
   {

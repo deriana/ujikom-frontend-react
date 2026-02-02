@@ -22,10 +22,13 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "baseUrl": ".",
+    /* Path Alias */
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    /* Silence TS deprecation warning */
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }
