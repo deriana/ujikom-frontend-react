@@ -6,7 +6,7 @@ import RolesTable from "@/components/tables/RolesTable";
 export default function Roles() {
   return (
     <>
-      <PageMeta title="Frieren - Roles" description="apa yah ?" />
+      <PageMeta title="Roles" description="apa yah ?" />
       <PageBreadcrumb pageTitle="Roles" />
       <div className="space-y-6">
         <ComponentCard title="Roles Page">

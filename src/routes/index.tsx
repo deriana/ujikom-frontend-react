@@ -1,28 +1,21 @@
+import React from "react";
 import {
   BoxCubeIcon,
   CalenderIcon,
   GridIcon,
   ListIcon,
   PageIcon,
-  TableIcon,
-  UserCircleIcon,
   PieChartIcon,
   PlugInIcon,
-} from "@/icons";
-import { Database } from "lucide-react";
-
-export type SubItem = {
-  name: string;
-  path: string;
-  pro?: boolean;
-  new?: boolean;
-};
+  TableIcon,
+  UserCircleIcon,
+} from "../icons";
 
 export type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
-  subItems?: SubItem[];
+  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
 export const navItems: NavItem[] = [
@@ -33,14 +26,13 @@ export const navItems: NavItem[] = [
   },
   {
     name: "Master Data",
-    icon: <Database />,
+    icon: <PieChartIcon />,
     subItems: [
       { name: "Roles", path: "/roles", pro: false },
       { name: "Users", path: "/users", pro: false },
       { name: "Divisions", path: "/divisions", pro: false },
     ],
   },
-
   {
     icon: <CalenderIcon />,
     name: "Calendar",
