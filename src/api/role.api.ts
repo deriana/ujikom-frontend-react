@@ -1,6 +1,6 @@
 import api from "./axios";
 import { ApiResponse } from "@/types";
-import { Permissions, Role, RoleInput } from "@/types/role.types";
+import { Modules, Role, RoleInput } from "@/types/role.types";
 
 export const getRoles = async () => {
   const res = await api.get<ApiResponse<Role[]>>("/roles");
@@ -8,7 +8,7 @@ export const getRoles = async () => {
 };
 
 export const getPermissions = async () => {
-  const res = await api.get<ApiResponse<Permissions[]>>("/permissions/modules");
+  const res = await api.get<ApiResponse<Modules[]>>("/permissions/modules");
   return res.data.data;
 };
 
@@ -23,7 +23,7 @@ export const createRole = async (payload: RoleInput) => {
 };
 
 export const updateRole = async (id: number, payload: RoleInput) => {
-  const res = await api.post<ApiResponse<Role>>(`/roles/${id}`, payload);
+  const res = await api.put<ApiResponse<Role>>(`/roles/${id}`, payload);
   return res.data.data;
 };
 

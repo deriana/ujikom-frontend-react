@@ -1,5 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getRoles, createRole, updateRole, deleteRole, getPermissions } from "@/api/role.api";
+import {
+  getRoles,
+  createRole,
+  updateRole,
+  deleteRole,
+  getPermissions,
+  getRoleById
+} from "@/api/role.api";
 import { RoleInput } from "@/types/role.types";
 
 export const useRoles = () => {
@@ -9,13 +16,19 @@ export const useRoles = () => {
   });
 };
 
+export const useRoleById = (id: number) => {
+  return useQuery({
+    queryKey: ["roles", id],
+    queryFn: () => getRoleById(id),
+  });
+}
+
 export const usePermissions = () =>
   useQuery({
     queryKey: ["permissions"],
     queryFn: getPermissions,
     staleTime: 1000 * 60 * 30,
   });
-
 
 export const useCreateRole = () => {
   const qc = useQueryClient();

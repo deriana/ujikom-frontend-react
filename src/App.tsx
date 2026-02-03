@@ -24,6 +24,7 @@ import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Roles from "./pages/Roles/Index";
 import RolesCreate from "./pages/Roles/Create";
+import RolesUpdate from "./pages/Roles/Update";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -50,6 +51,7 @@ export default function App() {
               <Route index path="/" element={<Home />} />
               <Route path="/roles" element={<Roles />} />
               <Route path="/roles/create" element={<RolesCreate />} />
+              <Route path="/roles/:id/edit" element={<RolesUpdate />} />
 
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />

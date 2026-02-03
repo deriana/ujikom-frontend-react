@@ -8,12 +8,15 @@ export interface Role {
 export interface Permissions {
     id: number;
     name: string;
+    guard_name?: string;
+    module_name?: string;
 }
 
 export interface Modules {
-  id: number;
-  name: string;
-  actions: Permissions[];
+    id: number;
+    name: string;
+    actions?: string | null;
+    permissions: Permissions[];
 }
 
 export interface RoleInput {

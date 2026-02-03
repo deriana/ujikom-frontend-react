@@ -1,0 +1,107 @@
+// RolesUpdate.tsx
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import ComponentCard from "@/components/common/ComponentCard";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import PageMeta from "@/components/common/PageMeta";
+import RoleField from "./Field";
+import Spinner from "@/components/ui/loading/Spinner";
+import Button from "@/components/ui/button/Button";
+import toast from "react-hot-toast";
+import { usePermissions, useRoleById, useUpdateRole } from "@/hooks/useRole";
+import { RoleInput } from "@/types/role.types";
+
+export default function RolesUpdate() {
+  const { id } = useParams<{ id: string }>();
+  const roleId = Number(id);
+
+  const { data: modules } = usePermissions();
+  const { data: roleDataFromApi, isLoading: isFetchingRole } =
+    useRoleById(roleId);
+  const { mutateAsync: updateRole } = useUpdateRole();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [roleData, setRoleData] = useState<RoleInput>({
+    name: "",
+    permissions: [],
+  });
+
+  const navigate = useNavigate();
+
+  // Sync roleData saat fetch API selesai
+  useEffect(() => {
+    if (roleDataFromApi) {
+      setRoleData({
+        name: roleDataFromApi.name,
+        permissions: roleDataFromApi.permissions.map((p: any) => p.id),
+      });
+    }
+  }, [roleDataFromApi]);
+
+  const handleSubmit = async () => {
+    if (!roleData.name.trim()) {
+      toast.error("Role name is required");
+      return;
+    }
+
+    if (roleData.permissions.length === 0) {
+      toast.error("Please select at least one permission");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await updateRole({ id: roleId, data: roleData });
+      toast.success("Role updated successfully!");
+      setIsLoading(false);
+      navigate("/roles");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update role");
+      setIsLoading(false);
+    }
+  };
+
+  if (!modules || isFetchingRole) return <Spinner />
+
+  return (
+    <>
+      <PageMeta title="Roles - Edit" description="Edit role" />
+      <PageBreadcrumb
+        crumbs={[
+          { name: "Home", href: "/" },
+          { name: "Roles", href: "/roles" },
+          { name: "Edit" },
+        ]}
+      />
+
+      <div className="space-y-6">
+        <ComponentCard title="Edit Role">
+          <RoleField
+            key={roleId} // paksa reset state jika ganti role
+            modules={modules}
+            initialData={roleData}
+            onChange={setRoleData}
+          />
+
+          <div className="mt-4 flex justify-end">
+            <Button
+              variant="danger"
+              className="mr-5"
+              onClick={() => navigate("/roles")}
+            >
+              Back
+            </Button>
+
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading ? "Updating..." : "Update Role"}
+            </Button>
+          </div>
+        </ComponentCard>
+      </div>
+    </>
+  );
+}
