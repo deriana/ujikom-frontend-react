@@ -73,6 +73,7 @@ export default function RolesTable() {
 
   return (
     <DataTable
+      tableTitle="Roles Table"
       data={roles}
       columns={columns}
       searchableKeys={["name"]}

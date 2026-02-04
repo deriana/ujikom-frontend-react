@@ -25,6 +25,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Roles from "./pages/Roles/Index";
 import RolesCreate from "./pages/Roles/Create";
 import RolesUpdate from "./pages/Roles/Update";
+import Trash from "./pages/Trash/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,8 @@ export default function App() {
               <Route path="/roles" element={<Roles />} />
               <Route path="/roles/create" element={<RolesCreate />} />
               <Route path="/roles/:id/edit" element={<RolesUpdate />} />
+
+              <Route path="/trash" element={<Trash />} />
 
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />

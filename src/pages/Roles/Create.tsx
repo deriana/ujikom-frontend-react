@@ -32,14 +32,14 @@ export default function RolesCreate() {
     }
 
     setIsLoading(true);
-
     try {
-      await mutateAsync(roleData); 
+      await mutateAsync(roleData);
       toast.success("Role created successfully!");
-      setIsLoading(false);
       navigate("/roles");
     } catch (err: any) {
       toast.error(err?.message || "Failed to create role");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,38 +47,34 @@ export default function RolesCreate() {
 
   return (
     <>
-    <PageMeta title="Roles - Create" description="Create new role" />
-<PageBreadcrumb
-  crumbs={[
-    { name: "Home", href: "/" },
-    { name: "Roles", href: "/roles" },
-    { name: "Create" },
-  ]}
-/>
+      <PageMeta title="Roles - Create" description="Create new role" />
+      <PageBreadcrumb
+        crumbs={[
+          { name: "Home", href: "/" },
+          { name: "Roles", href: "/roles" },
+          { name: "Create" },
+        ]}
+      />
 
       <div className="space-y-6">
-        <ComponentCard title="Roles Page">
+        <ComponentCard title="Create Role">
           <RoleField
-            modules={modules}
-            initialData={roleData}
+            value={roleData}
             onChange={setRoleData}
+            modules={modules}
           />
 
-          <div className="mt-4 flex justify-end">
+          <div className="flex justify-end mt-6">
             <Button
-              variant="danger"
-              className="mr-5"
+            className="mr-5"
               onClick={() => navigate("/roles")}
-            >
-              Back
-            </Button>
-
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
               disabled={isLoading}
+              variant="danger"
             >
-              {isLoading ? "Creating..." : "Create Role"}
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit} disabled={isLoading}>
+              {isLoading ? "Saving..." : "Create Role"}
             </Button>
           </div>
         </ComponentCard>

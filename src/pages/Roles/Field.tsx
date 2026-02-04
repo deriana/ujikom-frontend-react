@@ -1,117 +1,92 @@
-import React, { useState, useEffect } from "react";
-import { Modules, RoleInput } from "@/types/role.types";
-import Switch from "@/components/form/switch/Switch";
+import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
+import { Modules, RoleInput } from "@/types/role.types";
 
 interface RoleFieldProps {
+  value: RoleInput;
+  onChange: (val: RoleInput) => void;
   modules: Modules[];
-  initialData?: RoleInput;
-  onChange: (data: RoleInput) => void;
+  disabled?: boolean;
 }
 
-const RoleField: React.FC<RoleFieldProps> = ({
-  modules,
-  initialData,
+export default function RoleField({
+  value,
   onChange,
-}) => {
-  const [roleName, setRoleName] = useState(initialData?.name || "");
-  const [selectedPermissions, setSelectedPermissions] = useState<number[]>(
-    initialData?.permissions || []
-  );
+  modules,
+  disabled = false,
+}: RoleFieldProps) {
+  const togglePermission = (id: number) => {
+    const exists = value.permissions.includes(id);
 
-  // Sinkronisasi saat initialData berubah
-  useEffect(() => {
-    if (initialData) {
-      setRoleName(initialData.name);
-      setSelectedPermissions(initialData.permissions);
-    }
-  }, [initialData]);
+    const newPermissions = exists
+      ? value.permissions.filter((p) => p !== id)
+      : [...value.permissions, id];
 
-  useEffect(() => {
-    onChange({
-      name: roleName,
-      permissions: selectedPermissions,
-    });
-  }, [roleName, selectedPermissions]);
-
-  const togglePermission = (permissionId: number) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permissionId)
-        ? prev.filter((id) => id !== permissionId)
-        : [...prev, permissionId]
-    );
+    onChange({ ...value, permissions: newPermissions });
   };
 
-  const toggleModule = (modulePermissions: number[]) => {
-    const allSelected = modulePermissions.every((id) =>
-      selectedPermissions.includes(id)
-    );
+  const toggleModule = (module: Modules) => {
+    const ids = module.permissions.map((p) => p.id);
+    const allSelected = ids.every((id) => value.permissions.includes(id));
 
-    if (allSelected) {
-      setSelectedPermissions((prev) =>
-        prev.filter((id) => !modulePermissions.includes(id))
-      );
-    } else {
-      setSelectedPermissions((prev) => [
-        ...prev,
-        ...modulePermissions.filter((id) => !prev.includes(id)),
-      ]);
-    }
+    const newPermissions = allSelected
+      ? value.permissions.filter((p) => !ids.includes(p))
+      : [...new Set([...value.permissions, ...ids])];
+
+    onChange({ ...value, permissions: newPermissions });
   };
 
   return (
     <div className="space-y-6">
       {/* Role Name */}
       <div>
-        <label
-          htmlFor="roleName"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
+        <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-200">
           Role Name
         </label>
         <Input
-          type="text"
-          id="roleName"
-          value={roleName}
-          onChange={(e) => setRoleName(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:focus:ring-blue-400 sm:text-sm"
+          value={value.name}
+          disabled={disabled}
           placeholder="Enter role name"
+          onChange={(e) => onChange({ ...value, name: e.target.value })}
         />
       </div>
 
-      {/* Modules + permissions */}
-      <div className="space-y-4">
+      {/* Permissions */}
+      <div className="space-y-5">
         {modules.map((module) => {
-          const modulePermissionIds = module.permissions.map((p) => p.id);
-          const allSelected = modulePermissionIds.every((id) =>
-            selectedPermissions.includes(id)
+          const ids = module.permissions.map((p) => p.id);
+          const allChecked = ids.every((id) =>
+            value.permissions.includes(id)
           );
 
           return (
             <div
               key={module.id}
-              className="border rounded-md p-4 dark:border-gray-600"
+              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm 
+                         dark:border-gray-800 dark:bg-white/3"
             >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 capitalize">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-semibold capitalize text-gray-800 dark:text-white/90">
                   {module.name}
                 </h3>
-                <Switch
+
+                <Checkbox
+                  checked={allChecked}
+                  onChange={() => toggleModule(module)}
                   label="Select All"
-                  checked={allSelected}
-                  onChange={() => toggleModule(modulePermissionIds)}
-                  color="blue"
+                  disabled={disabled}
                 />
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {module.permissions.map((perm) => (
-                  <Switch
-                    key={perm.id}
-                    label={perm.name}
-                    checked={selectedPermissions.includes(perm.id)}
-                    onChange={() => togglePermission(perm.id)}
-                    color="blue"
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-3">
+                {module.permissions.map((permission) => (
+                  <Checkbox
+                    key={permission.id}
+                    id={`perm-${permission.id}`}
+                    checked={value.permissions.includes(permission.id)}
+                    onChange={() => togglePermission(permission.id)}
+                    label={permission.name}
+                    disabled={disabled}
                   />
                 ))}
               </div>
@@ -121,6 +96,4 @@ const RoleField: React.FC<RoleFieldProps> = ({
       </div>
     </div>
   );
-};
-
-export default RoleField;
+}

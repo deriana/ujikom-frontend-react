@@ -1,4 +1,3 @@
-// RolesUpdate.tsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ComponentCard from "@/components/common/ComponentCard";
@@ -19,8 +18,8 @@ export default function RolesUpdate() {
   const { data: roleDataFromApi, isLoading: isFetchingRole } =
     useRoleById(roleId);
   const { mutateAsync: updateRole } = useUpdateRole();
-  const [isLoading, setIsLoading] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [roleData, setRoleData] = useState<RoleInput>({
     name: "",
     permissions: [],
@@ -28,12 +27,11 @@ export default function RolesUpdate() {
 
   const navigate = useNavigate();
 
-  // Sync roleData saat fetch API selesai
   useEffect(() => {
     if (roleDataFromApi) {
       setRoleData({
         name: roleDataFromApi.name,
-        permissions: roleDataFromApi.permissions.map((p: any) => p.id),
+        permissions: roleDataFromApi.permissions.map((p: any) => Number(p.id)),
       });
     }
   }, [roleDataFromApi]);
@@ -53,15 +51,15 @@ export default function RolesUpdate() {
     try {
       await updateRole({ id: roleId, data: roleData });
       toast.success("Role updated successfully!");
-      setIsLoading(false);
       navigate("/roles");
     } catch (err: any) {
       toast.error(err?.message || "Failed to update role");
+    } finally {
       setIsLoading(false);
     }
   };
 
-  if (!modules || isFetchingRole) return <Spinner />
+  if (!modules || isFetchingRole || !roleDataFromApi) return <Spinner />;
 
   return (
     <>
@@ -77,26 +75,22 @@ export default function RolesUpdate() {
       <div className="space-y-6">
         <ComponentCard title="Edit Role">
           <RoleField
-            key={roleId} // paksa reset state jika ganti role
-            modules={modules}
-            initialData={roleData}
+            value={roleData}
             onChange={setRoleData}
+            modules={modules}
+            disabled={roleDataFromApi.system_reserve}
           />
 
-          <div className="mt-4 flex justify-end">
+          <div className="flex justify-end mt-6">
             <Button
-              variant="danger"
               className="mr-5"
               onClick={() => navigate("/roles")}
-            >
-              Back
-            </Button>
-
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
               disabled={isLoading}
+              variant="danger"
             >
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit} disabled={isLoading}>
               {isLoading ? "Updating..." : "Update Role"}
             </Button>
           </div>

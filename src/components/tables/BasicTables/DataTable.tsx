@@ -29,6 +29,7 @@ interface DataTableProps<T extends { id: number }> {
   newFilterComponent?: React.ReactNode;
   handleCreate?: () => void;
   createButtonLabel?: string;
+  tableTitle?: string;
 }
 export function DataTable<T extends { id: number }>({
   data,
@@ -41,6 +42,7 @@ export function DataTable<T extends { id: number }>({
   newFilterComponent,
   handleCreate,
   createButtonLabel = "Add New",
+  tableTitle = "Data Table",
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -83,7 +85,7 @@ export function DataTable<T extends { id: number }>({
       {/* FILTER BAR */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
         <h3 className="text-sm font-semibold text-gray-800 dark:text-white/90">
-          Users List
+          {tableTitle}
         </h3>
         <div className="flex flex-col gap-3 sm:flex-row">
           {/* SEARCH */}

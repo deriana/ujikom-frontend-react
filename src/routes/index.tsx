@@ -8,7 +8,9 @@ import {
   PieChartIcon,
   PlugInIcon,
   TableIcon,
+  TrashBinIcon,
   UserCircleIcon,
+  
 } from "../icons";
 
 export type NavItem = {
@@ -64,6 +66,11 @@ export const navItems: NavItem[] = [
 ];
 
 export const othersItems: NavItem[] = [
+  {
+    icon: <TrashBinIcon />,
+    name: "Trash",
+    path: "/trash",
+  },
   {
     icon: <PieChartIcon />,
     name: "Charts",
