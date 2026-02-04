@@ -77,6 +77,7 @@ export default function RolesTable() {
       searchableKeys={["name"]}
       loading={isLoading}
       handleCreate={handleCreate}
+      label="Roles"
     />
   );
 }
