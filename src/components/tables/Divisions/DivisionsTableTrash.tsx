@@ -9,6 +9,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { DataTable } from "../BasicTables/DataTable";
 import TableActions from "../BasicTables/TableAction";
 import toast from "react-hot-toast";
+import { RESOURCES } from "@/constants/Resource";
 
 export default function DivisionTableTrash() {
   const {
@@ -78,6 +79,7 @@ export default function DivisionTableTrash() {
           dataName={row.name}
           onRestore={handleRestore}
           onForceDelete={handleForceDelete}
+          baseNamePermission={RESOURCES.DIVISION}
         />
       ),
     },
@@ -99,6 +101,7 @@ export default function DivisionTableTrash() {
       searchableKeys={["name", "code"]}
       loading={isLoading}
       label="Trashed Divisions"
+      baseNamePermission={RESOURCES.DIVISION}
     />
   );
 }

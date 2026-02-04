@@ -1,27 +1,29 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
 import { navItems, othersItems, NavItem } from "@/routes/route";
 import { ChevronDownIcon } from "lucide-react";
 import { HorizontaLDots } from "@/icons";
+import { AuthContext } from "@/context/AuthContext";
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const { permissions = [] } = useContext(AuthContext);
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
     index: number;
   } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {}
+    {},
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
     (path: string) => location.pathname === path,
-    [location.pathname]
+    [location.pathname],
   );
 
   useEffect(() => {
@@ -71,6 +73,28 @@ const AppSidebar: React.FC = () => {
       }
       return { type: menuType, index };
     });
+  };
+
+  const filterNavByPermission = (items: NavItem[]): NavItem[] => {
+    return items
+      .map((item) => {
+        if (item.subItems) {
+          const allowedSub = item.subItems.filter(
+            (sub) => !sub.permission || permissions.includes(sub.permission),
+          );
+
+          if (allowedSub.length === 0) return null;
+
+          return { ...item, subItems: allowedSub };
+        }
+
+        if (item.permission && !permissions.includes(item.permission)) {
+          return null;
+        }
+
+        return item;
+      })
+      .filter(Boolean) as NavItem[];
   };
 
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
@@ -203,8 +227,8 @@ const AppSidebar: React.FC = () => {
           isExpanded || isMobileOpen
             ? "w-72.5"
             : isHovered
-            ? "w-72.5"
-            : "w-22.5"
+              ? "w-72.5"
+              : "w-22.5"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -261,7 +285,7 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(filterNavByPermission(navItems), "main")}
             </div>
             <div className="">
               <h2
@@ -277,7 +301,7 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(othersItems, "others")}
+              {renderMenuItems(filterNavByPermission(othersItems), "others")}
             </div>
           </div>
         </nav>

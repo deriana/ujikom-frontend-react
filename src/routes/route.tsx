@@ -4,20 +4,29 @@ import {
   CalenderIcon,
   GridIcon,
   ListIcon,
-  PageIcon,
   PieChartIcon,
   PlugInIcon,
   TableIcon,
   TrashBinIcon,
   UserCircleIcon,
-  
 } from "../icons";
+import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
+import { RESOURCES } from "@/constants/Resource";
+
+export type NavSubItem = {
+  name: string;
+  path: string;
+  permission?: string;
+  pro?: boolean;
+  new?: boolean;
+};
 
 export type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  permission?: string;
+  subItems?: NavSubItem[];
 };
 
 export const navItems: NavItem[] = [
@@ -30,9 +39,24 @@ export const navItems: NavItem[] = [
     name: "Master Data",
     icon: <PieChartIcon />,
     subItems: [
-      { name: "Roles", path: "/roles", pro: false },
-      { name: "Users", path: "/users", pro: false },
-      { name: "Divisions", path: "/divisions", pro: false },
+      {
+        name: "Roles",
+        path: "/roles",
+        pro: false,
+        permission: buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Users",
+        path: "/users",
+        pro: false,
+        permission: buildPermission(RESOURCES.USER, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Divisions",
+        path: "/divisions",
+        pro: false,
+        permission: buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.INDEX),
+      },
     ],
   },
   {
@@ -55,14 +79,6 @@ export const navItems: NavItem[] = [
     icon: <TableIcon />,
     subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
   },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
-  },
 ];
 
 export const othersItems: NavItem[] = [
@@ -70,8 +86,16 @@ export const othersItems: NavItem[] = [
     icon: <TrashBinIcon />,
     name: "Trash",
     subItems: [
-      { name: "Trash", path: "/trash", pro: false },
-      { name: "Divisions", path: "/trash/divisions", pro: false },
+      // { name: "Trash", path: "/trash", pro: false },
+      {
+        name: "Divisions",
+        path: "/trash/divisions",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.DIVISION,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
     ],
   },
   {

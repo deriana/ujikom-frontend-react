@@ -1,3 +1,4 @@
+import { Can } from "@/components/auth/Can";
 import FilterDropdown from "@/components/FilterDropdown";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
 import {
@@ -8,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Tooltip from "@/components/ui/tooltip";
+import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { Column } from "@/types";
 import { Plus } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
@@ -26,6 +28,7 @@ interface DataTableProps<T> {
   handleCreate?: () => void;
   tableTitle?: string;
   label?: string;
+  baseNamePermission?: string;
 }
 
 export function DataTable<T extends object>({
@@ -39,6 +42,7 @@ export function DataTable<T extends object>({
   handleCreate,
   tableTitle = "Data Table",
   label = "Data",
+  baseNamePermission,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -132,14 +136,16 @@ export function DataTable<T extends object>({
           />
 
           {handleCreate && (
-            <Tooltip content={`Create ${label}`} position="bottom">
-              <button
-                onClick={handleCreate}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <Plus size={16} />
-              </button>
-            </Tooltip>
+            <Can value={buildPermission(baseNamePermission!, PERMISSIONS.BASE.CREATE)}>
+              <Tooltip content={`Create ${label}`} position="bottom">
+                <button
+                  onClick={handleCreate}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <Plus size={16} />
+                </button>
+              </Tooltip>
+            </Can>
           )}
         </div>
       </div>

@@ -55,9 +55,7 @@ const refreshUser = async () => {
   useEffect(() => {
     refreshUser();
   }, []);
-
-  console.log(user);
-  console.log(permissions);
+  
   return (
     <AuthContext.Provider value={{ user, loading, permissions, login, logout, refreshUser }}>
       {children}

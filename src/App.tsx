@@ -1,6 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
-import NotFound from "./pages/OtherPage/NotFound";
+import NotFound from "./pages/Error/NotFound";
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
@@ -28,6 +33,12 @@ import RolesUpdate from "./pages/Roles/Update";
 import Trash from "./pages/Trash/Index";
 import Divisions from "./pages/Division/Index";
 import DivisionsTrash from "./pages/Trash/Pages/DivisionTrash";
+import Maintenance from "./pages/Error/Maintenance";
+import ServerError from "./pages/Error/ServerError";
+import Forbidden from "./pages/Error/Forbidden";
+import PermissionRoute from "./routes/PermissionRoute";
+import { buildPermission, PERMISSIONS } from "./constants/Permissions";
+import { RESOURCES } from "./constants/Resource";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -51,30 +62,47 @@ export default function App() {
           {/* 🔒 Protected Area */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
+              {/* ===== PUBLIC AFTER LOGIN (tanpa permission khusus) ===== */}
               <Route index path="/" element={<Home />} />
-              <Route path="/roles" element={<Roles />} />
-              <Route path="/roles/create" element={<RolesCreate />} />
-              <Route path="/roles/:id/edit" element={<RolesUpdate />} />
-
-              <Route path="/divisions" element={<Divisions />} />
-              
-              <Route path="/trash" element={<Trash />} />
-              <Route path="/trash/divisions" element={<DivisionsTrash />} />
-
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
 
+              {/* ===== ROLE MANAGEMENT ===== */}
+              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.INDEX)} />}>
+                <Route path="/roles" element={<Roles />} />
+              </Route>
+
+              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.CREATE)} />}>
+                <Route path="/roles/create" element={<RolesCreate />} />
+              </Route>
+
+              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.EDIT)} />}>
+                <Route path="/roles/:id/edit" element={<RolesUpdate />} />
+              </Route>
+
+              {/* ===== DIVISION MANAGEMENT ===== */}
+              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.INDEX)} />}>
+                <Route path="/divisions" element={<Divisions />} />
+              </Route>
+
+              <Route
+                element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.RESTORE)} />}
+              >
+                <Route path="/trash/divisions" element={<DivisionsTrash />} />
+              </Route>
+
+              {/* <Route path="/trash" element={<Trash />} /> */}
+
+              {/* ===== UI DEMO PAGES (optional protect or not) ===== */}
               <Route path="/form-elements" element={<FormElements />} />
               <Route path="/basic-tables" element={<BasicTables />} />
-
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/avatars" element={<Avatars />} />
               <Route path="/badge" element={<Badges />} />
               <Route path="/buttons" element={<Buttons />} />
               <Route path="/images" element={<Images />} />
               <Route path="/videos" element={<Videos />} />
-
               <Route path="/line-chart" element={<LineChart />} />
               <Route path="/bar-chart" element={<BarChart />} />
             </Route>
@@ -82,7 +110,13 @@ export default function App() {
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />
-          <Route path="*" element={<NotFound />} />
+
+          <Route path="/403" element={<Forbidden />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="/500" element={<ServerError />} />
+          <Route path="/503" element={<Maintenance />} />
+
+          <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
       </Router>
     </>

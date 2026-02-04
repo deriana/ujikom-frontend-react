@@ -12,6 +12,7 @@ import { Division, DivisionInput } from "@/types/division.types";
 import Badge from "@/components/ui/badge/Badge";
 import { useState } from "react";
 import DivisionModal from "@/pages/Division/Modal";
+import { RESOURCES } from "@/constants/Resource";
 
 export default function DivisionTable() {
   const { data: divisions = [], isLoading, isError, error } = useDivisions();
@@ -128,6 +129,7 @@ export default function DivisionTable() {
           dataName={row.name}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          baseNamePermission={RESOURCES.DIVISION}
         />
       ),
     },
@@ -151,6 +153,7 @@ export default function DivisionTable() {
         loading={isLoading}
         handleCreate={handleCreate}
         label="Divisions"
+        baseNamePermission={RESOURCES.DIVISION}
       />
 
       <DivisionModal
