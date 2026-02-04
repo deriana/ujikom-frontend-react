@@ -11,8 +11,6 @@ export default function RolesTable() {
   const { data: roles = [], isLoading, isError, error } = useRoles();
   const { mutate: deleteRole } = useDeleteRole();
 
-  console.log(roles);
-
   const navigate = useNavigate();
 
   const handleEdit = (id: number) => {
@@ -25,7 +23,7 @@ export default function RolesTable() {
         toast.success("Role Deleted Successfully!");
     } catch (err: any) {
       console.error(err);
-        toast.error("Failed Delete Role: " + (err?.message || "Unknown error"));
+        toast.error("Failed Delete Role: " + (err?.message.message || "Unknown error"));
     }
   };
 
