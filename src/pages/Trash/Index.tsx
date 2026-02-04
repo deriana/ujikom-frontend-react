@@ -7,7 +7,7 @@ const pages = [
   {
     name: "Division",
     icon: <Layers className="w-8 h-8" />,
-    path: "/division",
+    path: "/trash/divisions",
   },
   {
     name: "Teams",

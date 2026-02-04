@@ -10,18 +10,10 @@ import {
 } from "@/api/division.api";
 import { DivisionInput } from "@/types/division.types";
 
-export const useDivisions = () => {
+export const useDivisions = (trashed = false) => {
   return useQuery({
-    queryKey: ["divisions"],
-    queryFn: getDivision,
-    staleTime: 1000 * 60 * 5,
-  });
-};
-
-export const useTrashedDivisions = () => {
-  return useQuery({
-    queryKey: ["divisions", "trashed"],
-    queryFn: getTrashedDivision,
+    queryKey: ["divisions", { trashed }],
+    queryFn: trashed ? getTrashedDivision : getDivision,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -93,15 +85,15 @@ export const useRestoreDivision = () => {
     mutationFn: (uuid: string) => restoreDivision(uuid),
     onMutate: async (uuid) => {
       await qc.cancelQueries({ queryKey: ["divisions"], exact: false });
-      const trashed = qc.getQueryData(["divisions", "trashed"]);
-      qc.setQueryData(["divisions", "trashed"], (old: any[] = []) =>
+      const trashed = qc.getQueryData(["divisions", {trashed: true}]);
+      qc.setQueryData(["divisions", {trashed: true}], (old: any[] = []) =>
         old.filter((d) => d.uuid !== uuid)
       );
       return { previousTrashed: trashed };
     },
     onError: (_err, _uuid, context: any) => {
       if (context?.previousTrashed)
-        qc.setQueryData(["divisions", "trashed"], context.previousTrashed);
+        qc.setQueryData(["divisions", {trashed: true}], context.previousTrashed);
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ["divisions"], exact: false }),
   });
@@ -114,16 +106,16 @@ export const useForceDeleteDivision = () => {
   return useMutation({
     mutationFn: (uuid: string) => forceDeleteDivision(uuid),
     onMutate: async (uuid) => {
-      await qc.cancelQueries({ queryKey: ["divisions", "trashed"] });
-      const previous = qc.getQueryData(["divisions", "trashed"]);
-      qc.setQueryData(["divisions", "trashed"], (old: any[] = []) =>
+      await qc.cancelQueries({ queryKey: ["divisions", {trashed: true}] });
+      const previous = qc.getQueryData(["divisions", {trashed: true}]);
+      qc.setQueryData(["divisions", {trashed: true}], (old: any[] = []) =>
         old.filter((d) => d.uuid !== uuid)
       );
       return { previous };
     },
     onError: (_err, _uuid, context: any) => {
-      if (context?.previous) qc.setQueryData(["divisions", "trashed"], context.previous);
+      if (context?.previous) qc.setQueryData(["divisions", {trashed: true}], context.previous);
     },
-    onSettled: () => qc.invalidateQueries({ queryKey: ["divisions", "trashed"] }),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["divisions", {trashed: true}] }),
   });
 };

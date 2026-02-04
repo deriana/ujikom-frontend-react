@@ -6,6 +6,7 @@ export interface DivisionInput {
 }
 
 export interface TeamInput {
+    uuid: string;
     name: string;
 }
 
@@ -17,6 +18,6 @@ export interface Division {
 }
 
 export interface Team {
-    id: number;
+    uuid: string;
     name: string;
 }

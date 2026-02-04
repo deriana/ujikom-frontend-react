@@ -36,7 +36,7 @@ export default function DivisionTable() {
       uuid: division.uuid,
       name: division.name,
       code: division.code,
-      teams: division.teams.map((t) => ({ name: t.name })),
+      teams: division.teams.map((t) => ({uuid: t.uuid, name: t.name })),
     });
 
     setIsEditMode(true);
@@ -108,12 +108,12 @@ export default function DivisionTable() {
       header: "Division Code",
       render: (row) => <Badge>{row.code}</Badge>,
     },
-    {
+{
       header: "Teams",
       render: (row) => (
         <div className="flex flex-wrap gap-1">
           {row.teams.map((team) => (
-            <Badge key={team.id} size="sm" color="info">
+            <Badge key={team.uuid} size="sm" color="info">
               {team.name}
             </Badge>
           ))}

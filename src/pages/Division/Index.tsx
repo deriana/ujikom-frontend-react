@@ -3,7 +3,6 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
 import DivisionTable from "@/components/tables/Divisions/DivisionsTable";
 
-
 export default function Divisions() {
   return (
     <>

@@ -27,6 +27,7 @@ import RolesCreate from "./pages/Roles/Create";
 import RolesUpdate from "./pages/Roles/Update";
 import Trash from "./pages/Trash/Index";
 import Divisions from "./pages/Division/Index";
+import DivisionsTrash from "./pages/Trash/Pages/DivisionTrash";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -58,6 +59,7 @@ export default function App() {
               <Route path="/divisions" element={<Divisions />} />
               
               <Route path="/trash" element={<Trash />} />
+              <Route path="/trash/divisions" element={<DivisionsTrash />} />
 
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />

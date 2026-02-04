@@ -23,12 +23,12 @@ export const deleteDivision = async (uuid: string) => {
 };
 
 export const restoreDivision = async (uuid: string) => {
-  const res = await api.post<ApiResponse<Division[]>>(`/divisions/${uuid}`);
+  const res = await api.post<ApiResponse<Division[]>>(`/divisions/restore/${uuid}`);
   return res.data.data;
 };
 
 export const forceDeleteDivision = async (uuid: string) => {
-  const res = await api.delete<ApiResponse<Division[]>>(`/divisions/${uuid}`);
+  const res = await api.delete<ApiResponse<Division[]>>(`/divisions/force-delete/${uuid}`);
   return res.data.data;
 };
 

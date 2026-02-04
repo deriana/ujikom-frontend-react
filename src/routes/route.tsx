@@ -69,7 +69,10 @@ export const othersItems: NavItem[] = [
   {
     icon: <TrashBinIcon />,
     name: "Trash",
-    path: "/trash",
+    subItems: [
+      { name: "Trash", path: "/trash", pro: false },
+      { name: "Divisions", path: "/trash/divisions", pro: false },
+    ],
   },
   {
     icon: <PieChartIcon />,

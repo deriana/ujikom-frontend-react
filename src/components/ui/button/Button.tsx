@@ -3,7 +3,15 @@ import { ReactNode } from "react";
 interface ButtonProps {
   children: ReactNode; // Button text or content
   size?: "sm" | "md"; // Button size
-  variant?: "primary" | "outline" | "danger" | "warning"; // Button variant
+  variant?:
+    | "primary"
+    | "outline"
+    | "danger"
+    | "warning"
+    | "success"
+    | "info"
+    | "secondary"
+    | "destructive"; // Button variant
   startIcon?: ReactNode; // Icon before the text
   endIcon?: ReactNode; // Icon after the text
   onClick?: () => void; // Click handler
@@ -39,11 +47,18 @@ const Button: React.FC<ButtonProps> = ({
       "bg-red-500 text-white shadow-theme-xs hover:bg-red-600 disabled:bg-red-300",
     warning:
       "bg-yellow-500 text-white shadow-theme-xs hover:bg-yellow-600 disabled:bg-yellow-300",
+    success:
+      "bg-green-500 text-white shadow-theme-xs hover:bg-green-600 disabled:bg-green-300",
+    info: "bg-blue-500 text-white shadow-theme-xs hover:bg-blue-600 disabled:bg-blue-300",
+    secondary:
+      "bg-gray-500 text-white shadow-theme-xs hover:bg-gray-600 disabled:bg-gray-300",
+    destructive:
+      "bg-red-700 text-white shadow-theme-xs hover:bg-red-800 disabled:bg-red-400",
   };
 
   return (
     <button
-      type={type || "button"} // default "button" supaya aman
+      type={type || "button"}
       className={`inline-flex items-center justify-center gap-2 rounded-lg transition ${className} ${
         sizeClasses[size]
       } ${variantClasses[variant]} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
