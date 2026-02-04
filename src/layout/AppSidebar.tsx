@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
-import { navItems, othersItems, NavItem } from "@/routes";
+import { navItems, othersItems, NavItem } from "@/routes/route";
 import { ChevronDownIcon } from "lucide-react";
 import { HorizontaLDots } from "@/icons";
 
