@@ -1,6 +1,5 @@
 import FilterDropdown from "@/components/FilterDropdown";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
-import Button from "@/components/ui/button/Button";
 import {
   Table,
   TableBody,
@@ -8,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Tooltip from "@/components/ui/tooltip";
 import { Column } from "@/types";
 import { Plus } from "lucide-react";
 import { useState, useMemo } from "react";
@@ -27,6 +27,7 @@ interface DataTableProps<T> {
   handleCreate?: () => void;
   createButtonLabel?: string;
   tableTitle?: string;
+  label?: string;
 }
 
 export function DataTable<T extends object>({
@@ -34,13 +35,13 @@ export function DataTable<T extends object>({
   columns,
   searchableKeys = [],
   statusConfig,
-  pageSizeOptions = [10, 20, 30, 40, 50],
+  // pageSizeOptions = [10, 20, 30, 40, 50],
   defaultPageSize = 10,
   loading = false,
   newFilterComponent,
   handleCreate,
-  createButtonLabel = "Add New",
   tableTitle = "Data Table",
+  label = "Data",
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -134,12 +135,14 @@ export function DataTable<T extends object>({
 
           {/* ADD BUTTON */}
           {handleCreate && (
-            <button
-              onClick={handleCreate}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <Plus size={16} />
-            </button>
+            <Tooltip content={`Create ${label}`} position="bottom">
+              <button
+                onClick={handleCreate}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <Plus size={16} />
+              </button>
+            </Tooltip>
           )}
         </div>
       </div>

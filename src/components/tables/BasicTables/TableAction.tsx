@@ -1,5 +1,6 @@
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
+import Tooltip from "@/components/ui/tooltip";
 import { useModal } from "@/hooks/useModal";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
@@ -28,33 +29,41 @@ export default function TableActions<T extends string | number>({
   return (
     <div className="flex items-center gap-2 justify-start">
       {onShow && (
-        <button
-          onClick={() => onShow(id)}
-          className="p-2 rounded-lg text-gray-500 hover:bg-blue-50 dark:hover:bg-white/10"
-          aria-label="Show"
-        >
-          <Eye size={16} />
-        </button>
+        <Tooltip content={`Show ${dataName}`}>
+          <Button
+            onClick={() => onShow(id)}
+            aria-label="Show"
+            size="sm"
+          >
+            <Eye size={16} />
+          </Button>
+        </Tooltip>
       )}
 
       {onEdit && (
-        <button
-          onClick={() => onEdit(id)}
-          className="p-2 rounded-lg text-gray-500 hover:bg-yellow-50 dark:hover:bg-white/10"
-          aria-label="Edit"
-        >
-          <Pencil size={16} />
-        </button>
+        <Tooltip content={`Edit ${dataName}`}>
+          <Button
+            onClick={() => onEdit(id)}
+            aria-label="Edit"
+            size="sm"
+            variant="warning"
+          >
+            <Pencil size={16} />
+          </Button>
+        </Tooltip>
       )}
 
       {onDelete && (
-        <button
-          onClick={openModal}
-          className="p-2 rounded-lg text-gray-500 hover:bg-red-50 dark:hover:bg-white/10"
-          aria-label="Delete"
-        >
-          <Trash2 size={16} />
-        </button>
+        <Tooltip content={`Delete ${dataName}`}>
+          <Button
+            onClick={openModal}
+            aria-label="Delete"
+            size="sm"
+            variant="danger"
+          >
+            <Trash2 size={16} />
+          </Button>
+        </Tooltip>
       )}
 
       {/* Modal Konfirmasi Delete */}
