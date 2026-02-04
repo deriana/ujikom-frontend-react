@@ -3,22 +3,21 @@ import { Modal } from "@/components/ui/modal";
 import { useModal } from "@/hooks/useModal";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 
-interface TableActionsProps {
-  id: number;
+interface TableActionsProps<T extends string | number> {
+  id: T;
   dataName?: string;
-  onShow?: (id: number) => void;
-  onEdit?: (id: number) => void;
-  onDelete?: (id: number) => void;
-  showDeleteConfirm?: boolean;
+  onShow?: (id: T) => void;
+  onEdit?: (id: T) => void;
+  onDelete?: (id: T) => void;
 }
 
-export default function TableActions({
+export default function TableActions<T extends string | number>({
   id,
   onShow,
   onEdit,
   onDelete,
   dataName,
-}: TableActionsProps) {
+}: TableActionsProps<T>) {
   const { isOpen, openModal, closeModal } = useModal();
 
   const handleConfirmDelete = () => {
@@ -76,7 +75,7 @@ export default function TableActions({
             <Button size="sm" variant="outline" onClick={closeModal}>
               Close
             </Button>
-            <Button size="sm" onClick={handleConfirmDelete}>
+            <Button size="sm" onClick={handleConfirmDelete} variant="danger">
               Delete
             </Button>
           </div>

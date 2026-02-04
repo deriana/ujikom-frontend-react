@@ -12,26 +12,24 @@ import { Column } from "@/types";
 import { Plus } from "lucide-react";
 import { useState, useMemo } from "react";
 
-interface DataTableProps<T extends { id: number }> {
+interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
-
   searchableKeys?: (keyof T)[];
   statusConfig?: {
     key: keyof T;
     options: { label: string; value: string }[];
   };
-
   pageSizeOptions?: number[];
   defaultPageSize?: number;
   loading?: boolean;
-
   newFilterComponent?: React.ReactNode;
   handleCreate?: () => void;
   createButtonLabel?: string;
   tableTitle?: string;
 }
-export function DataTable<T extends { id: number }>({
+
+export function DataTable<T extends object>({
   data,
   columns,
   searchableKeys = [],
@@ -166,8 +164,15 @@ export function DataTable<T extends { id: number }>({
           <TableSkeleton cols={columns.length} rows={5} />
         ) : (
           <TableBody>
-            {paginatedData.map((row) => (
-              <TableRow key={row.id} className="border-b dark:border-white/10">
+            {paginatedData.map((row, index) => (
+              <TableRow
+                key={
+                  ("id" in row ? row.id : "uuid" in row ? row.uuid : index) as
+                    | string
+                    | number
+                }
+                className="border-b dark:border-white/10"
+              >
                 {columns.map((col, i) => (
                   <td key={i} className={`px-5 py-3 ${col.className || ""}`}>
                     {col.render
