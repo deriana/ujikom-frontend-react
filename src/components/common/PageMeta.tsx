@@ -1,20 +1,22 @@
-import { HelmetProvider, Helmet } from "react-helmet-async";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+import React from "react";
 
-const PageMeta = ({
-  title,
-  description,
-}: {
+interface PageMetaProps {
   title: string;
-  description: string;
-}) => (
-  <Helmet>
-    <title>{title}</title>
-    <meta name="description" content={description} />
-  </Helmet>
-);
+  description?: string;
+}
 
 export const AppWrapper = ({ children }: { children: React.ReactNode }) => (
   <HelmetProvider>{children}</HelmetProvider>
 );
 
-export default PageMeta;
+export default function PageMeta({ title, description }: PageMetaProps) {
+  return (
+    <Helmet prioritizeSeoTags>
+      <title>{title} | Admin Panel</title>
+      {description && (
+        <meta name="description" content={description} />
+      )}
+    </Helmet>
+  );
+}

@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Users, Layers, Briefcase, Shield } from "lucide-react";
-import PageMeta from "@/components/common/PageMeta";
+import { Users, Layers, Briefcase } from "lucide-react";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import ComponentCard from "@/components/common/ComponentCard";
+// import ComponentCard from "@/components/common/ComponentCard";
 
 const pages = [
   {
@@ -27,7 +26,6 @@ export default function Trash() {
 
   return (
     <div>
-      <PageMeta title="Trash" description="Navigation Page" />
       <PageBreadcrumb pageTitle="Trash" />
         <div className="min-h-screen px-5 py-7 xl:px-10 xl:py-12">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

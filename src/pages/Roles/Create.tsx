@@ -47,7 +47,7 @@ export default function RolesCreate() {
 
   return (
     <>
-      <PageMeta title="Roles - Create" description="Create new role" />
+      <PageMeta title="Create" />
       <PageBreadcrumb
         crumbs={[
           { name: "Home", href: "/" },

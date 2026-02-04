@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import PageMeta from "@/components/common/PageMeta";
 import RoleField from "./Field";
 import Spinner from "@/components/ui/loading/Spinner";
 import Button from "@/components/ui/button/Button";
 import toast from "react-hot-toast";
 import { usePermissions, useRoleById, useUpdateRole } from "@/hooks/useRole";
 import { RoleInput } from "@/types/role.types";
+import PageMeta from "@/components/common/PageMeta";
 
 export default function RolesUpdate() {
   const { id } = useParams<{ id: string }>();
@@ -53,7 +53,7 @@ export default function RolesUpdate() {
       toast.success("Role updated successfully!");
       navigate("/roles");
     } catch (err: any) {
-      toast.error(err?.message || "Failed to update role");
+      toast.error(err?.message.message || "Failed to update role");
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +63,7 @@ export default function RolesUpdate() {
 
   return (
     <>
-      <PageMeta title="Roles - Edit" description="Edit role" />
+      <PageMeta title="Update" />
       <PageBreadcrumb
         crumbs={[
           { name: "Home", href: "/" },

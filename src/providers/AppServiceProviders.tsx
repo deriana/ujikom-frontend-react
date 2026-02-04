@@ -8,15 +8,16 @@ const queryClient = new QueryClient();
 
 export default function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider>
-          <AppWrapper>{children}</AppWrapper>
-        </ThemeProvider>
-      </AuthProvider>
+    <AppWrapper>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
 
-      {/* Devtools */}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </AppWrapper>
   );
 }
