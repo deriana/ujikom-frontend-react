@@ -6,12 +6,14 @@ import Badge from "@/components/ui/badge/Badge";
 import toast from "react-hot-toast";
 import { useDeleteRole, useRoles } from "@/hooks/useRole";
 import { useNavigate } from "react-router-dom";
+import { RESOURCES } from "@/constants/Resource";
 
 export default function RolesTable() {
   const { data: roles = [], isLoading, isError, error } = useRoles();
   const { mutate: deleteRole } = useDeleteRole();
 
   const navigate = useNavigate();
+
 
   const handleEdit = (id: number) => {
     navigate(`/roles/${id}/edit`);
@@ -56,6 +58,7 @@ export default function RolesTable() {
           dataName={row.name}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          baseNamePermission={RESOURCES.ROLE}
         />
       ),
     },
@@ -77,6 +80,8 @@ export default function RolesTable() {
       searchableKeys={["name"]}
       loading={isLoading}
       handleCreate={handleCreate}
+      label="Roles"
+      baseNamePermission={RESOURCES.ROLE}
     />
   );
 }

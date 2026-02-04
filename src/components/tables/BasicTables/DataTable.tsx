@@ -1,6 +1,6 @@
+import { Can } from "@/components/auth/Can";
 import FilterDropdown from "@/components/FilterDropdown";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
-import Button from "@/components/ui/button/Button";
 import {
   Table,
   TableBody,
@@ -8,41 +8,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Tooltip from "@/components/ui/tooltip";
+import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { Column } from "@/types";
 import { Plus } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
-interface DataTableProps<T extends { id: number }> {
+interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
-
   searchableKeys?: (keyof T)[];
   statusConfig?: {
     key: keyof T;
     options: { label: string; value: string }[];
   };
-
-  pageSizeOptions?: number[];
   defaultPageSize?: number;
   loading?: boolean;
-
   newFilterComponent?: React.ReactNode;
   handleCreate?: () => void;
-  createButtonLabel?: string;
   tableTitle?: string;
+  label?: string;
+  baseNamePermission?: string;
 }
-export function DataTable<T extends { id: number }>({
+
+export function DataTable<T extends object>({
   data,
   columns,
   searchableKeys = [],
   statusConfig,
-  pageSizeOptions = [10, 20, 30, 40, 50],
   defaultPageSize = 10,
   loading = false,
   newFilterComponent,
   handleCreate,
-  createButtonLabel = "Add New",
   tableTitle = "Data Table",
+  label = "Data",
+  baseNamePermission,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -78,7 +78,14 @@ export function DataTable<T extends { id: number }>({
   }, [filteredData, page, limit]);
 
   // Reset page if overflow
-  if (page > totalPages) setPage(1);
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [page, totalPages]);
+
+  // EMPTY STATES
+  const isEmpty = !loading && data.length === 0;
+  const isFilteredEmpty =
+    !loading && data.length > 0 && filteredData.length === 0;
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5">
@@ -88,7 +95,6 @@ export function DataTable<T extends { id: number }>({
           {tableTitle}
         </h3>
         <div className="flex flex-col gap-3 sm:flex-row">
-          {/* SEARCH */}
           {searchableKeys.length > 0 && (
             <input
               placeholder="Search..."
@@ -101,10 +107,8 @@ export function DataTable<T extends { id: number }>({
             />
           )}
 
-          {/* NEW FILTER COMPONENT */}
           {newFilterComponent}
 
-          {/* STATUS FILTER */}
           {statusConfig && (
             <FilterDropdown
               value={statusFilter}
@@ -114,14 +118,11 @@ export function DataTable<T extends { id: number }>({
               }}
               options={[
                 { label: "All Status", value: "all" },
-                { label: "Active", value: "Active" },
-                { label: "Pending", value: "Pending" },
-                { label: "Cancel", value: "Cancel" },
+                ...statusConfig.options,
               ]}
             />
           )}
 
-          {/* LIMIT */}
           <FilterDropdown
             value={String(limit)}
             onChange={(val) => {
@@ -134,14 +135,17 @@ export function DataTable<T extends { id: number }>({
             }))}
           />
 
-          {/* ADD BUTTON */}
           {handleCreate && (
-            <button
-              onClick={handleCreate}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <Plus size={16} />
-            </button>
+            <Can value={buildPermission(baseNamePermission!, PERMISSIONS.BASE.CREATE)}>
+              <Tooltip content={`Create ${label}`} position="bottom">
+                <button
+                  onClick={handleCreate}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <Plus size={16} />
+                </button>
+              </Tooltip>
+            </Can>
           )}
         </div>
       </div>
@@ -150,10 +154,16 @@ export function DataTable<T extends { id: number }>({
       <Table className="w-full text-sm text-left">
         <TableHeader className="border-b dark:border-white/10">
           <TableRow>
+            <TableCell
+              isHeader
+              className="px-5 py-3 font-medium text-gray-500 w-16"
+            >
+              No
+            </TableCell>
             {columns.map((col, i) => (
               <TableCell
-                isHeader
                 key={i}
+                isHeader
                 className="px-5 py-3 font-medium text-gray-500"
               >
                 {col.header}
@@ -164,10 +174,45 @@ export function DataTable<T extends { id: number }>({
 
         {loading ? (
           <TableSkeleton cols={columns.length} rows={5} />
+        ) : isEmpty ? (
+          <TableBody>
+            <TableRow>
+              <td
+                colSpan={columns.length}
+                className="px-5 py-10 text-center text-gray-500"
+              >
+                No {label.toLowerCase()} available.
+              </td>
+            </TableRow>
+          </TableBody>
+        ) : isFilteredEmpty ? (
+          <TableBody>
+            <TableRow>
+              <td
+                colSpan={columns.length}
+                className="px-5 py-10 text-center text-gray-500"
+              >
+                No matching {label.toLowerCase()} found.
+              </td>
+            </TableRow>
+          </TableBody>
         ) : (
           <TableBody>
-            {paginatedData.map((row) => (
-              <TableRow key={row.id} className="border-b dark:border-white/10">
+            {paginatedData.map((row, index) => (
+              <TableRow
+                key={
+                  "id" in row
+                    ? (row as any).id
+                    : "uuid" in row
+                      ? (row as any).uuid
+                      : index
+                }
+                className="border-b dark:border-white/10"
+              >
+                <td className="px-5 py-3 text-gray-500">
+                  {(page - 1) * limit + index + 1}
+                </td>
+
                 {columns.map((col, i) => (
                   <td key={i} className={`px-5 py-3 ${col.className || ""}`}>
                     {col.render

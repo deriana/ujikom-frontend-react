@@ -1,4 +1,5 @@
 export interface Role {
+  map: any;
   id: number;
   name: string;
   permissions: Permissions[];
