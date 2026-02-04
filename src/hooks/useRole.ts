@@ -5,23 +5,25 @@ import {
   updateRole,
   deleteRole,
   getPermissions,
-  getRoleById
+  getRoleById,
 } from "@/api/role.api";
-import { RoleInput } from "@/types/role.types";
+import { Role, RoleInput } from "@/types/role.types";
 
 export const useRoles = () => {
-  return useQuery({
+  return useQuery<Role[]>({
     queryKey: ["roles"],
     queryFn: getRoles,
+    staleTime: 1000 * 60 * 5, 
   });
 };
 
 export const useRoleById = (id: number) => {
-  return useQuery({
+  return useQuery<Role>({
     queryKey: ["roles", id],
     queryFn: () => getRoleById(id),
+    enabled: !!id,
   });
-}
+};
 
 export const usePermissions = () =>
   useQuery({
@@ -32,25 +34,58 @@ export const usePermissions = () =>
 
 export const useCreateRole = () => {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: (data: RoleInput) => createRole(data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["roles"] }),
+
+    onSuccess: (newRole) => {
+      // Langsung tambahkan ke cache list tanpa refetch
+      qc.setQueryData<Role[]>(["roles"], (old = []) => [...old, newRole]);
+    },
   });
 };
 
 export const useUpdateRole = () => {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: RoleInput }) =>
       updateRole(id, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["roles"] }),
+
+    onSuccess: (updatedRole, variables) => {
+      qc.setQueryData<Role>(["roles", variables.id], updatedRole);
+
+      qc.invalidateQueries({ queryKey: ["roles"] });
+    },
   });
 };
 
 export const useDeleteRole = () => {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: (id: number) => deleteRole(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["roles"] }),
+
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["roles"] });
+
+      const previousRoles = qc.getQueryData<Role[]>(["roles"]);
+
+      qc.setQueryData<Role[]>(["roles"], (old = []) =>
+        old.filter((role) => role.id !== id)
+      );
+
+      return { previousRoles };
+    },
+
+    onError: (_err, _id, context) => {
+      if (context?.previousRoles) {
+        qc.setQueryData(["roles"], context.previousRoles);
+      }
+    },
+
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["roles"] });
+    },
   });
 };
