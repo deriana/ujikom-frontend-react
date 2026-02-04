@@ -39,7 +39,6 @@ export const useCreateRole = () => {
     mutationFn: (data: RoleInput) => createRole(data),
 
     onSuccess: (newRole) => {
-      // Langsung tambahkan ke cache list tanpa refetch
       qc.setQueryData<Role[]>(["roles"], (old = []) => [...old, newRole]);
     },
   });
