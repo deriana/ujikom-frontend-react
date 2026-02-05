@@ -48,6 +48,10 @@ export function DataTable<T extends object>({
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(defaultPageSize);
+  const [sortConfig, setSortConfig] = useState<{
+    key: keyof T | "index";
+    direction: "asc" | "desc";
+  }>({ key: "index", direction: "asc" });
 
   // FILTERING
   const filteredData = useMemo(() => {
@@ -69,13 +73,54 @@ export function DataTable<T extends object>({
     });
   }, [data, search, statusFilter, searchableKeys, statusConfig]);
 
+  // TOGGLE SORT
+  const toggleSort = (key: keyof T | "index") => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return {
+          key,
+          direction: prev.direction === "asc" ? "desc" : "asc",
+        };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const sortedData = useMemo(() => {
+    if (!filteredData) return [];
+
+    const sorted = [...filteredData];
+
+    sorted.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      if (sortConfig.key === "index") {
+        aValue = data.indexOf(a);
+        bValue = data.indexOf(b);
+      } else {
+        aValue = a[sortConfig.key];
+        bValue = b[sortConfig.key];
+      }
+
+      if (typeof aValue === "string") aValue = aValue.toLowerCase();
+      if (typeof bValue === "string") bValue = bValue.toLowerCase();
+
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return sorted;
+  }, [filteredData, sortConfig, data]);
+
   // PAGINATION
   const totalPages = Math.max(1, Math.ceil(filteredData.length / limit));
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * limit;
-    return filteredData.slice(start, start + limit);
-  }, [filteredData, page, limit]);
+    return sortedData.slice(start, start + limit);
+  }, [sortedData, page, limit]);
 
   // Reset page if overflow
   useEffect(() => {
@@ -136,7 +181,12 @@ export function DataTable<T extends object>({
           />
 
           {handleCreate && (
-            <Can value={buildPermission(baseNamePermission!, PERMISSIONS.BASE.CREATE)}>
+            <Can
+              value={buildPermission(
+                baseNamePermission!,
+                PERMISSIONS.BASE.CREATE,
+              )}
+            >
               <Tooltip content={`Create ${label}`} position="bottom">
                 <button
                   onClick={handleCreate}
@@ -156,10 +206,19 @@ export function DataTable<T extends object>({
           <TableRow>
             <TableCell
               isHeader
-              className="px-5 py-3 font-medium text-gray-500 w-16"
+              className="px-5 py-3 font-medium text-gray-500 w-16 cursor-pointer"
+              onClick={() => toggleSort("index")}
             >
-              No
+              <div className="inline-flex items-center gap-1">
+                <span>No</span>
+                {sortConfig.key === "index" && (
+                  <span className="text-xs">
+                    {sortConfig.direction === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
             </TableCell>
+
             {columns.map((col, i) => (
               <TableCell
                 key={i}
