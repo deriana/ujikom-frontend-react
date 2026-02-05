@@ -39,6 +39,7 @@ import Forbidden from "./pages/Error/Forbidden";
 import PermissionRoute from "./routes/PermissionRoute";
 import { buildPermission, PERMISSIONS } from "./constants/Permissions";
 import { RESOURCES } from "./constants/Resource";
+import Allowances from "./pages/Allowance/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -85,6 +86,12 @@ export default function App() {
               <Route element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.INDEX)} />}>
                 <Route path="/divisions" element={<Divisions />} />
               </Route>
+
+              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.INDEX)} />}>
+                <Route path="/allowances" element={<Allowances />} />
+              </Route>
+
+              {/* ===== TRASH ===== */}
 
               <Route
                 element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.RESTORE)} />}

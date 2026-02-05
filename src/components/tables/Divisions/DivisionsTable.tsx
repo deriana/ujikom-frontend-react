@@ -1,4 +1,4 @@
-import { Column } from "@/types";
+import { Column, Division, DivisionInput } from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import TableActions from "@/components/tables/BasicTables/TableAction";
 import toast from "react-hot-toast";
@@ -8,7 +8,6 @@ import {
   useCreateDivision,
   useUpdateDivision,
 } from "@/hooks/useDivision";
-import { Division, DivisionInput } from "@/types/division.types";
 import Badge from "@/components/ui/badge/Badge";
 import { useState } from "react";
 import DivisionModal from "@/pages/Division/Modal";

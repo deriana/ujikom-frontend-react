@@ -1,23 +1,25 @@
+import { UUID } from "./common";
+
 export interface DivisionInput {
-    uuid?: string;
+    uuid?: UUID;
     name: string;
     code: string;
     teams: TeamInput[];
 }
 
 export interface TeamInput {
-    uuid: string;
+    uuid?: UUID;
     name: string;
 }
 
 export interface Division {
-    uuid: string;
+    uuid: UUID;
     name: string;
     code: string;
     teams: Team[];
 }
 
 export interface Team {
-    uuid: string;
+    uuid: UUID;
     name: string;
 }
