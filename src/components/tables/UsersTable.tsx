@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import FilterDropdown from "@/components/FilterDropdown";
 import { usersDummy } from "./BasicTables/DummyUsers";
 import toast from "react-hot-toast";
+import { RESOURCES } from "@/constants/Resource";
 
 export default function UsersTable() {
   const [usersData, setUsersData] = useState<User[]>([]);
@@ -151,6 +152,7 @@ export default function UsersTable() {
           onShow={handleShow}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          baseNamePermission={RESOURCES.USER}
         />
       ),
     },

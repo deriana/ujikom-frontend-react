@@ -1,7 +1,8 @@
+import { UUID } from "./common";
 import { Role } from "./role.types";
 
 export interface User {
-  uuid: string;
+  uuid: UUID;
   name: string;
   email: string;
   roles: Role[];
