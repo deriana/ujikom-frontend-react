@@ -40,6 +40,7 @@ import PermissionRoute from "./routes/PermissionRoute";
 import { buildPermission, PERMISSIONS } from "./constants/Permissions";
 import { RESOURCES } from "./constants/Resource";
 import Allowances from "./pages/Allowance/Index";
+import AllowancesTrash from "./pages/Trash/Pages/AllowanceTrash";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -97,6 +98,7 @@ export default function App() {
                 element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.RESTORE)} />}
               >
                 <Route path="/trash/divisions" element={<DivisionsTrash />} />
+                <Route path="/trash/allowances" element={<AllowancesTrash />} />
               </Route>
 
               {/* <Route path="/trash" element={<Trash />} /> */}
