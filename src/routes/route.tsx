@@ -63,6 +63,12 @@ export const navItems: NavItem[] = [
         pro: false,
         permission: buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.INDEX),
       },
+      {
+        name: "Positions",
+        path: "/Positions",
+        pro: false,
+        permission: buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX),
+      },
     ],
   },
   {

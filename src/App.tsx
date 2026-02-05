@@ -39,8 +39,9 @@ import Forbidden from "./pages/Error/Forbidden";
 import PermissionRoute from "./routes/PermissionRoute";
 import { buildPermission, PERMISSIONS } from "./constants/Permissions";
 import { RESOURCES } from "./constants/Resource";
-import Allowances from "./pages/Allowance/Index";
+import Allowances from "./pages/Allowances/Index";
 import AllowancesTrash from "./pages/Trash/Pages/AllowanceTrash";
+import Positions from "./pages/Positions/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -70,7 +71,6 @@ export default function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
 
-              {/* ===== ROLE MANAGEMENT ===== */}
               <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.INDEX)} />}>
                 <Route path="/roles" element={<Roles />} />
               </Route>
@@ -83,7 +83,6 @@ export default function App() {
                 <Route path="/roles/:id/edit" element={<RolesUpdate />} />
               </Route>
 
-              {/* ===== DIVISION MANAGEMENT ===== */}
               <Route element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.INDEX)} />}>
                 <Route path="/divisions" element={<Divisions />} />
               </Route>
@@ -91,6 +90,11 @@ export default function App() {
               <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.INDEX)} />}>
                 <Route path="/allowances" element={<Allowances />} />
               </Route>
+
+              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX)} />}>
+                <Route path="/positions" element={<Positions />} />
+              </Route>
+
 
               {/* ===== TRASH ===== */}
 

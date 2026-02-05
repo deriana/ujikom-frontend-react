@@ -13,8 +13,8 @@ import Badge from "@/components/ui/badge/Badge";
 import { allowanceTypeMap } from "@/constants/Allowance";
 import Currency from "@/components/ui/currency/Currency";
 import { useMemo, useState } from "react";
-import AllowanceModal from "@/pages/Allowance/Modal";
-import AllowanceShowModal from "@/pages/Allowance/ShowModal";
+import AllowanceModal from "@/pages/Allowances/Modal";
+import AllowanceShowModal from "@/pages/Allowances/ShowModal";
 import FilterDropdown from "@/components/FilterDropdown";
 
 export default function AllowanceTable() {
