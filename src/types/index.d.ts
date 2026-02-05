@@ -11,6 +11,17 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface Timestamps {
+  created_at: date;
+  updated_at: date;
+}
+
+export interface Creator {
+  created_by_id: string;
+  updated_by_id: string;
+  deleted_by_id: string;
+}
+
 export interface User {
   id: number;
   name: string;
