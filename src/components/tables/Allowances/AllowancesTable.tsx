@@ -12,9 +12,10 @@ import { DataTable } from "../BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import { allowanceTypeMap } from "@/constants/Allowance";
 import Currency from "@/components/ui/currency/Currency";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AllowanceModal from "@/pages/Allowance/Modal";
 import AllowanceShowModal from "@/pages/Allowance/ShowModal";
+import FilterDropdown from "@/components/FilterDropdown";
 
 export default function AllowanceTable() {
   const { data: allowances = [], isLoading, isError, error } = useAllowances();
@@ -23,6 +24,7 @@ export default function AllowanceTable() {
   const { mutate: deleteAllowance } = useDeleteAllowance();
   const [showUuid, setShowUuid] = useState<string | null>(null);
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("all");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [allowanceData, setAllowanceData] = useState<AllowanceInput>({
@@ -33,7 +35,25 @@ export default function AllowanceTable() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // ==================== HANDLE MODAL ====================
+  const typeOptions = useMemo(() => {
+    return [
+      { label: "All Types", value: "all" },
+      ...Object.entries(allowanceTypeMap).map(([key, meta]) => ({
+        label: meta.label,
+        value: key,
+      })),
+    ];
+  }, []);
+
+  const filteredAllowances = useMemo(() => {
+    if (!allowances) return [];
+
+    return allowances.filter((allowance) => {
+      if (typeFilter === "all") return true;
+      return allowance.type === typeFilter;
+    });
+  }, [allowances, typeFilter]);
+
   const handleEdit = (uuid: string) => {
     const allowance = allowances.find((a) => a.uuid === uuid);
     if (!allowance) return;
@@ -155,13 +175,20 @@ export default function AllowanceTable() {
     <>
       <DataTable
         tableTitle="Allowance Table"
-        data={allowances}
+        data={filteredAllowances}
         columns={columns}
         searchableKeys={["name"]}
         loading={isLoading}
         handleCreate={handleCreate}
         label="Allowances"
         baseNamePermission={RESOURCES.ALLOWANCE}
+        newFilterComponent={
+          <FilterDropdown
+            value={typeFilter}
+            options={typeOptions}
+            onChange={(val) => setTypeFilter(val)}
+          />
+        }
       />
 
       <AllowanceModal
