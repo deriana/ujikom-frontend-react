@@ -14,6 +14,7 @@ import { DataTable } from "../BasicTables/DataTable";
 import { useState } from "react";
 import PositionModal from "@/pages/Positions/Modal";
 import PositionShowModal from "@/pages/Positions/ShowModal";
+import Badge from "@/components/ui/badge/Badge";
 
 export default function PositionsTable() {
   const { data: positions = [], isLoading, isError, error } = usePositions();
@@ -151,6 +152,25 @@ export default function PositionsTable() {
         />
       ),
     },
+    {
+      header: "Allowances",
+      render: (row) => {
+        const count = row.allowances?.length ?? 0;
+
+        if (count === 0) {
+          return (
+            <Badge size="sm" color="error">No Allowance</Badge>
+          );
+        }
+
+        return (
+          <Badge size="sm" color="primary">
+            {count} Allowance{count > 1 ? "s" : ""}
+          </Badge>
+        );
+      },
+    },
+
     {
       header: "Action",
       render: (row) => (
