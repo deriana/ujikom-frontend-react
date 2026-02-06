@@ -12,12 +12,15 @@ import Badge from "@/components/ui/badge/Badge";
 import { useState } from "react";
 import DivisionModal from "@/pages/Division/Modal";
 import { RESOURCES } from "@/constants/Resource";
+import DivisionShowModal from "@/pages/Division/ShowModal";
 
 export default function DivisionTable() {
   const { data: divisions = [], isLoading, isError, error } = useDivisions();
   const { mutate: deleteDivision } = useDeleteDivision();
   const { mutateAsync: createDivision } = useCreateDivision();
   const { mutateAsync: updateDivision } = useUpdateDivision();
+  const [showUuid, setShowUuid] = useState<string | null>(null);
+  const [isShowModalOpen, setIsShowModalOpen] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [divisionData, setDivisionData] = useState<DivisionInput>({
@@ -36,7 +39,7 @@ export default function DivisionTable() {
       uuid: division.uuid,
       name: division.name,
       code: division.code,
-      teams: division.teams.map((t) => ({uuid: t.uuid, name: t.name })),
+      teams: division.teams.map((t) => ({ uuid: t.uuid, name: t.name })),
     });
 
     setIsEditMode(true);
@@ -108,7 +111,7 @@ export default function DivisionTable() {
       header: "Division Code",
       render: (row) => <Badge>{row.code}</Badge>,
     },
-{
+    {
       header: "Teams",
       render: (row) => (
         <div className="flex flex-wrap gap-1">
@@ -128,6 +131,7 @@ export default function DivisionTable() {
           dataName={row.name}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onShow={handleShow}
           baseNamePermission={RESOURCES.DIVISION}
         />
       ),
@@ -141,6 +145,11 @@ export default function DivisionTable() {
       </div>
     );
   }
+
+  const handleShow = (uuid: string) => {
+    setShowUuid(uuid);
+    setIsShowModalOpen(true);
+  };
 
   return (
     <>
@@ -162,6 +171,12 @@ export default function DivisionTable() {
         setDivisionData={setDivisionData}
         onSubmit={handleSubmit}
         isLoading={isSubmitting}
+      />
+
+      <DivisionShowModal
+        uuid={showUuid}
+        isOpen={isShowModalOpen}
+        onClose={() => setIsShowModalOpen(false)}
       />
     </>
   );
