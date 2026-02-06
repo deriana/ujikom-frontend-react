@@ -836,3 +836,35 @@ input[type=number] {
 .input-delete-outline:focus {
     outline: none;
 }
+
+@layer base {
+  input[type="time"],
+  input[type="date"] {
+    color-scheme: light !important; 
+  }
+
+  .dark input[type="time"],
+  .dark input[type="date"] {
+    color-scheme: dark !important;
+  }
+
+  ::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 2px;
+    padding: 2px;
+    transition: all 0.2s;
+  }
+
+  ::-webkit-calendar-picker-indicator:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .dark ::-webkit-calendar-picker-indicator:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}

@@ -43,6 +43,7 @@ import Allowances from "./pages/Allowances/Index";
 import AllowancesTrash from "./pages/Trash/Pages/AllowanceTrash";
 import Positions from "./pages/Positions/Index";
 import PositionsTrash from "./pages/Trash/Pages/PositionTrash";
+import Setting from "./pages/Settings/Setting";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -95,6 +96,11 @@ export default function App() {
               <Route element={<PermissionRoute permission={buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX)} />}>
                 <Route path="/positions" element={<Positions />} />
               </Route>
+
+              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX)} />}>
+                <Route path="/settings" element={<Setting />} />
+              </Route>
+
 
 
               {/* ===== TRASH ===== */}

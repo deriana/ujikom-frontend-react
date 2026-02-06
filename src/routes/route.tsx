@@ -12,6 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
+import { Settings } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -156,4 +157,10 @@ export const othersItems: NavItem[] = [
       { name: "Sign Up", path: "/signup", pro: false },
     ],
   },
+  {
+    icon: <Settings />,
+    name: "Settings",
+    path: "/settings",
+    permission: buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX),
+  }
 ];
