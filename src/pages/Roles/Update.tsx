@@ -1,65 +1,61 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import RoleField from "./Field";
 import Spinner from "@/components/ui/loading/Spinner";
 import Button from "@/components/ui/button/Button";
-import toast from "react-hot-toast";
 import { usePermissions, useRoleById, useUpdateRole } from "@/hooks/useRole";
 import { RoleInput } from "@/types/role.types";
 import PageMeta from "@/components/common/PageMeta";
+import { useCrudPageForm } from "@/hooks/useCrudPageForm"; 
 
 export default function RolesUpdate() {
   const { id } = useParams<{ id: string }>();
   const roleId = Number(id);
 
   const { data: modules } = usePermissions();
-  const { data: roleDataFromApi, isLoading: isFetchingRole } =
-    useRoleById(roleId);
+  const { data: roleFromApi, isLoading: isFetchingRole } = useRoleById(roleId);
   const { mutateAsync: updateRole } = useUpdateRole();
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [roleData, setRoleData] = useState<RoleInput>({
-    name: "",
-    permissions: [],
-  });
-
   const navigate = useNavigate();
 
+  const { form, setForm, submit, loading } =
+    useCrudPageForm<RoleInput, RoleInput, number>({
+      label: "Role",
+      emptyForm: {
+        name: "",
+        permissions: [],
+      },
+
+      mapToPayload: (f) => f,
+
+      validate: (f) => {
+        if (!f.name.trim()) return "Role name is required";
+        if (f.permissions.length === 0)
+          return "Please select at least one permission";
+        return null;
+      },
+
+      createFn: async () => {
+        throw new Error("Create not allowed on update page");
+      },
+
+      updateFn: (id, payload) => updateRole({ id, data: payload }),
+
+      getId: () => roleId, 
+      redirectPath: "/roles",
+    });
+
   useEffect(() => {
-    if (roleDataFromApi) {
-      setRoleData({
-        name: roleDataFromApi.name,
-        permissions: roleDataFromApi.permissions.map((p: any) => Number(p.id)),
+    if (roleFromApi) {
+      setForm({
+        name: roleFromApi.name,
+        permissions: roleFromApi.permissions.map((p: any) => Number(p.id)),
       });
     }
-  }, [roleDataFromApi]);
+  }, [roleFromApi, setForm]);
 
-  const handleSubmit = async () => {
-    if (!roleData.name.trim()) {
-      toast.error("Role name is required");
-      return;
-    }
-
-    if (roleData.permissions.length === 0) {
-      toast.error("Please select at least one permission");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      await updateRole({ id: roleId, data: roleData });
-      toast.success("Role updated successfully!");
-      navigate("/roles");
-    } catch (err: any) {
-      toast.error(err?.message.message || "Failed to update role");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (!modules || isFetchingRole || !roleDataFromApi) return <Spinner />;
+  if (!modules || isFetchingRole || !roleFromApi) return <Spinner />;
 
   return (
     <>
@@ -75,23 +71,23 @@ export default function RolesUpdate() {
       <div className="space-y-6">
         <ComponentCard title="Edit Role">
           <RoleField
-            value={roleData}
-            onChange={setRoleData}
+            value={form}
+            onChange={setForm}
             modules={modules}
-            disabled={roleDataFromApi.system_reserve}
+            disabled={roleFromApi.system_reserve}
           />
 
           <div className="flex justify-end mt-6">
             <Button
               className="mr-5"
               onClick={() => navigate("/roles")}
-              disabled={isLoading}
+              disabled={loading}
               variant="danger"
             >
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={isLoading}>
-              {isLoading ? "Updating..." : "Update Role"}
+            <Button onClick={submit} disabled={loading}>
+              {loading ? "Updating..." : "Update Role"}
             </Button>
           </div>
         </ComponentCard>

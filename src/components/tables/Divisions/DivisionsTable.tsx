@@ -1,7 +1,6 @@
 import { Column, Division, DivisionInput } from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import TableActions from "@/components/tables/BasicTables/TableAction";
-import toast from "react-hot-toast";
 import {
   useDeleteDivision,
   useDivisions,
@@ -9,124 +8,63 @@ import {
   useUpdateDivision,
 } from "@/hooks/useDivision";
 import Badge from "@/components/ui/badge/Badge";
-import { useState } from "react";
 import DivisionModal from "@/pages/Division/Modal";
-import { RESOURCES } from "@/constants/Resource";
 import DivisionShowModal from "@/pages/Division/ShowModal";
-// import { usePageAlert } from "@/context/PageAlertContext";
+import { RESOURCES } from "@/constants/Resource";
+import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
+import { handleMutation } from "@/utils/handleMutation";
 
 export default function DivisionTable() {
   const { data: divisions = [], isLoading, isError, error } = useDivisions();
-  const { mutate: deleteDivision } = useDeleteDivision();
+  const { mutateAsync: deleteDivision } = useDeleteDivision();
   const { mutateAsync: createDivision } = useCreateDivision();
   const { mutateAsync: updateDivision } = useUpdateDivision();
-  const [showUuid, setShowUuid] = useState<string | null>(null);
-  const [isShowModalOpen, setIsShowModalOpen] = useState(false);
-  // const { showAlert } = usePageAlert();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [divisionData, setDivisionData] = useState<DivisionInput>({
-    name: "",
-    code: "",
-    teams: [],
+  const show = useShowModal<string>();
+  const crud = useCrudModalForm<DivisionInput, DivisionInput>({
+    label: "Division",
+    emptyForm: { name: "", code: "", teams: [] },
+    validate: (form) => {
+      if (!form.name.trim()) return "Division name is required";
+      if (!form.code.trim()) return "Division code is required";
+      return null;
+    },
+
+    mapToPayload: (form) => ({
+      name: form.name.trim().replace(/\s+/g, " "), 
+      code: form.code.trim().toUpperCase(),
+      teams: form.teams,
+    }),
+    createFn: createDivision,
+    updateFn: (uuid, payload) => updateDivision({ uuid, data: payload }),
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleEdit = (uuid: string) => {
     const division = divisions.find((d) => d.uuid === uuid);
     if (!division) return;
-
-    setDivisionData({
+    crud.openEdit({
       uuid: division.uuid,
       name: division.name,
       code: division.code,
       teams: division.teams.map((t) => ({ uuid: t.uuid, name: t.name })),
     });
-
-    setIsEditMode(true);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = async (uuid: string) => {
-    try {
-      await deleteDivision(uuid);
-      toast.success("Division Deleted Successfully!");
-      // showAlert({
-      //   variant: "success",
-      //   title: "Success",
-      //   message: "Division Deleted Successfully!",
-      // });
-    } catch (err: any) {
-      console.error(err);
-      // showAlert({
-      //   variant: "error",
-      //   title: "Error",
-      //   message:
-      //     "Failed Delete Division: " +
-      //     (err?.message.message || "Unknown error"),
-      // });
-      toast.error(
-        "Failed Delete Division: " + (err?.message.message || "Unknown error"),
-      );
-    }
   };
 
   const handleCreate = () => {
-    setDivisionData({ name: "", code: "", teams: [] });
-    setIsEditMode(false);
-    setIsModalOpen(true);
+    crud.openCreate();
   };
 
-  const handleSubmit = async () => {
-    if (!divisionData.name.trim()) {
-      toast.error("Division name is required");
-      return;
-    }
-    if (!divisionData.code.trim()) {
-      toast.error("Division code is required");
-      return;
-    }
+  const handleDelete = (uuid: string) =>
+    handleMutation(() => deleteDivision(uuid), {
+      loading: "Deleting division...",
+      success: "Division deleted successfully",
+      error: "Failed to delete division",
+    });
 
-    setIsSubmitting(true);
-    try {
-      if (isEditMode) {
-        await updateDivision({
-          uuid: divisionData.uuid!,
-          data: {
-            name: divisionData.name,
-            code: divisionData.code,
-            teams: divisionData.teams,
-          },
-        });
-
-        toast.success("Division updated successfully!");
-        // showAlert({
-        //   variant: "success",
-        //   title: "Success",
-        //   message: "Division updated Successfully!",
-        // });
-      } else {
-        await createDivision(divisionData);
-        toast.success("Division created successfully!");
-        // showAlert({
-        //   variant: "success",
-        //   title: "Success",
-        //   message: "Division created Successfully!",
-        // });
-      }
-      setIsModalOpen(false);
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to save division");
-      // showAlert({
-      //   variant: "error",
-      //   title: "Error",
-      //   message: err?.message || "Failed to save division",
-      // });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleShow = (uuid: string) => {
+    show.open(uuid);
   };
 
+  const MAX_TEAMS = 3;
   const columns: Column<Division>[] = [
     {
       header: "Division Name",
@@ -142,19 +80,33 @@ export default function DivisionTable() {
     },
     {
       header: "Teams",
-      render: (row) => (
-        <div className="flex flex-wrap gap-1">
-          {row.teams.length > 0 ? (
-            row.teams.map((team) => (
-              <Badge key={team.uuid} size="sm" color="info">
-                {team.name}
+      render: (row) => {
+        const teams = row.teams ?? [];
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {teams.length > 0 ? (
+              <>
+                {teams.slice(0, MAX_TEAMS).map((team) => (
+                  <Badge key={team.uuid} size="sm" color="info">
+                    {team.name}
+                  </Badge>
+                ))}
+
+                {teams.length > MAX_TEAMS && (
+                  <Badge size="sm" color="warning">
+                    +{teams.length - MAX_TEAMS} more
+                  </Badge>
+                )}
+              </>
+            ) : (
+              <Badge size="sm" color="error">
+                No Teams
               </Badge>
-            ))
-          ) : (
-            <Badge size="sm" color="error">No Teams</Badge>
-          )}
-        </div>
-      ),
+            )}
+          </div>
+        );
+      },
     },
     {
       header: "Action",
@@ -179,11 +131,6 @@ export default function DivisionTable() {
     );
   }
 
-  const handleShow = (uuid: string) => {
-    setShowUuid(uuid);
-    setIsShowModalOpen(true);
-  };
-
   return (
     <>
       <DataTable
@@ -198,18 +145,18 @@ export default function DivisionTable() {
       />
 
       <DivisionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        divisionData={divisionData}
-        setDivisionData={setDivisionData}
-        onSubmit={handleSubmit}
-        isLoading={isSubmitting}
+        isOpen={crud.isOpen}
+        onClose={crud.close}
+        divisionData={crud.form}
+        setDivisionData={crud.setForm}
+        onSubmit={crud.submit}
+        isLoading={crud.loading}
       />
 
       <DivisionShowModal
-        uuid={showUuid}
-        isOpen={isShowModalOpen}
-        onClose={() => setIsShowModalOpen(false)}
+        uuid={show.showId}
+        isOpen={show.isOpen}
+        onClose={show.close}
       />
     </>
   );

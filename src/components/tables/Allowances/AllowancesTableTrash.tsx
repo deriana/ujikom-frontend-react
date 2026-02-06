@@ -8,10 +8,10 @@ import { Allowance, AllowanceType } from "@/types/allowance.types";
 import Badge from "@/components/ui/badge/Badge";
 import { DataTable } from "../BasicTables/DataTable";
 import TableActions from "../BasicTables/TableAction";
-import toast from "react-hot-toast";
 import { RESOURCES } from "@/constants/Resource";
 import { allowanceTypeMap } from "@/constants/Allowance";
 import Currency from "@/components/ui/currency/Currency";
+import { useTrashActions } from "@/hooks/useTrashActions";
 
 export default function AllowanceTableTrash() {
   const {
@@ -23,31 +23,11 @@ export default function AllowanceTableTrash() {
   const { mutateAsync: restoreAllowance } = useRestoreAllowance();
   const { mutateAsync: forceDeleteAllowance } = useForceDeleteAllowance();
 
-  const handleRestore = async (uuid: string) => {
-    try {
-      await restoreAllowance(uuid);
-      toast.success("Allowance Restored Successfully!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        "Failed Restore Allowance: " +
-          (err?.message.message || "Unknown error"),
-      );
-    }
-  };
-
-  const handleForceDelete = async (uuid: string) => {
-    try {
-      await forceDeleteAllowance(uuid);
-      toast.success("Allowance Force Deleted Successfully!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        "Failed Force Delete Allowance: " +
-          (err?.message.message || "Unknown error"),
-      );
-    }
-  };
+    const { handleRestore, handleForceDelete } = useTrashActions({
+      label: "Allowance",
+      restoreFn: restoreAllowance,
+      forceDeleteFn: forceDeleteAllowance,
+    });
 
   const columns: Column<Allowance>[] = [
     {

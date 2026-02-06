@@ -7,8 +7,8 @@ import {
 import { Column, Position } from "@/types";
 import TableActions from "../BasicTables/TableAction";
 import { RESOURCES } from "@/constants/Resource";
-import toast from "react-hot-toast";
 import { DataTable } from "../BasicTables/DataTable";
+import { useTrashActions } from "@/hooks/useTrashActions";
 
 export default function PositionsTableTrash() {
   const {
@@ -20,30 +20,11 @@ export default function PositionsTableTrash() {
   const { mutateAsync: restorePosition } = useRestorePosition();
   const { mutateAsync: forceDeletePosition } = useForceDeletePosition();
 
-  const handleRestore = async (uuid: string) => {
-    try {
-      await restorePosition(uuid);
-      toast.success("Position Restored Successfully!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        "Failed Restore Position: " + (err?.message.message || "Unknown error"),
-      );
-    }
-  };
-
-  const handleForceDelete = async (uuid: string) => {
-    try {
-      await forceDeletePosition(uuid);
-      toast.success("Position Force Deleted Successfully!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        "Failed Force Delete Position: " +
-          (err?.message.message || "Unknown error"),
-      );
-    }
-  };
+  const { handleRestore, handleForceDelete } = useTrashActions({
+    label: "Position",
+    restoreFn: restorePosition,
+    forceDeleteFn: forceDeletePosition,
+  });
 
   const columns: Column<Position>[] = [
     {

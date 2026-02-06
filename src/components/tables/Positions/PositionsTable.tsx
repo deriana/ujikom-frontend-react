@@ -9,46 +9,70 @@ import { useAllowances } from "@/hooks/useAllowance";
 import { Column, Position, PositionInput } from "@/types";
 import TableActions from "../BasicTables/TableAction";
 import { RESOURCES } from "@/constants/Resource";
-import toast from "react-hot-toast";
 import { DataTable } from "../BasicTables/DataTable";
-import { useState } from "react";
 import PositionModal from "@/pages/Positions/Modal";
 import PositionShowModal from "@/pages/Positions/ShowModal";
 import Badge from "@/components/ui/badge/Badge";
+import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
+import { handleMutation } from "@/utils/handleMutation";
 
 export default function PositionsTable() {
   const { data: positions = [], isLoading, isError, error } = usePositions();
   const { data: allowances = [] } = useAllowances();
 
-  const { mutateAsync: deletePosition } = useDeletePosition();
   const { mutateAsync: createPosition } = useCreatePosition();
   const { mutateAsync: updatePosition } = useUpdatePosition();
+  const { mutateAsync: deletePosition } = useDeletePosition();
 
-  const [showUuid, setShowUuid] = useState<string | null>(null);
-  const [isShowModalOpen, setIsShowModalOpen] = useState(false);
+  const show = useShowModal<string>();
 
-  const emptyForm: PositionInput = {
-    name: "",
-    base_salary: 0,
-    allowances: [],
-  };
+  const crud = useCrudModalForm<PositionInput, any>({
+    label: "Position",
+    emptyForm: {
+      name: "",
+      base_salary: 0,
+      allowances: [],
+    },
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [positionData, setPositionData] = useState<PositionInput>(emptyForm);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
+    validate: (form) => {
+      const name = form.name.trim();
+      if (!name) return "Position name is required";
+      if (name.length < 3) return "Position name must be at least 3 characters";
+      if (form.base_salary <= 0) return "Base salary must be greater than 0";
 
-  const openCreate = () => {
-    setPositionData(emptyForm);
-    setIsEditMode(false);
-    setIsModalOpen(true);
-  };
+      const cleaned = form.allowances.filter((a) => a.uuid);
+      const hasDuplicate =
+        new Set(cleaned.map((a) => a.uuid)).size !== cleaned.length;
 
-  const openEdit = (uuid: string) => {
+      if (hasDuplicate) return "Duplicate allowances are not allowed";
+
+      return null;
+    },
+
+    mapToPayload: (form) => {
+      const cleanedAllowances = form.allowances
+        .filter((a) => a.uuid)
+        .map((a) => ({
+          uuid: a.uuid,
+          amount: a.amount,
+        }));
+
+      return {
+        name: form.name.trim().replace(/\s+/g, " "),
+        base_salary: form.base_salary,
+        allowances: cleanedAllowances,
+      };
+    },
+
+    createFn: createPosition,
+    updateFn: (uuid, payload) => updatePosition({ uuid, data: payload }),
+  });
+
+  const handleEdit = (uuid: string) => {
     const position = positions.find((p) => p.uuid === uuid);
     if (!position) return;
 
-    setPositionData({
+    crud.openEdit({
       uuid: position.uuid,
       name: position.name,
       base_salary: position.base_salary,
@@ -58,81 +82,17 @@ export default function PositionsTable() {
         amount: a.amount ?? 0,
       })),
     });
-
-    setIsEditMode(true);
-    setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setPositionData(emptyForm);
-    setIsEditMode(false);
-  };
+  const handleDelete = (uuid: string) =>
+    handleMutation(() => deletePosition(uuid), {
+      loading: "Deleting position...",
+      success: "Position deleted successfully",
+      error: "Failed to delete position",
+    });
 
-  const handleSubmit = async () => {
-    if (!positionData.name.trim()) {
-      toast.error("Position name is required");
-      return;
-    }
-
-    if (positionData.base_salary <= 0) {
-      toast.error("Base salary must be greater than 0");
-      return;
-    }
-
-    const cleanedAllowances = positionData.allowances
-      .filter((a) => a.uuid)
-      .map((a) => ({
-        uuid: a.uuid,
-        amount: a.amount,
-      }));
-
-    const hasDuplicate =
-      new Set(cleanedAllowances.map((a) => a.uuid)).size !==
-      cleanedAllowances.length;
-
-    if (hasDuplicate) {
-      toast.error("Duplicate allowances are not allowed");
-      return;
-    }
-
-    const payload = {
-      name: positionData.name,
-      base_salary: positionData.base_salary,
-      allowances: cleanedAllowances,
-    };
-
-    setIsSubmitting(true);
-    try {
-      if (isEditMode) {
-        await updatePosition({ uuid: positionData.uuid!, data: payload });
-        toast.success("Position updated successfully!");
-      } else {
-        await createPosition(payload);
-        toast.success("Position created successfully!");
-      }
-
-      closeModal();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to save position");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (uuid: string) => {
-    try {
-      await deletePosition(uuid);
-      toast.success("Position deleted successfully!");
-    } catch {
-      toast.error("Failed delete position");
-    }
-  };
-
-  const handleShow = (uuid: string) => {
-    setShowUuid(uuid);
-    setIsShowModalOpen(true);
-  };
+  const handleShow = (uuid: string) => show.open(uuid);
+  const handleCreate = () => crud.openCreate();
 
   const columns: Column<Position>[] = [
     {
@@ -158,9 +118,7 @@ export default function PositionsTable() {
         const count = row.allowances?.length ?? 0;
 
         if (count === 0) {
-          return (
-            <Badge size="sm" color="error">No Allowance</Badge>
-          );
+          return <Badge size="sm" color="error">No Allowance</Badge>;
         }
 
         return (
@@ -170,14 +128,13 @@ export default function PositionsTable() {
         );
       },
     },
-
     {
       header: "Action",
       render: (row) => (
         <TableActions
           id={row.uuid}
           dataName={row.name}
-          onEdit={openEdit}
+          onEdit={handleEdit}
           onDelete={handleDelete}
           onShow={handleShow}
           baseNamePermission={RESOURCES.POSITION}
@@ -202,29 +159,29 @@ export default function PositionsTable() {
         columns={columns}
         searchableKeys={["name"]}
         loading={isLoading}
-        handleCreate={openCreate}
+        handleCreate={handleCreate}
         label="Positions"
         baseNamePermission={RESOURCES.POSITION}
       />
 
       <PositionModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        positionData={positionData}
-        setPositionData={setPositionData}
-        onSubmit={handleSubmit}
-        isLoading={isSubmitting}
+        isOpen={crud.isOpen}
+        onClose={crud.close}
+        positionData={crud.form}
+        setPositionData={crud.setForm}
+        onSubmit={crud.submit}
+        isLoading={crud.loading}
         allowanceOptions={allowances.map((a) => ({
           uuid: a.uuid,
           name: a.name,
-          amount: a.amount, // default master amount
+          amount: a.amount,
         }))}
       />
 
       <PositionShowModal
-        uuid={showUuid}
-        isOpen={isShowModalOpen}
-        onClose={() => setIsShowModalOpen(false)}
+        uuid={show.showId}
+        isOpen={show.isOpen}
+        onClose={show.close}
       />
     </>
   );
