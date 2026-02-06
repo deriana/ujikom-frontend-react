@@ -13,6 +13,7 @@ import { useState } from "react";
 import DivisionModal from "@/pages/Division/Modal";
 import { RESOURCES } from "@/constants/Resource";
 import DivisionShowModal from "@/pages/Division/ShowModal";
+// import { usePageAlert } from "@/context/PageAlertContext";
 
 export default function DivisionTable() {
   const { data: divisions = [], isLoading, isError, error } = useDivisions();
@@ -21,7 +22,7 @@ export default function DivisionTable() {
   const { mutateAsync: updateDivision } = useUpdateDivision();
   const [showUuid, setShowUuid] = useState<string | null>(null);
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
-
+  // const { showAlert } = usePageAlert();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [divisionData, setDivisionData] = useState<DivisionInput>({
     name: "",
@@ -50,8 +51,20 @@ export default function DivisionTable() {
     try {
       await deleteDivision(uuid);
       toast.success("Division Deleted Successfully!");
+      // showAlert({
+      //   variant: "success",
+      //   title: "Success",
+      //   message: "Division Deleted Successfully!",
+      // });
     } catch (err: any) {
       console.error(err);
+      // showAlert({
+      //   variant: "error",
+      //   title: "Error",
+      //   message:
+      //     "Failed Delete Division: " +
+      //     (err?.message.message || "Unknown error"),
+      // });
       toast.error(
         "Failed Delete Division: " + (err?.message.message || "Unknown error"),
       );
@@ -85,14 +98,30 @@ export default function DivisionTable() {
             teams: divisionData.teams,
           },
         });
+
         toast.success("Division updated successfully!");
+        // showAlert({
+        //   variant: "success",
+        //   title: "Success",
+        //   message: "Division updated Successfully!",
+        // });
       } else {
         await createDivision(divisionData);
         toast.success("Division created successfully!");
+        // showAlert({
+        //   variant: "success",
+        //   title: "Success",
+        //   message: "Division created Successfully!",
+        // });
       }
       setIsModalOpen(false);
     } catch (err: any) {
       toast.error(err?.message || "Failed to save division");
+      // showAlert({
+      //   variant: "error",
+      //   title: "Error",
+      //   message: err?.message || "Failed to save division",
+      // });
     } finally {
       setIsSubmitting(false);
     }
@@ -115,11 +144,15 @@ export default function DivisionTable() {
       header: "Teams",
       render: (row) => (
         <div className="flex flex-wrap gap-1">
-          {row.teams.map((team) => (
-            <Badge key={team.uuid} size="sm" color="info">
-              {team.name}
-            </Badge>
-          ))}
+          {row.teams.length > 0 ? (
+            row.teams.map((team) => (
+              <Badge key={team.uuid} size="sm" color="info">
+                {team.name}
+              </Badge>
+            ))
+          ) : (
+            <Badge size="sm" color="error">No Teams</Badge>
+          )}
         </div>
       ),
     },
