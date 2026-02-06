@@ -42,6 +42,7 @@ import { RESOURCES } from "./constants/Resource";
 import Allowances from "./pages/Allowances/Index";
 import AllowancesTrash from "./pages/Trash/Pages/AllowanceTrash";
 import Positions from "./pages/Positions/Index";
+import PositionsTrash from "./pages/Trash/Pages/PositionTrash";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -102,7 +103,16 @@ export default function App() {
                 element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.RESTORE)} />}
               >
                 <Route path="/trash/divisions" element={<DivisionsTrash />} />
+              </Route>
+              <Route
+                element={<PermissionRoute permission={buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.RESTORE)} />}
+              >
                 <Route path="/trash/allowances" element={<AllowancesTrash />} />
+              </Route>
+              <Route
+                element={<PermissionRoute permission={buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.RESTORE)} />}
+              >
+                <Route path="/trash/positions" element={<PositionsTrash />} />
               </Route>
 
               {/* <Route path="/trash" element={<Trash />} /> */}

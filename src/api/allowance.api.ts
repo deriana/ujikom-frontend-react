@@ -4,7 +4,6 @@ import { ApiResponse } from "@/types";
 
 export const getAllowance = async () => {
   const res = await api.get<ApiResponse<Allowance[]>>("/allowances");
-  console.log("data", res)
   return res.data.data;
 };
 
