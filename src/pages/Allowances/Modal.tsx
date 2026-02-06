@@ -2,6 +2,7 @@ import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import Input from "@/components/form/input/InputField";
 import { AllowanceInput } from "@/types";
+import { CurrencyInput } from "@/components/form/form-elements/CurrencyInput";
 
 interface AllowanceModalProps {
   isOpen: boolean;
@@ -85,23 +86,14 @@ export default function AllowanceModal({
               </label>
 
               <div className="relative mt-1">
-                <Input
-                  type="number"
-                  value={allowanceData.amount === 0 ? "" : allowanceData.amount}
-                  onChange={(e) =>
-                    setAllowanceData({
-                      ...allowanceData,
-                      amount:
-                        e.target.value === "" ? 0 : Number(e.target.value),
-                    })
+                <CurrencyInput
+                  value={allowanceData.amount}
+                  onChange={(val) =>
+                    setAllowanceData({ ...allowanceData, amount: val })
                   }
-                  placeholder="Enter amount"
-                  className="pl-15 .no-spinner"
+                  placeholder="Masukkan nominal"
+                  className="max-w-xs" // Contoh jika ingin membatasi lebar
                 />
-
-                <span className="absolute left-0 top-1/2 flex h-11 w-12 -translate-y-1/2 items-center justify-center border-r border-gray-200 text-sm font-medium text-gray-600 dark:border-gray-700 dark:text-gray-300">
-                  Rp
-                </span>
               </div>
 
               {allowanceData.type === "percentage" && (

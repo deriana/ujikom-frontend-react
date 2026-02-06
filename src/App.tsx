@@ -30,7 +30,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Roles from "./pages/Roles/Index";
 import RolesCreate from "./pages/Roles/Create";
 import RolesUpdate from "./pages/Roles/Update";
-import Trash from "./pages/Trash/Index";
+// import Trash from "./pages/Trash/Index";
 import Divisions from "./pages/Division/Index";
 import DivisionsTrash from "./pages/Trash/Pages/DivisionTrash";
 import Maintenance from "./pages/Error/Maintenance";

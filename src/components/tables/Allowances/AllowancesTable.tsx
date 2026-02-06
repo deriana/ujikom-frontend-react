@@ -21,7 +21,7 @@ export default function AllowanceTable() {
   const { data: allowances = [], isLoading, isError, error } = useAllowances();
   const { mutateAsync: createAllowance } = useCreateAllowance();
   const { mutateAsync: updateAllowance } = useUpdateAllowance();
-  const { mutate: deleteAllowance } = useDeleteAllowance();
+  const { mutateAsync: deleteAllowance } = useDeleteAllowance();
   const [showUuid, setShowUuid] = useState<string | null>(null);
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
   const [typeFilter, setTypeFilter] = useState("all");

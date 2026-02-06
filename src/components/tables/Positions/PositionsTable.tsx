@@ -1,40 +1,147 @@
 import Currency from "@/components/ui/currency/Currency";
-import { usePositions } from "@/hooks/usePosition";
-import { Column, Position } from "@/types";
+import {
+  useCreatePosition,
+  useDeletePosition,
+  usePositions,
+  useUpdatePosition,
+} from "@/hooks/usePosition";
+import { useAllowances } from "@/hooks/useAllowance";
+import { Column, Position, PositionInput } from "@/types";
 import TableActions from "../BasicTables/TableAction";
 import { RESOURCES } from "@/constants/Resource";
 import toast from "react-hot-toast";
 import { DataTable } from "../BasicTables/DataTable";
+import { useState } from "react";
+import PositionModal from "@/pages/Positions/Modal";
+import PositionShowModal from "@/pages/Positions/ShowModal";
 
 export default function PositionsTable() {
   const { data: positions = [], isLoading, isError, error } = usePositions();
+  const { data: allowances = [] } = useAllowances();
 
-  const handleCreate = () => {
-    toast.success("Create Postion");
+  const { mutateAsync: deletePosition } = useDeletePosition();
+  const { mutateAsync: createPosition } = useCreatePosition();
+  const { mutateAsync: updatePosition } = useUpdatePosition();
+
+  const [showUuid, setShowUuid] = useState<string | null>(null);
+  const [isShowModalOpen, setIsShowModalOpen] = useState(false);
+
+  const emptyForm: PositionInput = {
+    name: "",
+    base_salary: 0,
+    allowances: [],
   };
 
-  const handleEdit = (uuid: string) => {
-    toast.success(`Edit Postion ${uuid}`);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [positionData, setPositionData] = useState<PositionInput>(emptyForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  const openCreate = () => {
+    setPositionData(emptyForm);
+    setIsEditMode(false);
+    setIsModalOpen(true);
+  };
+
+  const openEdit = (uuid: string) => {
+    const position = positions.find((p) => p.uuid === uuid);
+    if (!position) return;
+
+    setPositionData({
+      uuid: position.uuid,
+      name: position.name,
+      base_salary: position.base_salary,
+      allowances: position.allowances.map((a) => ({
+        uuid: a.uuid,
+        name: a.name,
+        amount: a.amount ?? 0,
+      })),
+    });
+
+    setIsEditMode(true);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setPositionData(emptyForm);
+    setIsEditMode(false);
+  };
+
+  const handleSubmit = async () => {
+    if (!positionData.name.trim()) {
+      toast.error("Position name is required");
+      return;
+    }
+
+    if (positionData.base_salary <= 0) {
+      toast.error("Base salary must be greater than 0");
+      return;
+    }
+
+    const cleanedAllowances = positionData.allowances
+      .filter((a) => a.uuid)
+      .map((a) => ({
+        uuid: a.uuid,
+        amount: a.amount,
+      }));
+
+    const hasDuplicate =
+      new Set(cleanedAllowances.map((a) => a.uuid)).size !==
+      cleanedAllowances.length;
+
+    if (hasDuplicate) {
+      toast.error("Duplicate allowances are not allowed");
+      return;
+    }
+
+    const payload = {
+      name: positionData.name,
+      base_salary: positionData.base_salary,
+      allowances: cleanedAllowances,
+    };
+
+    setIsSubmitting(true);
+    try {
+      if (isEditMode) {
+        await updatePosition({ uuid: positionData.uuid!, data: payload });
+        toast.success("Position updated successfully!");
+      } else {
+        await createPosition(payload);
+        toast.success("Position created successfully!");
+      }
+
+      closeModal();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to save position");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDelete = async (uuid: string) => {
-    toast.success(`Delete Postion ${uuid}`);
+    try {
+      await deletePosition(uuid);
+      toast.success("Position deleted successfully!");
+    } catch {
+      toast.error("Failed delete position");
+    }
   };
 
   const handleShow = (uuid: string) => {
-    toast.success(`Show Postion ${uuid}`);
+    setShowUuid(uuid);
+    setIsShowModalOpen(true);
   };
 
   const columns: Column<Position>[] = [
     {
-      header: "Postions Name",
+      header: "Position Name",
       render: (row) => (
         <span className="font-medium text-gray-800 capitalize dark:text-white/90">
           {row.name}
         </span>
       ),
     },
-
     {
       header: "Base Salary",
       render: (row) => (
@@ -44,14 +151,13 @@ export default function PositionsTable() {
         />
       ),
     },
-
     {
       header: "Action",
       render: (row) => (
         <TableActions
           id={row.uuid}
           dataName={row.name}
-          onEdit={handleEdit}
+          onEdit={openEdit}
           onDelete={handleDelete}
           onShow={handleShow}
           baseNamePermission={RESOURCES.POSITION}
@@ -76,9 +182,29 @@ export default function PositionsTable() {
         columns={columns}
         searchableKeys={["name"]}
         loading={isLoading}
-        handleCreate={handleCreate}
+        handleCreate={openCreate}
         label="Positions"
         baseNamePermission={RESOURCES.POSITION}
+      />
+
+      <PositionModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        positionData={positionData}
+        setPositionData={setPositionData}
+        onSubmit={handleSubmit}
+        isLoading={isSubmitting}
+        allowanceOptions={allowances.map((a) => ({
+          uuid: a.uuid,
+          name: a.name,
+          amount: a.amount, // default master amount
+        }))}
+      />
+
+      <PositionShowModal
+        uuid={showUuid}
+        isOpen={isShowModalOpen}
+        onClose={() => setIsShowModalOpen(false)}
       />
     </>
   );

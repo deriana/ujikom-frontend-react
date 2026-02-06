@@ -4,7 +4,6 @@ import { ApiResponse } from "@/types";
 
 export const getPosition = async () => {
   const res = await api.get<ApiResponse<Position[]>>("/positions");
-  console.log("data", res)
   return res.data.data;
 };
 

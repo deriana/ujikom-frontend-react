@@ -1,27 +1,25 @@
-import { useAllowanceByUuid } from "@/hooks/useAllowance";
+import { usePositionByUuid } from "@/hooks/usePosition";
 import { Modal } from "@/components/ui/modal";
-import Badge from "@/components/ui/badge/Badge";
 import Currency from "@/components/ui/currency/Currency";
-import { allowanceTypeMap } from "@/constants/Allowance";
-import { Calendar, User, Briefcase, Info, Clock } from "lucide-react"; // Gunakan icon (opsional)
+import { Calendar, User, Briefcase, Info, Clock } from "lucide-react";
 
-interface AllowanceShowModalProps {
+interface PositionShowModalProps {
   uuid: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function AllowanceShowModal({
+export default function PositionShowModal({
   uuid,
   isOpen,
   onClose,
-}: AllowanceShowModalProps) {
+}: PositionShowModalProps) {
   const {
-    data: allowance,
+    data: position,
     isLoading,
     isError,
     error,
-  } = useAllowanceByUuid(uuid || "");
+  } = usePositionByUuid(uuid || "");
 
   if (!uuid) return null;
 
@@ -31,19 +29,11 @@ export default function AllowanceShowModal({
         {/* Header Section */}
         <div className="flex justify-between items-start mb-6">
           <div>
-            <div className="flex gap-3">
-              <h4 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-                {isLoading ? "Loading..." : allowance?.name}
-              </h4>
-              <span className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">|</span>
-              {allowance && (
-                <Badge color={allowanceTypeMap[allowance.type].color} size="md">
-                  {allowanceTypeMap[allowance.type].label}
-                </Badge>
-              )}
-            </div>
+            <h4 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+              {isLoading ? "Loading..." : position?.name}
+            </h4>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
-              <Info size={14} /> Allowance configuration details
+              <Info size={14} /> Position configuration details
             </p>
           </div>
         </div>
@@ -57,15 +47,15 @@ export default function AllowanceShowModal({
             {(error as Error).message}
           </div>
         ) : (
-          allowance && (
+          position && (
             <div className="space-y-6">
               {/* Highlight Card: Amount */}
               <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800/30">
                 <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                  Total Amount
+                  Positions Base Salary
                 </span>
                 <div className="text-4xl font-black text-blue-700 dark:text-blue-300 mt-1">
-                  <Currency value={allowance.amount} />
+                  <Currency value={position.base_salary} />
                 </div>
               </div>
 
@@ -76,10 +66,10 @@ export default function AllowanceShowModal({
                     <User size={14} /> Creator
                   </div>
                   <p className="text-gray-900 dark:text-gray-200 font-medium">
-                    {allowance.creator.name}
+                    {position.creator.name}
                   </p>
                   <p className="text-xs text-gray-500 break-all">
-                    {allowance.creator.email}
+                    {position.creator.email}
                   </p>
                 </div>
 
@@ -88,10 +78,10 @@ export default function AllowanceShowModal({
                     <Calendar size={14} /> Date Created
                   </div>
                   <p className="text-gray-900 dark:text-gray-200 font-medium">
-                    {allowance.created_at}
+                    {position.created_at}
                   </p>
                   <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-1">
-                    <Clock size={10} /> Updated: {allowance.updated_at}
+                    <Clock size={10} /> Updated: {position.updated_at}
                   </div>
                 </div>
               </div>
@@ -100,25 +90,25 @@ export default function AllowanceShowModal({
               <div className="mt-2">
                 <div className="flex items-center gap-2 text-sm font-bold text-gray-800 dark:text-gray-200 mb-3">
                   <Briefcase size={16} className="text-indigo-500" />
-                  Assigned Positions ({allowance.positions.length})
+                  Assigned Allowances ({position.allowances.length})
                 </div>
 
-                {allowance.positions.length === 0 ? (
+                {position.allowances.length === 0 ? (
                   <div className="text-center py-6 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-xl text-gray-400 text-sm">
-                    No positions assigned to this allowance
+                    No positions assigned to this position
                   </div>
                 ) : (
                   <div className="grid gap-2">
-                    {allowance.positions.map((pos) => (
+                    {position.allowances.map((allo) => (
                       <div
-                        key={pos.uuid}
+                        key={allo.uuid}
                         className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-gray-700"
                       >
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {pos.name}
+                          {allo.name}
                         </span>
                         <div className="text-sm font-bold text-gray-900 dark:text-white">
-                          <Currency value={pos.amount || 0} />
+                          <Currency value={allo.amount || 0} />
                         </div>
                       </div>
                     ))}
