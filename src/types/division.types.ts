@@ -1,4 +1,4 @@
-import { UUID } from "./common";
+import { UserLite, UUID } from "./common";
 
 export interface DivisionInput {
     uuid?: UUID;
@@ -17,6 +17,9 @@ export interface Division {
     name: string;
     code: string;
     teams: Team[];
+    creator: UserLite;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface Team {

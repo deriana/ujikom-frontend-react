@@ -63,6 +63,12 @@ export const navItems: NavItem[] = [
         pro: false,
         permission: buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.INDEX),
       },
+      {
+        name: "Positions",
+        path: "/Positions",
+        pro: false,
+        permission: buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX),
+      },
     ],
   },
   {
@@ -108,6 +114,15 @@ export const othersItems: NavItem[] = [
         pro: false,
         permission: buildPermission(
           RESOURCES.ALLOWANCE,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
+      {
+        name: "Positions",
+        path: "/trash/positions",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.POSITION,
           PERMISSIONS.BASE.RESTORE,
         ),
       },

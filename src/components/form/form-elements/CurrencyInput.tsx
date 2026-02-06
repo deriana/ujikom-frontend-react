@@ -1,61 +1,37 @@
-import React from "react";
-import { AllowanceType } from "@/types";
 import Input from "../input/InputField";
 
 interface CurrencyInputProps {
   value: number;
   onChange: (value: number) => void;
-  type: AllowanceType;
   placeholder?: string;
-  className?: string;
+  symbol?: string;
+  className?: string; // Untuk custom margin atau width dari luar
 }
 
-const CurrencyInput: React.FC<CurrencyInputProps> = ({
+export const CurrencyInput = ({
   value,
   onChange,
-  type,
-  placeholder = "",
+  placeholder = "Enter amount",
+  symbol = "Rp",
   className = "",
-}) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = Number(e.target.value);
-    if (!isNaN(val)) onChange(val);
-  };
-
+}: CurrencyInputProps) => {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-        Amount
-      </label>
+    <div className={`relative  ${className}`}>
+      <Input
+        type="number"
+        value={value === 0 ? "" : value}
+        onChange={(e) => {
+          const val = e.target.value;
+          onChange(val === "" ? 0 : Number(val));
+        }}
+        placeholder={placeholder}
+        // Gabungkan class default dengan class khusus spinner
+        className="pl-15 no-spinner" 
+      />
 
-      <div className="relative mt-1">
-        <Input
-          type="number"
-          value={value}
-          onChange={handleChange}
-          placeholder={placeholder}
-          className={`pl-12 ${className}`}
-        />
-
-        {type === "fixed" && (
-          <span className="absolute left-0 top-1/2 flex h-11 w-12 -translate-y-1/2 items-center justify-center border-r border-gray-200 text-sm font-medium text-gray-600 dark:border-gray-700 dark:text-gray-300">
-            Rp
-          </span>
-        )}
-        {type === "percentage" && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-600 dark:text-gray-300">
-            %
-          </span>
-        )}
-      </div>
-
-      {type === "percentage" && (
-        <p className="text-xs text-gray-500 mt-1">
-          This will be calculated based on salary percentage.
-        </p>
-      )}
+      <span className="absolute left-0 top-1/2 flex h-full w-12 -translate-y-1/2 items-center justify-center border-r border-gray-200 text-sm font-medium text-gray-600 dark:border-gray-700 dark:text-gray-300">
+        {symbol}
+      </span>
     </div>
   );
 };
-
-export default CurrencyInput;

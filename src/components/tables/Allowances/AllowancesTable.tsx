@@ -13,15 +13,15 @@ import Badge from "@/components/ui/badge/Badge";
 import { allowanceTypeMap } from "@/constants/Allowance";
 import Currency from "@/components/ui/currency/Currency";
 import { useMemo, useState } from "react";
-import AllowanceModal from "@/pages/Allowance/Modal";
-import AllowanceShowModal from "@/pages/Allowance/ShowModal";
+import AllowanceModal from "@/pages/Allowances/Modal";
+import AllowanceShowModal from "@/pages/Allowances/ShowModal";
 import FilterDropdown from "@/components/FilterDropdown";
 
 export default function AllowanceTable() {
   const { data: allowances = [], isLoading, isError, error } = useAllowances();
   const { mutateAsync: createAllowance } = useCreateAllowance();
   const { mutateAsync: updateAllowance } = useUpdateAllowance();
-  const { mutate: deleteAllowance } = useDeleteAllowance();
+  const { mutateAsync: deleteAllowance } = useDeleteAllowance();
   const [showUuid, setShowUuid] = useState<string | null>(null);
   const [isShowModalOpen, setIsShowModalOpen] = useState(false);
   const [typeFilter, setTypeFilter] = useState("all");

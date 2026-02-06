@@ -7,6 +7,12 @@ export const getDivision = async () => {
   return res.data.data;
 };
 
+export const getDivisionByUuid = async (uuid: string) => {
+  const res = await api.get<ApiResponse<Division>>(`/divisions/${uuid}`);
+  return res.data.data;
+}
+
+
 export const createDivision = async (payload: DivisionInput) => {
   const res = await api.post<ApiResponse<Division[]>>("/divisions",payload);
   return res.data.data;

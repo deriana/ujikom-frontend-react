@@ -7,6 +7,7 @@ import {
   restoreDivision,
   forceDeleteDivision,
   getTrashedDivision,
+  getDivisionByUuid,
 } from "@/api/division.api";
 import { DivisionInput } from "@/types/division.types";
 
@@ -17,6 +18,15 @@ export const useDivisions = (trashed = false) => {
     staleTime: 1000 * 60 * 5,
   });
 };
+
+export const useDivisionByUuid = (uuid: string) => {
+  return useQuery({
+    queryKey: ["divisions", uuid],
+    queryFn: () => getDivisionByUuid(uuid),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
 
 // CREATE with optimistic update
 export const useCreateDivision = () => {

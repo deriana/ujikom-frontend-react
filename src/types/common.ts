@@ -44,6 +44,6 @@ export interface UserLite {
 
 export interface AllowancePositionPivot {
   uuid: UUID;
-  name: string;
+  name?: string;
   amount?: number;
 }
