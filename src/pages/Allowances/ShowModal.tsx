@@ -25,6 +25,12 @@ export default function AllowanceShowModal({
 
   if (!uuid) return null;
 
+  const colorVariants = {
+    info: "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/30 text-blue-600 dark:text-blue-400 text-blue-700 dark:text-blue-300",
+    success:
+      "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800/30 text-green-600 dark:text-green-400 text-green-700 dark:text-green-300",
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-xl m-4">
       <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-xl">
@@ -35,7 +41,9 @@ export default function AllowanceShowModal({
               <h4 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
                 {isLoading ? "Loading..." : allowance?.name}
               </h4>
-              <span className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">|</span>
+              <span className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+                |
+              </span>
               {allowance && (
                 <Badge color={allowanceTypeMap[allowance.type].color} size="md">
                   {allowanceTypeMap[allowance.type].label}
@@ -60,15 +68,37 @@ export default function AllowanceShowModal({
           allowance && (
             <div className="space-y-6">
               {/* Highlight Card: Amount */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800/30">
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                  Total Amount
+              <div
+                className={`p-6 rounded-2xl border ${
+                  allowance.type === "fixed"
+                    ? "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/30"
+                    : "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800/30"
+                }`}
+              >
+                <span
+                  className={`text-xs font-bold uppercase tracking-wider ${
+                    allowance.type === "fixed"
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-green-600 dark:text-green-400"
+                  }`}
+                >
+                  Total Amount ({allowanceTypeMap[allowance.type].label})
                 </span>
-                <div className="text-4xl font-black text-blue-700 dark:text-blue-300 mt-1">
-                  <Currency value={allowance.amount} />
+                <div
+                  className={`text-4xl font-black mt-1 ${
+                    allowance.type === "fixed"
+                      ? "text-blue-700 dark:text-blue-300"
+                      : "text-green-700 dark:text-green-300"
+                  }`}
+                >
+                  {/* Jika percentage, tambahkan simbol % atau gunakan Currency jika fixed */}
+                  {allowance.type === "percentage" ? (
+                    `${allowance.amount}%`
+                  ) : (
+                    <Currency value={allowance.amount} />
+                  )}
                 </div>
               </div>
-
               {/* Info Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
