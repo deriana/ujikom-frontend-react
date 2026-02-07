@@ -2,17 +2,20 @@ import { AllowancePositionPivot } from "./common";
 
 /** ===== Position & Team ===== */
 export interface Position {
+  uuid?: string;
   name: string;
   base_salary: string;
   allowances?: AllowancePositionPivot[];
 }
 
 export interface Team {
+  uuid?: string;
   name: string;
   division: string;
 }
 
 export interface Manager {
+  uuid?: string;
   name: string;
   nik: string;
 }

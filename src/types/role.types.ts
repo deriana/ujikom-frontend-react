@@ -1,4 +1,6 @@
 export interface Role {
+  slice(arg0: number): unknown;
+  charAt(arg0: number): unknown;
   map: any;
   id: number;
   name: string;

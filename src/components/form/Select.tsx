@@ -1,36 +1,41 @@
 import { useState } from "react";
 
-interface Option {
-  value: string;
+interface Option<T = string> {
+  value: T;
   label: string;
 }
 
-interface SelectProps {
-  options: Option[];
+interface SelectProps<T = string> {
+  options: Option<T>[];
   placeholder?: string;
-  onChange: (value: string) => void;
+  onChange: (value: T) => void;
   className?: string;
-  defaultValue?: string;
-  value?: string;
+  defaultValue?: T;
+  value?: T;
   disabled?: boolean;
 }
 
-const Select: React.FC<SelectProps> = ({
+const Select = <T extends string | number>({
   options,
   placeholder = "Select an option",
   onChange,
   className = "",
-  defaultValue = "",
+  defaultValue,
+  value,
   disabled = false,
-  value = "",
-}) => {
-  // Manage the selected value
-  const [selectedValue, setSelectedValue] = useState<string>(value);
+}: SelectProps<T>) => {
+  // Manage selected value as string internally
+  const [selectedValue, setSelectedValue] = useState<string>(
+    value !== undefined ? String(value) : ""
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
     setSelectedValue(val);
-    onChange(val);
+
+    // Convert back to number if generic is number
+    const selected: T = typeof options[0].value === "number" ? (Number(val) as T) : (val as T);
+    onChange(selected);
   };
 
   return (
@@ -42,9 +47,9 @@ const Select: React.FC<SelectProps> = ({
       } ${className}`}
       value={selectedValue}
       onChange={handleChange}
-      disabled={disabled} // tambahkan ini
+      disabled={disabled}
     >
-      {/* Placeholder option */}
+      {/* Placeholder */}
       <option
         value=""
         disabled
@@ -52,11 +57,11 @@ const Select: React.FC<SelectProps> = ({
       >
         {placeholder}
       </option>
-      {/* Map over options */}
+
       {options.map((option) => (
         <option
-          key={option.value}
-          value={option.value}
+          key={option.value.toString()} // key harus string
+          value={option.value.toString()} // convert value ke string untuk select
           className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
         >
           {option.label}

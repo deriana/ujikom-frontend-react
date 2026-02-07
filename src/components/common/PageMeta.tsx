@@ -20,9 +20,9 @@ export default function PageMeta({ title, description }: PageMetaProps) {
 
   return (
     <Helmet prioritizeSeoTags>
-      <title>
-        {title} | {general?.site_name}
-      </title>
+      <title>{`${title} | ${
+        general?.site_name || "HRIS Management"
+      }`}</title>
       {description && <meta name="description" content={description} />}
 
       <link rel="icon" href={faviconUrl} />

@@ -46,6 +46,7 @@ import PositionsTrash from "./pages/Trash/Pages/PositionTrash";
 import Setting from "./pages/Settings/Setting";
 import Users from "./pages/User/Index";
 import UsersCreate from "./pages/User/Create";
+import UsersUpdate from "./pages/User/Update";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -127,7 +128,16 @@ export default function App() {
                 <Route path="/users" element={<Users />} />
               </Route>
 
-              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.USER, PERMISSIONS.BASE.CREATE)} />}>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.CREATE,
+                    )}
+                  />
+                }
+              >
                 <Route path="/users/create" element={<UsersCreate />} />
               </Route>
 
@@ -135,9 +145,18 @@ export default function App() {
               <Route path="/users/:uuid/show" element={<UsersUpdate />} />
             </Route> */}
 
-              {/* <Route element={<PermissionRoute permission={buildPermission(RESOURCES.USER, PERMISSIONS.BASE.EDIT)} />}>
-              <Route path="/users/:uuid/edit" element={<UsersUpdate />} />
-            </Route> */}
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.EDIT,
+                    )}
+                  />
+                }
+              >
+                <Route path="/users/:uuid/edit" element={<UsersUpdate />} />
+              </Route>
 
               <Route
                 element={

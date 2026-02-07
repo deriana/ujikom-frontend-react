@@ -31,7 +31,7 @@ export default function UsersCreate() {
       password: "",
       password_confirmation: "",
       is_active: true,
-      role_id: 4, // Employee
+      role: "employee", // default role
       team_uuid: undefined,
       position_uuid: undefined,
       manager_nik: undefined,

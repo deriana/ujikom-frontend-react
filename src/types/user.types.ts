@@ -26,7 +26,7 @@ export interface UserInput {
 
   is_active?: boolean; 
 
-  role_id?: number;
+  role?: string;
   team_uuid?: UUID;
   position_uuid?: UUID;
   manager_nik?: string;
