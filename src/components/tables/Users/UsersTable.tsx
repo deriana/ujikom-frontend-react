@@ -145,14 +145,6 @@ export default function UsersTable() {
       ),
     },
     {
-      header: "Created At",
-      render: (row) => (
-        <span className="text-gray-500 dark:text-gray-400 text-xs">
-          {row.created_at}
-        </span>
-      ),
-    },
-    {
       header: "Actions",
       render: (row) => (
         <TableActions

@@ -26,7 +26,7 @@ export interface UserInput {
 
   is_active?: boolean; 
 
-  role_uuid?: UUID;
+  role_id?: number;
   team_uuid?: UUID;
   position_uuid?: UUID;
   manager_nik?: string;
@@ -37,7 +37,7 @@ export interface UserInput {
   base_salary?: number;
 
   phone?: string;
-  gender?: "male" | "female" | "other";
+  gender?: "male" | "female";
   date_of_birth?: string;
   address?: string;
   join_date?: string;

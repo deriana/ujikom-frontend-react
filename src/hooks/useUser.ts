@@ -12,6 +12,7 @@ import {
   changePassword,
   changeUserStatus,
   uploadProfilePhoto,
+  getManager,
 } from "@/api/user.api";
 import { UserInput } from "@/types/user.types";
 
@@ -31,6 +32,14 @@ export const useUserByUuid = (uuid?: string) => {
     enabled: !!uuid,
   });
 };
+
+export const useGetManager = () => {
+  return useQuery({
+    queryKey: ["users", "manager"],
+    queryFn: getManager,
+    staleTime: 1000 * 60 * 5,
+  });
+}
 
 /** ===== Mutations ===== */
 export const useCreateUser = () => {

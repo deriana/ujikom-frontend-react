@@ -1,6 +1,7 @@
 import { User, UserInput } from "@/types/user.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
+import { Manager } from "@/types/employee.types";
 
 /** ===== Basic CRUD ===== */
 export const getUser = async () => {
@@ -92,5 +93,11 @@ export const uploadProfilePhoto = async (uuid: string, file: File) => {
     }
   );
 
+  return res.data.data;
+};
+
+/** GEt data Manager */
+export const getManager = async () => {
+  const res = await api.get<ApiResponse<Manager[]>>("/users/managers");
   return res.data.data;
 };
