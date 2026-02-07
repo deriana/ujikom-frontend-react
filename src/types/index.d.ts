@@ -4,3 +4,5 @@ export * from "./allowance.types";
 export * from "./division.types";
 export * from "./auth.types";
 export * from "./role.types";
+export * from "./settings.types";
+export * from "./user.types";

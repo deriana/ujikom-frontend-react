@@ -1,5 +1,4 @@
 import axios from "axios";
-import { error } from "node:console";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -18,23 +17,24 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // console.log(error.response);
     const status = error.response?.status;
 
-    if (status === 401) {
-      localStorage.removeItem("token");
-    }
+    // if (status === 401) {
+    //   localStorage.removeItem("token");
+    // }
 
-    if (status === 403) {
-      window.location.href = "/403";
-    }
+    // if (status === 403) {
+    //   window.location.href = "/403";
+    // }
 
-    if (status === 500) {
-      window.location.href = "/500";
-    }
+    // if (status === 500) {
+    //   window.location.href = "/500";
+    // }
 
-    if (status === 503) {
-      window.location.href = "/503";
-    }
+    // if (status === 503) {
+    //   window.location.href = "/503";
+    // }
 
     return Promise.reject(error);
   }
