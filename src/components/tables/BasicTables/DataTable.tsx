@@ -215,9 +215,10 @@ export function DataTable<T extends object>({
               <Tooltip content={`Create ${label}`} position="bottom">
                 <button
                   onClick={handleCreate}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="inline-flex items-center justify-center gap-2 px-4 h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <Plus size={16} />
+                  <span className="sm:hidden">Create {label}</span>
                 </button>
               </Tooltip>
             </Can>
