@@ -6,11 +6,58 @@ import { useDeleteUser, useUsers } from "@/hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { RESOURCES } from "@/constants/Resource";
 import { handleMutation } from "@/utils/handleMutation";
+import { useMemo, useState } from "react";
+import FilterDropdown from "@/components/FilterDropdown";
 
 export default function UsersTable() {
   const { data: users = [], isLoading, isError, error } = useUsers();
   const { mutateAsync: deleteUser } = useDeleteUser();
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [teamFilter, setTeamFilter] = useState("all");
+  const [divisionFilter, setDivisionFilter] = useState("all");
+  const [positionFilter, setPositionFilter] = useState("all");
   console.log(users);
+
+  const roleOptions = useMemo(() => {
+    const roles = Array.from(new Set(users.flatMap((u) => u.roles || [])));
+    return [
+      { label: "All Roles", value: "all" },
+      ...roles.map((r) => ({
+        label: r.charAt(0).toUpperCase() + r.slice(1),
+        value: r,
+      })),
+    ];
+  }, [users]);
+
+  const teamOptions = useMemo(() => {
+    const teams = Array.from(
+      new Set(users.map((u) => u.employee?.team?.name).filter(Boolean)),
+    );
+    return [
+      { label: "All Teams", value: "all" },
+      ...teams.map((t) => ({ label: t!, value: t! })),
+    ];
+  }, [users]);
+
+  const divisionOptions = useMemo(() => {
+    const divisions = Array.from(
+      new Set(users.map((u) => u.employee?.team?.division).filter(Boolean)),
+    );
+    return [
+      { label: "All Divisions", value: "all" },
+      ...divisions.map((d) => ({ label: d!, value: d! })),
+    ];
+  }, [users]);
+
+  const positionOptions = useMemo(() => {
+    const positions = Array.from(
+      new Set(users.map((u) => u.employee?.position?.name).filter(Boolean)),
+    );
+    return [
+      { label: "All Positions", value: "all" },
+      ...positions.map((p) => ({ label: p!, value: p! })),
+    ];
+  }, [users]);
 
   const navigate = useNavigate();
 
@@ -145,6 +192,36 @@ export default function UsersTable() {
       handleCreate={handleCreate}
       label="Users"
       baseNamePermission={RESOURCES.USER}
+      newFilterComponent={
+        <>
+          <FilterDropdown
+            value={roleFilter}
+            options={roleOptions}
+            onChange={setRoleFilter}
+          />
+          <FilterDropdown
+            value={teamFilter}
+            options={teamOptions}
+            onChange={setTeamFilter}
+          />
+          <FilterDropdown
+            value={divisionFilter}
+            options={divisionOptions}
+            onChange={setDivisionFilter}
+          />
+          <FilterDropdown
+            value={positionFilter}
+            options={positionOptions}
+            onChange={setPositionFilter}
+          />
+        </>
+      }
+      extraFilters={{
+        roles: roleFilter,
+        "employee.team.name": teamFilter,
+        "employee.team.division": divisionFilter,
+        "employee.position.name": positionFilter,
+      }}
     />
   );
 }

@@ -35,6 +35,7 @@ interface DataTableProps<T> {
   tableTitle?: string;
   label?: string;
   baseNamePermission?: string;
+  extraFilters?: Record<string, string>;
 }
 
 export function DataTable<T extends object>({
@@ -49,6 +50,7 @@ export function DataTable<T extends object>({
   tableTitle = "Data Table",
   label = "Data",
   baseNamePermission,
+  extraFilters,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -81,9 +83,20 @@ export function DataTable<T extends object>({
         statusFilter === "all" ||
         String(getNestedValue(item, String(statusConfig.key))) === statusFilter;
 
-      return matchSearch && matchStatus;
+      const matchExtra = Object.entries(extraFilters || {}).every(
+        ([key, val]) => {
+          if (val === "all") return true;
+          const value = getNestedValue(item, key);
+          if (Array.isArray(value)) {
+            return value.includes(val);
+          }
+          return String(value) === val;
+        },
+      );
+
+      return matchSearch && matchStatus && matchExtra;
     });
-  }, [data, search, statusFilter, searchableKeys, statusConfig]);
+  }, [data, search, statusFilter, searchableKeys, statusConfig, extraFilters]);
 
   // TOGGLE SORT
   const toggleSort = (key: keyof T | "index") => {
