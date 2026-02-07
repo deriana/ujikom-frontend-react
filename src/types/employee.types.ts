@@ -1,0 +1,88 @@
+import { AllowancePositionPivot } from "./common";
+
+/** ===== Position & Team ===== */
+export interface Position {
+  name: string;
+  base_salary: string;
+  allowances?: AllowancePositionPivot[];
+}
+
+export interface Team {
+  name: string;
+  division: string;
+}
+
+export interface Manager {
+  name: string;
+  nik: string;
+}
+
+/** ===== Employee Status (from backend enum EmployeeStatus) ===== */
+export enum EmployeeStatusEnum {
+  PERMANENT = 0,
+  CONTRACT = 1,
+  INTERN = 2,
+  PROBATION = 3,
+}
+
+export type EmployeeStatusColor =
+  | "primary"
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "light"
+  | "dark";
+
+export interface EmployeeStatusMeta {
+  label: string;
+  color: EmployeeStatusColor;
+}
+
+export const employeeStatusMap: Record<EmployeeStatusEnum, EmployeeStatusMeta> = {
+  [EmployeeStatusEnum.PERMANENT]: { label: "Permanent", color: "success" },
+  [EmployeeStatusEnum.CONTRACT]: { label: "Contract", color: "info" },
+  [EmployeeStatusEnum.INTERN]: { label: "Intern", color: "light" },
+  [EmployeeStatusEnum.PROBATION]: { label: "Probation", color: "warning" },
+};
+
+/** ===== Employment State (from backend enum EmploymentState) ===== */
+export enum EmploymentStateEnum {
+  ACTIVE = "active",
+  RESIGNED = "resigned",
+  TERMINATED = "terminated",
+}
+
+export interface EmploymentStateMeta {
+  label: string;
+  color: EmployeeStatusColor;
+}
+
+export const employmentStateMap: Record<EmploymentStateEnum, EmploymentStateMeta> = {
+  [EmploymentStateEnum.ACTIVE]: { label: "Active", color: "success" },
+  [EmploymentStateEnum.RESIGNED]: { label: "Resigned", color: "warning" },
+  [EmploymentStateEnum.TERMINATED]: { label: "Terminated", color: "error" },
+};
+
+/** ===== Employee ===== */
+export interface Employee {
+  nik: string;
+  profile_photo?: string;
+  status: EmployeeStatusEnum;
+  statusMeta?: EmployeeStatusMeta;
+  base_salary: string;
+  position: Position;
+  team: Team;
+  manager: Manager;
+  phone?: string;
+  gender?: "male" | "female";
+  date_of_birth?: string;
+  address?: string;
+  join_date?: string;
+  resign_date?: string | null;
+  contract_start?: string | null;
+  contract_end?: string | null;
+  employment_state: EmploymentStateEnum;
+  termination_date?: string | null;
+  termination_reason?: string | null;
+}

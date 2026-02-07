@@ -1,0 +1,150 @@
+import { Column } from "@/types";
+import { User } from "@/types/user.types";
+import { DataTable } from "@/components/tables/BasicTables/DataTable";
+import TableActions from "@/components/tables/BasicTables/TableAction";
+import { useDeleteUser, useUsers } from "@/hooks/useUser";
+import { useNavigate } from "react-router-dom";
+import { RESOURCES } from "@/constants/Resource";
+import { handleMutation } from "@/utils/handleMutation";
+
+export default function UsersTable() {
+  const { data: users = [], isLoading, isError, error } = useUsers();
+  const { mutateAsync: deleteUser } = useDeleteUser();
+  console.log(users);
+
+  const navigate = useNavigate();
+
+  const handleEdit = (uuid: string) => {
+    navigate(`/users/${uuid}/edit`);
+  };
+
+  const handleShow = (uuid: string) => {
+    navigate(`/users/${uuid}/show`);
+  };
+
+  const handleDelete = (uuid: string) =>
+    handleMutation(() => deleteUser(uuid), {
+      loading: "Deleting user...",
+      success: "User deleted successfully",
+      error: "Failed to delete user",
+    });
+
+  const handleCreate = () => {
+    navigate("/users/create");
+  };
+
+  const columns: Column<User>[] = [
+    {
+      header: "Employee Name",
+      render: (row) => (
+        <span className="font-medium text-gray-800 capitalize dark:text-white/90">
+          {row.name}
+        </span>
+      ),
+    },
+    {
+      header: "Email",
+      render: (row) => (
+        <span className="text-gray-600 dark:text-gray-300 text-sm">
+          {row.email}
+        </span>
+      ),
+    },
+    {
+      header: "Role",
+      render: (row) => (
+        <div className="flex flex-wrap gap-1">
+          {row.roles?.map((role: string) => (
+            <span
+              key={role}
+              className="px-2 py-1 text-xs capitalize rounded-full bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
+            >
+              {role}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      header: "NIK",
+      render: (row) => (
+        <span className="text-gray-600 dark:text-gray-300 text-sm">
+          {row.employee?.nik || "-"}
+        </span>
+      ),
+    },
+    {
+      header: "Position",
+      render: (row) => (
+        <span className="text-gray-600 dark:text-gray-300 text-sm">
+          {row.employee?.position?.name || "-"}
+        </span>
+      ),
+    },
+    {
+      header: "Team",
+      render: (row) => (
+        <span className="text-gray-600 dark:text-gray-300 text-sm">
+          {row.employee?.team?.name || "-"}
+        </span>
+      ),
+    },
+    {
+      header: "Division",
+      render: (row) => (
+        <span className="text-gray-600 dark:text-gray-300 text-sm">
+          {row.employee?.team?.division || "-"}
+        </span>
+      ),
+    },
+    {
+      header: "Created At",
+      render: (row) => (
+        <span className="text-gray-500 dark:text-gray-400 text-xs">
+          {row.created_at}
+        </span>
+      ),
+    },
+    {
+      header: "Actions",
+      render: (row) => (
+        <TableActions
+          id={row.uuid}
+          dataName={row.name}
+          onShow={handleShow}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          baseNamePermission={RESOURCES.USER}
+        />
+      ),
+    },
+  ];
+
+  if (isError) {
+    return (
+      <div className="text-red-500 text-sm">
+        Failed to load users: {(error as Error).message}
+      </div>
+    );
+  }
+
+  return (
+    <DataTable
+      tableTitle="Users Table"
+      data={users}
+      columns={columns}
+      searchableKeys={[
+        "name",
+        "email",
+        "employee.nik",
+        "employee.position.name",
+        "employee.team.name",
+        "employee.team.division",
+      ]}
+      loading={isLoading}
+      handleCreate={handleCreate}
+      label="Users"
+      baseNamePermission={RESOURCES.USER}
+    />
+  );
+}

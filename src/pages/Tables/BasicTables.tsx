@@ -1,6 +1,6 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
-import UsersTable from "@/components/tables/UsersTable";
+import UsersTable from "@/components/tables/Users/UsersTable";
 
 export default function BasicTables() {
   return (

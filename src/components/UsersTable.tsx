@@ -1,12 +1,12 @@
 import Badge from "@/components/ui/badge/Badge";
 import { Column, User } from "@/types";
-import { DataTable } from "./BasicTables/DataTable";
-import TableActions from "./BasicTables/TableAction";
 import { useEffect, useMemo, useState } from "react";
 import FilterDropdown from "@/components/FilterDropdown";
-import { usersDummy } from "./BasicTables/DummyUsers";
 import toast from "react-hot-toast";
 import { RESOURCES } from "@/constants/Resource";
+import { usersDummy } from "./tables/BasicTables/DummyUsers";
+import TableActions from "./tables/BasicTables/TableAction";
+import { DataTable } from "./tables/BasicTables/DataTable";
 
 export default function UsersTable() {
   const [usersData, setUsersData] = useState<User[]>([]);
