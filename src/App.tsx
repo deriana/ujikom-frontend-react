@@ -22,7 +22,6 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-// import Face from "./pages/Attendances/Face";
 import { useState, useEffect } from "react";
 import Spinner from "./components/ui/loading/Spinner";
 import { Toaster } from "react-hot-toast";
@@ -47,6 +46,7 @@ import Setting from "./pages/Settings/Setting";
 import Users from "./pages/User/Index";
 import UsersCreate from "./pages/User/Create";
 import UsersUpdate from "./pages/User/Update";
+import FaceScanner from "./pages/Attendance/Face";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -264,6 +264,8 @@ export default function App() {
               <Route path="/bar-chart" element={<BarChart />} />
             </Route>
           </Route>
+          
+            <Route path="/attendance" element={<FaceScanner />} />
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />
