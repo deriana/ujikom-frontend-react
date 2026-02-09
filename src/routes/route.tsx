@@ -127,6 +127,15 @@ export const othersItems: NavItem[] = [
           PERMISSIONS.BASE.RESTORE,
         ),
       },
+      {
+        name: "Users",
+        path: "/trash/users",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.USER,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
     ],
   },
   {
