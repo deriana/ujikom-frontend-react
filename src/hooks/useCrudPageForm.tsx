@@ -1,5 +1,5 @@
 import { handleMutation } from "@/utils/handleMutation";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -28,25 +28,40 @@ export function useCrudPageForm<TForm, TPayload, TId = string | number>({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const initCreate = () => setForm(emptyForm);
+  // prevents double submit
+  const submittingRef = useRef(false);
 
-  const hydrate = (data: TForm) => setForm(data);
+  // prevents hydration overwrite
+  const initializedRef = useRef(false);
 
-  const submit = async () => {
-    if (!form) return;
+  const initCreate = useCallback(() => {
+    initializedRef.current = true;
+    setForm(emptyForm);
+  }, [emptyForm]);
+
+  const hydrate = useCallback((data: TForm) => {
+    if (initializedRef.current) return; // ignore refetch overwrite
+    initializedRef.current = true;
+    setForm(data);
+  }, []);
+
+  const submit = useCallback(async () => {
+    if (!form || submittingRef.current) return;
 
     if (validate) {
       const error = validate(form);
       if (error) return toast.error(error);
     }
 
+    submittingRef.current = true;
     setLoading(true);
+
     try {
       const payload = mapToPayload(form);
-      const uuid = getId?.(form);
+      const id = getId?.(form);
 
-      if (uuid) {
-        await handleMutation(() => updateFn(uuid, payload), {
+      if (id) {
+        await handleMutation(() => updateFn(id, payload), {
           loading: `Updating ${label}...`,
           success: `${label} updated successfully`,
           error: `Failed to update ${label}`,
@@ -63,9 +78,10 @@ export function useCrudPageForm<TForm, TPayload, TId = string | number>({
     } catch (e: any) {
       toast.error(e?.message || "Failed to save");
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
-  };
+  }, [form, validate, mapToPayload, getId, updateFn, createFn, label, navigate, redirectPath]);
 
   return { form, setForm, submit, loading, hydrate, initCreate };
 }

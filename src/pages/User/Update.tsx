@@ -24,7 +24,7 @@ function mapUserToForm(u: any): UserInput {
     team_uuid: u.employee?.team?.uuid ?? "",
     position_uuid: u.employee?.position?.uuid ?? "",
     manager_nik: u.employee?.manager?.nik ?? "",
-    employee_status: u.employee?.status ?? undefined,
+    employee_status: u.employee?.employee_status ?? undefined,
     contract_start: u.employee?.contract_start ?? "",
     contract_end: u.employee?.contract_end ?? "",
     base_salary: u.employee?.base_salary
@@ -39,7 +39,6 @@ function mapUserToForm(u: any): UserInput {
   };
 }
 
-
 export default function UsersUpdate() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
@@ -48,28 +47,33 @@ export default function UsersUpdate() {
   const { data: managers } = useGetManager();
   const { data: positions } = usePositions();
   const { data: divisions } = useDivisions();
-  const { data: userFromApi, isLoading: isFetchingUser } = useUserByUuid(uuid || "");
+  const { data: userFromApi, isLoading: isFetchingUser } = useUserByUuid(
+    uuid || "",
+  );
   const { mutateAsync: updateUser } = useUpdateUser();
 
-  const { form, setForm, hydrate, submit, loading } =
-    useCrudPageForm<UserInput, UserInput, string>({
-      label: "User",
-      emptyForm: {} as UserInput, // tidak dipakai di edit
-      mapToPayload: (f) => f,
-      updateFn: (id, payload) => updateUser({ uuid: id, data: payload }),
-      createFn: async () => { throw new Error("Not allowed"); },
-      getId: () => uuid || "",
-      redirectPath: "/users",
-    });
+  const { form, setForm, hydrate, submit, loading } = useCrudPageForm<
+    UserInput,
+    UserInput,
+    string
+  >({
+    label: "User",
+    emptyForm: {} as UserInput, // tidak dipakai di edit
+    mapToPayload: (f) => f,
+    updateFn: (id, payload) => updateUser({ uuid: id, data: payload }),
+    createFn: async () => {
+      throw new Error("Not allowed");
+    },
+    getId: () => uuid || "",
+    redirectPath: "/users",
+  });
 
-  // 🔥 Hydrate HANYA dari user API
   useEffect(() => {
     if (userFromApi) {
       hydrate(mapUserToForm(userFromApi));
     }
   }, [userFromApi, hydrate]);
 
-  // 🔥 Loading guard SEKARANG BENAR
   if (
     isFetchingUser ||
     !roles ||
