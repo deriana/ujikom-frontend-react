@@ -46,7 +46,10 @@ import Setting from "./pages/Settings/Setting";
 import Users from "./pages/User/Index";
 import UsersCreate from "./pages/User/Create";
 import UsersUpdate from "./pages/User/Update";
+import UsersShow from "./pages/User/Show";
+import UsersTrash from "./pages/Trash/Pages/UsersTrash";
 import FaceScanner from "./pages/Attendance/Face";
+
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -141,9 +144,18 @@ export default function App() {
                 <Route path="/users/create" element={<UsersCreate />} />
               </Route>
 
-              {/* <Route element={<PermissionRoute permission={buildPermission(RESOURCES.USER, PERMISSIONS.BASE.SHOW)} />}>
-              <Route path="/users/:uuid/show" element={<UsersUpdate />} />
-            </Route> */}
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.SHOW,
+                    )}
+                  />
+                }
+              >
+                <Route path="/users/:uuid/show" element={<UsersShow />} />
+              </Route>
 
               <Route
                 element={
@@ -247,6 +259,19 @@ export default function App() {
                 }
               >
                 <Route path="/trash/positions" element={<PositionsTrash />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.RESTORE,
+                    )}
+                  />
+                }
+              >
+                <Route path="/trash/users" element={<UsersTrash />} />
               </Route>
 
               {/* <Route path="/trash" element={<Trash />} /> */}

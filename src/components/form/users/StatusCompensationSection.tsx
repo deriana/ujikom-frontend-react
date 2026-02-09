@@ -4,6 +4,7 @@ import { CurrencyInput } from "@/components/form/form-elements/CurrencyInput";
 import { UserInput } from "@/types";
 import { EmployeeStatusEnum } from "@/types/employee.types";
 import { Banknote, Calendar } from "lucide-react";
+import DatePicker from "../date-picker";
 
 interface Props {
   value: UserInput;
@@ -37,21 +38,17 @@ export default function StatusCompensationSection({
           <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1">
             Employment Status
           </label>
-          <Select
-  options={employeeStatusOptions.map((opt) => ({
-    value: String(opt.value), // string
-    label: opt.label,
-  }))}
-  value={String(value.employee_status)} // convert number ke string supaya match
-  onChange={(val: string) =>
-    onChange({
-      ...value,
-      employee_status: Number(val) as EmployeeStatusEnum, // convert back ke number
-    })
-  }
-  disabled={disabled}
-/>
-
+          <Select<number>
+            options={employeeStatusOptions}
+            value={value.employee_status}
+            onChange={(val) =>
+              onChange({
+                ...value,
+                employee_status: val,
+              })
+            }
+            disabled={disabled}
+          />
         </div>
 
         <div className="space-y-1.5">
@@ -73,12 +70,13 @@ export default function StatusCompensationSection({
             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1">
               <Calendar size={12} /> Contract Duration Start
             </label>
-            <Input
-              type="date"
+            <DatePicker
+              id="contract_start_picker"
+              placeholder="Select start date"
               value={value.contract_start || ""}
               disabled={disabled}
-              onChange={(e) =>
-                onChange({ ...value, contract_start: e.target.value })
+              onChange={(_selectedDates, dateStr) =>
+                onChange({ ...value, contract_start: dateStr })
               }
             />
           </div>
@@ -86,12 +84,13 @@ export default function StatusCompensationSection({
             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1">
               <Calendar size={12} /> Contract Duration End
             </label>
-            <Input
-              type="date"
+            <DatePicker
+              id="contract_end_picker"
+              placeholder="Select end date"
               value={value.contract_end || ""}
               disabled={disabled}
-              onChange={(e) =>
-                onChange({ ...value, contract_end: e.target.value || null })
+              onChange={(_selectedDates, dateStr) =>
+                onChange({ ...value, contract_end: dateStr || null })
               }
             />
           </div>
