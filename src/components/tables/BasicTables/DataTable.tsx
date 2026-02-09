@@ -14,12 +14,18 @@ import { Column } from "@/types";
 import { Plus } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 
+type NestedKeys<T> = {
+  [K in keyof T & (string | number)]: T[K] extends object
+    ? `${K}` | `${K}.${NestedKeys<T[K]>}`
+    : `${K}`;
+}[keyof T & (string | number)];
+
 interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
-  searchableKeys?: (keyof T)[];
+  searchableKeys?: NestedKeys<T>[];
   statusConfig?: {
-    key: keyof T;
+    key: NestedKeys<T>;
     options: { label: string; value: string }[];
   };
   defaultPageSize?: number;
@@ -29,6 +35,7 @@ interface DataTableProps<T> {
   tableTitle?: string;
   label?: string;
   baseNamePermission?: string;
+  extraFilters?: Record<string, string>;
 }
 
 export function DataTable<T extends object>({
@@ -43,6 +50,7 @@ export function DataTable<T extends object>({
   tableTitle = "Data Table",
   label = "Data",
   baseNamePermission,
+  extraFilters,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -53,25 +61,42 @@ export function DataTable<T extends object>({
     direction: "asc" | "desc";
   }>({ key: "index", direction: "asc" });
 
+  // ambil value dari nested key, misal "employee.nik"
+  const getNestedValue = (obj: any, path: string) => {
+    return path.split(".").reduce((acc, key) => acc?.[key], obj);
+  };
+
   // FILTERING
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       const matchSearch =
         searchableKeys.length === 0 ||
-        searchableKeys.some((key) =>
-          String(item[key] ?? "")
+        searchableKeys.some((key) => {
+          const value = getNestedValue(item, String(key));
+          return String(value ?? "")
             .toLowerCase()
-            .includes(search.toLowerCase()),
-        );
+            .includes(search.toLowerCase());
+        });
 
       const matchStatus =
         !statusConfig ||
         statusFilter === "all" ||
-        String(item[statusConfig.key]) === statusFilter;
+        String(getNestedValue(item, String(statusConfig.key))) === statusFilter;
 
-      return matchSearch && matchStatus;
+      const matchExtra = Object.entries(extraFilters || {}).every(
+        ([key, val]) => {
+          if (val === "all") return true;
+          const value = getNestedValue(item, key);
+          if (Array.isArray(value)) {
+            return value.includes(val);
+          }
+          return String(value) === val;
+        },
+      );
+
+      return matchSearch && matchStatus && matchExtra;
     });
-  }, [data, search, statusFilter, searchableKeys, statusConfig]);
+  }, [data, search, statusFilter, searchableKeys, statusConfig, extraFilters]);
 
   // TOGGLE SORT
   const toggleSort = (key: keyof T | "index") => {
@@ -99,8 +124,8 @@ export function DataTable<T extends object>({
         aValue = data.indexOf(a);
         bValue = data.indexOf(b);
       } else {
-        aValue = a[sortConfig.key];
-        bValue = b[sortConfig.key];
+        aValue = getNestedValue(a, String(sortConfig.key));
+        bValue = getNestedValue(b, String(sortConfig.key));
       }
 
       if (typeof aValue === "string") aValue = aValue.toLowerCase();
@@ -190,9 +215,10 @@ export function DataTable<T extends object>({
               <Tooltip content={`Create ${label}`} position="bottom">
                 <button
                   onClick={handleCreate}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="inline-flex items-center justify-center gap-2 px-4 h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <Plus size={16} />
+                  <span className="sm:hidden">Create {label}</span>
                 </button>
               </Tooltip>
             </Can>
@@ -201,91 +227,93 @@ export function DataTable<T extends object>({
       </div>
 
       {/* TABLE */}
-      <Table className="w-full text-sm text-left">
-        <TableHeader className="border-b dark:border-white/10">
-          <TableRow>
-            <TableCell
-              isHeader
-              className="px-5 py-3 font-medium text-gray-500 w-16 cursor-pointer"
-              onClick={() => toggleSort("index")}
-            >
-              <div className="inline-flex items-center gap-1">
-                <span>No</span>
-                {sortConfig.key === "index" && (
-                  <span className="text-xs">
-                    {sortConfig.direction === "asc" ? "↑" : "↓"}
-                  </span>
-                )}
-              </div>
-            </TableCell>
-
-            {columns.map((col, i) => (
+      <div className="overflow-x-auto">
+        <Table className="w-full text-sm text-left">
+          <TableHeader className="sticky top-0 bg-white dark:bg-white/5 z-10 border-b dark:border-white/10">
+            <TableRow>
               <TableCell
-                key={i}
                 isHeader
-                className="px-5 py-3 font-medium text-gray-500"
+                className="px-5 py-3 font-medium text-gray-500 w-16 cursor-pointer"
+                onClick={() => toggleSort("index")}
               >
-                {col.header}
+                <div className="inline-flex items-center gap-1">
+                  <span>No</span>
+                  {sortConfig.key === "index" && (
+                    <span className="text-xs">
+                      {sortConfig.direction === "asc" ? "↑" : "↓"}
+                    </span>
+                  )}
+                </div>
               </TableCell>
-            ))}
-          </TableRow>
-        </TableHeader>
 
-        {loading ? (
-          <TableSkeleton cols={columns.length} rows={5} />
-        ) : isEmpty ? (
-          <TableBody>
-            <TableRow>
-              <td
-                colSpan={columns.length}
-                className="px-5 py-10 text-center text-gray-500"
-              >
-                No {label.toLowerCase()} available.
-              </td>
+              {columns.map((col, i) => (
+                <TableCell
+                  key={i}
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500"
+                >
+                  {col.header}
+                </TableCell>
+              ))}
             </TableRow>
-          </TableBody>
-        ) : isFilteredEmpty ? (
-          <TableBody>
-            <TableRow>
-              <td
-                colSpan={columns.length}
-                className="px-5 py-10 text-center text-gray-500"
-              >
-                No matching {label.toLowerCase()} found.
-              </td>
-            </TableRow>
-          </TableBody>
-        ) : (
-          <TableBody>
-            {paginatedData.map((row, index) => (
-              <TableRow
-                key={
-                  "id" in row
-                    ? (row as any).id
-                    : "uuid" in row
-                      ? (row as any).uuid
-                      : index
-                }
-                className="border-b dark:border-white/10"
-              >
-                <td className="px-5 py-3 text-gray-500">
-                  {(page - 1) * limit + index + 1}
+          </TableHeader>
+
+          {loading ? (
+            <TableSkeleton cols={columns.length} rows={5} />
+          ) : isEmpty ? (
+            <TableBody>
+              <TableRow>
+                <td
+                  colSpan={columns.length}
+                  className="px-5 py-10 text-center text-gray-500"
+                >
+                  No {label.toLowerCase()} available.
                 </td>
-
-                {columns.map((col, i) => (
-                  <td key={i} className={`px-5 py-3 ${col.className || ""}`}>
-                    {col.render
-                      ? col.render(row)
-                      : col.accessor
-                        ? String(row[col.accessor] ?? "-")
-                        : "-"}
-                  </td>
-                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        )}
-      </Table>
+            </TableBody>
+          ) : isFilteredEmpty ? (
+            <TableBody>
+              <TableRow>
+                <td
+                  colSpan={columns.length}
+                  className="px-5 py-10 text-center text-gray-500"
+                >
+                  No matching {label.toLowerCase()} found.
+                </td>
+              </TableRow>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {paginatedData.map((row, index) => (
+                <TableRow
+                  key={
+                    "id" in row
+                      ? (row as any).id
+                      : "uuid" in row
+                        ? (row as any).uuid
+                        : index
+                  }
+                  className="border-b dark:border-white/10"
+                >
+                  <td className="px-5 py-3 text-gray-500">
+                    {(page - 1) * limit + index + 1}
+                  </td>
+
+                  {columns.map((col, i) => (
+                    <td key={i} className={`px-5 py-3 ${col.className || ""}`}>
+                      {col.render
+                        ? col.render(row)
+                        : col.accessor
+                          ? String(row[col.accessor] ?? "-")
+                          : "-"}
+                    </td>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
+        </Table>
+      </div>
 
       {/* PAGINATION */}
       <div className="flex items-center justify-between px-5 py-4 border-t">

@@ -20,7 +20,6 @@ import { handleMutation } from "@/utils/handleMutation";
 
 export default function AllowanceTable() {
   const { data: allowances = [], isLoading, isError, error } = useAllowances();
-
   const { mutateAsync: createAllowance } = useCreateAllowance();
   const { mutateAsync: updateAllowance } = useUpdateAllowance();
   const { mutateAsync: deleteAllowance } = useDeleteAllowance();
@@ -30,7 +29,6 @@ export default function AllowanceTable() {
   const crud = useCrudModalForm<AllowanceInput, AllowanceInput>({
     label: "Allowance",
     emptyForm: { name: "", type: "fixed", amount: 0 },
-
     validate: (form) => {
       const name = form.name.trim();
       if (!name) return "Allowance name is required";
@@ -38,13 +36,11 @@ export default function AllowanceTable() {
       if (form.amount < 0) return "Amount cannot be negative";
       return null;
     },
-
     mapToPayload: (form) => ({
       name: form.name.trim().replace(/\s+/g, " "),
       type: form.type,
       amount: form.amount,
     }),
-
     createFn: createAllowance,
     updateFn: (uuid, payload) => updateAllowance({ uuid, data: payload }),
   });
@@ -61,15 +57,9 @@ export default function AllowanceTable() {
     ];
   }, []);
 
-  const filteredAllowances = useMemo(() => {
-    if (typeFilter === "all") return allowances;
-    return allowances.filter((a) => a.type === typeFilter);
-  }, [allowances, typeFilter]);
-
   const handleEdit = (uuid: string) => {
     const allowance = allowances.find((a) => a.uuid === uuid);
     if (!allowance) return;
-
     crud.openEdit({
       uuid: allowance.uuid,
       name: allowance.name,
@@ -145,13 +135,14 @@ export default function AllowanceTable() {
     <>
       <DataTable
         tableTitle="Allowance Table"
-        data={filteredAllowances}
+        data={allowances} // semua data mentah
         columns={columns}
         searchableKeys={["name"]}
         loading={isLoading}
         handleCreate={handleCreate}
         label="Allowances"
         baseNamePermission={RESOURCES.ALLOWANCE}
+        extraFilters={{ type: typeFilter }} // ini yang bikin filter diterapkan langsung
         newFilterComponent={
           <FilterDropdown
             value={typeFilter}
