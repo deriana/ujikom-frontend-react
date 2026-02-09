@@ -24,11 +24,17 @@ export function useCrudPageForm<TForm, TPayload, TId = string | number>({
   redirectPath,
   label,
 }: CrudPageConfig<TForm, TPayload, TId>) {
-  const [form, setForm] = useState<TForm>(emptyForm);
+  const [form, setForm] = useState<TForm | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const initCreate = () => setForm(emptyForm);
+
+  const hydrate = (data: TForm) => setForm(data);
+
   const submit = async () => {
+    if (!form) return;
+
     if (validate) {
       const error = validate(form);
       if (error) return toast.error(error);
@@ -61,5 +67,5 @@ export function useCrudPageForm<TForm, TPayload, TId = string | number>({
     }
   };
 
-  return { form, setForm, submit, loading };
+  return { form, setForm, submit, loading, hydrate, initCreate };
 }
