@@ -1,5 +1,5 @@
 import { ApiResponse } from "@/types";
-import { BulkAttendanceInput, BulkAttendanceResponse } from "@/types/attendance.types";
+import { Attendance, BulkAttendanceInput, BulkAttendanceResponse } from "@/types/attendance.types";
 import api from "./axios";
 
 export const sendBulkAttendance = async (payload: BulkAttendanceInput) => {
@@ -23,3 +23,13 @@ export const sendBulkAttendance = async (payload: BulkAttendanceInput) => {
 
   return res.data.data;
 };
+
+export const getAttendance = async (params?: { start_date?: string; end_date?: string }) => {
+  const res = await api.get<ApiResponse<Attendance[]>>("/attendances", { params });
+  return res.data.data;
+};
+
+export const getDetailAttendance = async (id: number) => {
+  const res = await api.get<ApiResponse<Attendance>>(`/attendances/${id}`);
+  return res.data.data;
+};  
