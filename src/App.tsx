@@ -48,7 +48,7 @@ import UsersCreate from "./pages/User/Create";
 import UsersUpdate from "./pages/User/Update";
 import UsersShow from "./pages/User/Show";
 import UsersTrash from "./pages/Trash/Pages/UsersTrash";
-import FaceScanner from "./pages/Attendance/Face";
+import FaceScanner from "./pages/Attendance/BulkFaceRecognition";
 
 
 export default function App() {

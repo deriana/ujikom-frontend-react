@@ -8,6 +8,7 @@ import { RESOURCES } from "@/constants/Resource";
 import { handleMutation } from "@/utils/handleMutation";
 import { useMemo, useState } from "react";
 import FilterDropdown from "@/components/FilterDropdown";
+import UserProfile from "@/components/UserProfile";
 
 export default function UsersTable() {
   const { data: users = [], isLoading, isError, error } = useUsers();
@@ -16,7 +17,6 @@ export default function UsersTable() {
   const [teamFilter, setTeamFilter] = useState("all");
   const [divisionFilter, setDivisionFilter] = useState("all");
   const [positionFilter, setPositionFilter] = useState("all");
-  console.log(users);
 
   const roleOptions = useMemo(() => {
     const roles = Array.from(new Set(users.flatMap((u) => u.roles || [])));
@@ -81,6 +81,21 @@ export default function UsersTable() {
   };
 
   const columns: Column<User>[] = [
+    {
+      header: "Profile",
+      render: (row) => {
+        return (
+          <div className="flex items-center gap-2">
+            <UserProfile
+              src={row.employee?.profile_photo}
+              alt={row.name}
+              size={40}
+              className="bg-gray-300 flex items-center justify-center text-white font-medium"
+            />
+          </div>
+        );
+      },
+    },
     {
       header: "Employee Name",
       render: (row) => (

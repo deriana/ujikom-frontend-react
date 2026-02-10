@@ -9,7 +9,6 @@ export const sendBulkAttendance = async (payload: BulkAttendanceInput) => {
   formData.append("longitude", payload.longitude.toString());
   
   payload.attendances.forEach((item, index) => {
-    // Tambahkan nama file (misal: face_0.jpg) agar Laravel lebih mudah memprosesnya
     const fileName = `face_${index}.jpg`;
     formData.append(`attendances[${index}][photo]`, item.photo, fileName);
     
@@ -20,12 +19,7 @@ export const sendBulkAttendance = async (payload: BulkAttendanceInput) => {
     formData.append(`attendances[${index}][descriptor]`, descriptorValue);
   });
   
-  // Gunakan interface response yang baru kita buat tadi
-  const res = await api.post<ApiResponse<BulkAttendanceResponse>>("/attendance/bulk-send", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const res = await api.post<ApiResponse<BulkAttendanceResponse>>("/attendance/bulk-send", formData);
 
   return res.data.data;
 };

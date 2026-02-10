@@ -27,6 +27,7 @@ interface TableActionsProps<T extends string | number> {
   onForceDelete?: (id: T) => void;
   onShow?: (id: T) => void;
   onEdit?: (id: T) => void;
+  newComponent?: React.ReactNode;
 }
 
 export default function TableActions<T extends string | number>({

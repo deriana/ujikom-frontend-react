@@ -14,14 +14,18 @@ import {
   GraduationCap,
 } from "lucide-react";
 
-export default function UsersShowContent({ user }: { user: any }) {
+export default function UsersShowContent({ user, onChangePhoto }: { user: any, onChangePhoto: () => void}) {
   const navigate = useNavigate();
   const employee = user?.employee;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header & Back Button */}
-      <ProfileHeader user={user} onBack={() => navigate(-1)} />
+      <ProfileHeader
+        user={user}
+        onBack={() => navigate(-1)}
+        onChangePhoto={onChangePhoto}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -38,7 +42,8 @@ export default function UsersShowContent({ user }: { user: any }) {
                 label="Gender"
                 value={
                   employee?.gender
-                    ? employee.gender.charAt(0).toUpperCase() + employee.gender.slice(1)
+                    ? employee.gender.charAt(0).toUpperCase() +
+                      employee.gender.slice(1)
                     : "-"
                 }
               />

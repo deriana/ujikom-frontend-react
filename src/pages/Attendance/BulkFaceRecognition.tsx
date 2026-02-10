@@ -110,7 +110,7 @@ const FaceAttendance: React.FC = () => {
       const now = Date.now();
       if (resizedDetections.length > 0 && coords && now - lastSentRef.current > 7000 && !isPending) {
         lastSentRef.current = now;
-        sendToBackend(detections); // Kirim koordinat asli, bukan resize
+        sendToBackend(detections);
       }
 
       requestAnimationFrame(loop);

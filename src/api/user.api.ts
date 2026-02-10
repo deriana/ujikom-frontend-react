@@ -12,7 +12,7 @@ export const getUser = async () => {
 export const getUserByUuid = async (uuid: string) => {
   const res = await api.get<ApiResponse<User>>(`/users/${uuid}`);
   return res.data.data;
-}
+};
 
 export const createUser = async (payload: UserInput) => {
   const res = await api.post<ApiResponse<User>>("/users", payload);
@@ -36,7 +36,9 @@ export const restoreUser = async (uuid: string) => {
 };
 
 export const forceDeleteUser = async (uuid: string) => {
-  const res = await api.delete<ApiResponse<User>>(`/users/force-delete/${uuid}`);
+  const res = await api.delete<ApiResponse<User>>(
+    `/users/force-delete/${uuid}`,
+  );
   return res.data.data;
 };
 
@@ -51,11 +53,11 @@ export const getTrashedUser = async () => {
 export const terminateEmployment = async (
   uuid: string,
   state: "resigned" | "terminated",
-  date?: string 
+  date?: string,
 ) => {
   const res = await api.put<ApiResponse<User>>(
     `/users/terminate-employment/${uuid}`,
-    { state, date }
+    { state, date },
   );
   return res.data.data;
 };
@@ -64,24 +66,31 @@ export const terminateEmployment = async (
 export const changePassword = async (uuid: string, newPassword: string) => {
   const res = await api.put<ApiResponse<User>>(
     `/users/change-password/${uuid}`,
-    { new_password: newPassword }
+    { new_password: newPassword },
   );
   return res.data.data;
 };
 
 /** Change user active status */
 export const changeUserStatus = async (uuid: string, isActive: boolean) => {
-  const res = await api.put<ApiResponse<User>>(
-    `/users/status/${uuid}`,
-    { is_active: isActive }
-  );
+  const res = await api.put<ApiResponse<User>>(`/users/status/${uuid}`, {
+    is_active: isActive,
+  });
   return res.data.data;
 };
 
 /** Upload profile photo */
 export const uploadProfilePhoto = async (uuid: string, file: File) => {
+  // Cek file dulu
+  console.log("File object:", file);
+
   const formData = new FormData();
   formData.append("profile_photo", file);
+
+  // Cek FormData content (trik: pakai for...of)
+  for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
 
   const res = await api.post<ApiResponse<User>>(
     `/users/upload-profile-photo/${uuid}`,
@@ -90,7 +99,7 @@ export const uploadProfilePhoto = async (uuid: string, file: File) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
 
   return res.data.data;

@@ -6,7 +6,8 @@ export const useSettings = () => {
   return useQuery({
     queryKey: ["settings"],
     queryFn: getSettings,
-    staleTime: 1000 * 60 * 10, 
+    staleTime: 1000 * 60 * 10,
+    enabled: !!localStorage.getItem("token"),
   });
 };
 
@@ -14,8 +15,9 @@ export const useUpdateSetting = <T extends keyof SettingsData>() => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ type, data }: { type: T; data: any }) => updateSetting(type, data),
-    
+    mutationFn: ({ type, data }: { type: T; data: any }) =>
+      updateSetting(type, data),
+
     onMutate: async ({ type, data }) => {
       await qc.cancelQueries({ queryKey: ["settings"] });
       const previousSettings = qc.getQueryData<SettingsData>(["settings"]);
@@ -31,13 +33,13 @@ export const useUpdateSetting = <T extends keyof SettingsData>() => {
 
       return { previousSettings };
     },
-    
+
     onError: (_err, _variables, context) => {
       if (context?.previousSettings) {
         qc.setQueryData(["settings"], context.previousSettings);
       }
     },
-    
+
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["settings"] });
     },

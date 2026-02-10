@@ -40,7 +40,7 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
-      <UserProfile />
+      <UserProfile className="mr-4"/>
 
 
         <span className="block mr-1 font-medium text-theme-sm">{user?.name || "Frieren"}</span>

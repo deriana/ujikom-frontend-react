@@ -1,17 +1,27 @@
 import { ArrowLeft, Mail, ShieldCheck, DollarSign } from "lucide-react";
 import { SectionCard, StatusBadge } from "./ProfileComponent";
 
-export const ProfileHeader = ({ user, onBack }: any) => (
+export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50 dark:bg-white/2 p-6 rounded-3xl border border-gray-100 dark:border-gray-800">
     <div className="flex items-center gap-5">
       <div className="relative">
-        <div className="size-20 rounded-2xl bg-linear-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-brand-500/20">
-          {user?.name?.charAt(0)}
-        </div>
+        {user?.employee?.profile_photo ? (
+          <img
+            src={user.employee.profile_photo} // ini harus URL full dari media
+            alt={user?.name}
+            className="size-20 rounded-2xl object-cover shadow-lg shadow-brand-500/20"
+          />
+        ) : (
+          <div className="size-20 rounded-2xl bg-linear-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-brand-500/20">
+            {user?.name?.charAt(0)}
+          </div>
+        )}
+
         <div className="absolute -bottom-2 -right-2 size-8 rounded-lg bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 flex items-center justify-center text-brand-500">
           <ShieldCheck size={18} />
         </div>
       </div>
+
       <div>
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
           {user?.name}
@@ -25,16 +35,27 @@ export const ProfileHeader = ({ user, onBack }: any) => (
         </div>
       </div>
     </div>
-    <button
-      onClick={onBack}
-      className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
-    >
-      <ArrowLeft
-        size={16}
-        className="group-hover:-translate-x-1 transition-transform"
-      />{" "}
-      Back to List
-    </button>
+
+    {/* Tombol action di kanan */}
+    <div className="flex gap-2">
+      <button
+        onClick={onBack}
+        className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
+      >
+        <ArrowLeft
+          size={16}
+          className="group-hover:-translate-x-1 transition-transform"
+        />
+        Back to List
+      </button>
+
+      <button
+        onClick={onChangePhoto}
+        className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
+      >
+        Change Photo
+      </button>
+    </div>
   </div>
 );
 
