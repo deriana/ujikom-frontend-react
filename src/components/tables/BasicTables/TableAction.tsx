@@ -121,7 +121,7 @@ export default function TableActions<T extends string | number>({
 
     const permissionKey = actionPermissionMap[action];
     const permission = buildPermission(
-      baseNamePermission,
+      baseNamePermission || "",
       PERMISSIONS.BASE[permissionKey],
     );
 
@@ -157,7 +157,7 @@ export default function TableActions<T extends string | number>({
           {onShow && (
             <Can
               value={buildPermission(
-                baseNamePermission,
+                baseNamePermission || "",
                 PERMISSIONS.BASE.INDEX,
               )}
             >
@@ -171,7 +171,7 @@ export default function TableActions<T extends string | number>({
 
           {onEdit && (
             <Can
-              value={buildPermission(baseNamePermission, PERMISSIONS.BASE.EDIT)}
+              value={buildPermission(baseNamePermission || "", PERMISSIONS.BASE.EDIT)}
             >
               <Tooltip content={`Edit ${dataName}`}>
                 <Button

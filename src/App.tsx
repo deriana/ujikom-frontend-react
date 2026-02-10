@@ -49,6 +49,7 @@ import UsersUpdate from "./pages/User/Update";
 import UsersShow from "./pages/User/Show";
 import UsersTrash from "./pages/Trash/Pages/UsersTrash";
 import FaceScanner from "./pages/Attendance/BulkFaceRecognition";
+import AttendancesReport from "./pages/AttendanceReport/Index";
 
 
 export default function App() {
@@ -79,6 +80,18 @@ export default function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
 
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.ATTENDANCE,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/attendances/report" element={<AttendancesReport />} />
+              </Route>
               <Route
                 element={
                   <PermissionRoute

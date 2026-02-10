@@ -1,15 +1,29 @@
 export interface Attendance {
   id: number;
-  employee_id: number;
+  employee: {
+    nik: string | null;
+    name: string | null;
+    email: string | null;
+    profile_photo: string | null;
+  };
   date: string;
+  status: string | null;
   clock_in: string | null;
   clock_out: string | null;
-  latitude_in: string | null;
-  longitude_in: string | null;
-  latitude_out: string | null;
-  longitude_out: string | null;
+  late_minutes: number | null;
+  early_leave_minutes: number | null;
   work_minutes: number | null;
-  status: 'present' | 'absent' | 'late';
+  overtime_minutes: number | null;
+  clock_in_photo: string | null;
+  clock_out_photo: string | null;
+  location_in: {
+    latitude: number | null;
+    longitude: number | null;
+  };
+  location_out: {
+    latitude: number | null;
+    longitude: number | null;
+  };
 }
 
 export interface AttendanceInput {
@@ -36,7 +50,7 @@ export interface BulkAttendanceResponse {
   failed_count: number;
   details: {
     name?: string;
-    status: 'Success' | 'Failed';
+    status: "Success" | "Failed";
     message?: string;
   }[];
 }

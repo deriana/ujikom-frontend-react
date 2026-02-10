@@ -5,4 +5,5 @@ export const RESOURCES = {
   SETTING: "setting",
   POSITION: "position",
   ALLOWANCE: "allowance",
+  ATTENDANCE: "attendance",
 } as const;

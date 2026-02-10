@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import { sendBulkAttendance } from "@/api/attendance.api";
-import { BulkAttendanceInput } from "@/types";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { sendBulkAttendance, getAttendance, getDetailAttendance } from "@/api/attendance.api";
+import {  BulkAttendanceInput } from "@/types";
 
 export const useSendBulkAttendance = () => {
   return useMutation({
@@ -11,5 +11,21 @@ export const useSendBulkAttendance = () => {
     onError: (error) => {
       console.error("Gagal memproses bulk attendance", error);
     }
+  });
+};
+
+export const useAttendances = (params?: { start_date?: string; end_date?: string }) => {
+  return useQuery({
+    queryKey: ["attendances", params?.start_date, params?.end_date],
+    queryFn: () => getAttendance(params),
+    enabled: !!params?.start_date && !!params?.end_date,
+  });
+};
+
+export const useDetailAttendance = (id: number) => {
+  return useQuery({
+    queryKey: ["attendances", id],
+    queryFn: () => getDetailAttendance(id),
+    enabled: !!id,
   });
 };
