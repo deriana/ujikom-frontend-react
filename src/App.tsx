@@ -22,7 +22,6 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-// import Face from "./pages/Attendances/Face";
 import { useState, useEffect } from "react";
 import Spinner from "./components/ui/loading/Spinner";
 import { Toaster } from "react-hot-toast";
@@ -30,7 +29,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Roles from "./pages/Roles/Index";
 import RolesCreate from "./pages/Roles/Create";
 import RolesUpdate from "./pages/Roles/Update";
-import Trash from "./pages/Trash/Index";
+// import Trash from "./pages/Trash/Index";
 import Divisions from "./pages/Division/Index";
 import DivisionsTrash from "./pages/Trash/Pages/DivisionTrash";
 import Maintenance from "./pages/Error/Maintenance";
@@ -39,6 +38,19 @@ import Forbidden from "./pages/Error/Forbidden";
 import PermissionRoute from "./routes/PermissionRoute";
 import { buildPermission, PERMISSIONS } from "./constants/Permissions";
 import { RESOURCES } from "./constants/Resource";
+import Allowances from "./pages/Allowances/Index";
+import AllowancesTrash from "./pages/Trash/Pages/AllowanceTrash";
+import Positions from "./pages/Positions/Index";
+import PositionsTrash from "./pages/Trash/Pages/PositionTrash";
+import Setting from "./pages/Settings/Setting";
+import Users from "./pages/User/Index";
+import UsersCreate from "./pages/User/Create";
+import UsersUpdate from "./pages/User/Update";
+import UsersShow from "./pages/User/Show";
+import UsersTrash from "./pages/Trash/Pages/UsersTrash";
+import FaceScanner from "./pages/Attendance/BulkFaceRecognition";
+import AttendancesReport from "./pages/AttendanceReport/Index";
+
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -68,28 +80,211 @@ export default function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
 
-              {/* ===== ROLE MANAGEMENT ===== */}
-              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.INDEX)} />}>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.ATTENDANCE,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/attendances/report" element={<AttendancesReport />} />
+              </Route>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.ROLE,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
                 <Route path="/roles" element={<Roles />} />
               </Route>
 
-              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.CREATE)} />}>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.ROLE,
+                      PERMISSIONS.BASE.CREATE,
+                    )}
+                  />
+                }
+              >
                 <Route path="/roles/create" element={<RolesCreate />} />
               </Route>
 
-              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.EDIT)} />}>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.ROLE,
+                      PERMISSIONS.BASE.EDIT,
+                    )}
+                  />
+                }
+              >
                 <Route path="/roles/:id/edit" element={<RolesUpdate />} />
               </Route>
 
-              {/* ===== DIVISION MANAGEMENT ===== */}
-              <Route element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.INDEX)} />}>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/users" element={<Users />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.CREATE,
+                    )}
+                  />
+                }
+              >
+                <Route path="/users/create" element={<UsersCreate />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.SHOW,
+                    )}
+                  />
+                }
+              >
+                <Route path="/users/:uuid/show" element={<UsersShow />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.EDIT,
+                    )}
+                  />
+                }
+              >
+                <Route path="/users/:uuid/edit" element={<UsersUpdate />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.DIVISION,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
                 <Route path="/divisions" element={<Divisions />} />
               </Route>
 
               <Route
-                element={<PermissionRoute permission={buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.RESTORE)} />}
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.ALLOWANCE,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/allowances" element={<Allowances />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.POSITION,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/positions" element={<Positions />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.SETTING,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/settings" element={<Setting />} />
+              </Route>
+
+              {/* ===== TRASH ===== */}
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.DIVISION,
+                      PERMISSIONS.BASE.RESTORE,
+                    )}
+                  />
+                }
               >
                 <Route path="/trash/divisions" element={<DivisionsTrash />} />
+              </Route>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.ALLOWANCE,
+                      PERMISSIONS.BASE.RESTORE,
+                    )}
+                  />
+                }
+              >
+                <Route path="/trash/allowances" element={<AllowancesTrash />} />
+              </Route>
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.POSITION,
+                      PERMISSIONS.BASE.RESTORE,
+                    )}
+                  />
+                }
+              >
+                <Route path="/trash/positions" element={<PositionsTrash />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.USER,
+                      PERMISSIONS.BASE.RESTORE,
+                    )}
+                  />
+                }
+              >
+                <Route path="/trash/users" element={<UsersTrash />} />
               </Route>
 
               {/* <Route path="/trash" element={<Trash />} /> */}
@@ -107,6 +302,8 @@ export default function App() {
               <Route path="/bar-chart" element={<BarChart />} />
             </Route>
           </Route>
+          
+            <Route path="/attendance" element={<FaceScanner />} />
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />

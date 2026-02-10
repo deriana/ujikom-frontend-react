@@ -20,26 +20,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [permissions, setPermissions] = useState<string[]>([]);
 
-const refreshUser = async () => {
-  try {
-    const me = await authApi.getMe();
-    setUser(me);
+  const refreshUser = async () => {
+    const token = localStorage.getItem("token");
 
-    const perms =
-      me.roles?.flatMap(role =>
-        role.permissions.map(p => p.name)
-      ) ?? [];
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-    setPermissions(perms);
+    try {
+      const me = await authApi.getMe();
+      setUser(me);
 
-  } catch {
-    setUser(null);
-    setPermissions([]);
-  } finally {
-    setLoading(false);
-  }
-};
+      const perms =
+        me.roles?.flatMap((role) => role.permissions.map((p) => p.name)) ?? [];
 
+      setPermissions(perms);
+    } catch {
+      setUser(null);
+      setPermissions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (email: string, password: string) => {
     await authApi.login(email, password);
@@ -55,9 +58,11 @@ const refreshUser = async () => {
   useEffect(() => {
     refreshUser();
   }, []);
-  
+
   return (
-    <AuthContext.Provider value={{ user, loading, permissions, login, logout, refreshUser }}>
+    <AuthContext.Provider
+      value={{ user, loading, permissions, login, logout, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

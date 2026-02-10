@@ -1,23 +1,28 @@
+import { UserLite, UUID } from "./common";
+
 export interface DivisionInput {
-    uuid?: string;
+    uuid?: UUID;
     name: string;
     code: string;
     teams: TeamInput[];
 }
 
 export interface TeamInput {
-    uuid: string;
+    uuid?: UUID;
     name: string;
 }
 
 export interface Division {
-    uuid: string;
+    uuid: UUID;
     name: string;
     code: string;
     teams: Team[];
+    creator: UserLite;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface Team {
-    uuid: string;
+    uuid: UUID;
     name: string;
 }

@@ -3,14 +3,14 @@ import { Role } from "@/types/role.types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import TableActions from "@/components/tables/BasicTables/TableAction";
 import Badge from "@/components/ui/badge/Badge";
-import toast from "react-hot-toast";
 import { useDeleteRole, useRoles } from "@/hooks/useRole";
 import { useNavigate } from "react-router-dom";
 import { RESOURCES } from "@/constants/Resource";
+import { handleMutation } from "@/utils/handleMutation";
 
 export default function RolesTable() {
   const { data: roles = [], isLoading, isError, error } = useRoles();
-  const { mutate: deleteRole } = useDeleteRole();
+  const { mutateAsync: deleteRole } = useDeleteRole();
 
   const navigate = useNavigate();
 
@@ -19,15 +19,12 @@ export default function RolesTable() {
     navigate(`/roles/${id}/edit`);
   };
 
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteRole(id);
-        toast.success("Role Deleted Successfully!");
-    } catch (err: any) {
-      console.error(err);
-        toast.error("Failed Delete Role: " + (err?.message.message || "Unknown error"));
-    }
-  };
+  const handleDelete = (id: number) =>
+    handleMutation(() => deleteRole(id), {
+      loading: "Deleting role...",
+      success: "Role deleted successfully",
+      error: "Failed to delete role",
+    });
 
   const handleCreate = () => {
     navigate("/roles/create");

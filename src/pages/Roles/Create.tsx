@@ -1,53 +1,76 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { useCreateRole, usePermissions } from "@/hooks/useRole";
-import { useState } from "react";
-import { RoleInput } from "@/types/role.types";
-import RoleField from "./Field";
-import Spinner from "@/components/ui/loading/Spinner";
-import Button from "@/components/ui/button/Button";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 import PageMeta from "@/components/common/PageMeta";
+import Button from "@/components/ui/button/Button";
+import RoleField from "./Field";
+import FormSkeleton from "@/components/skeleton/FormSkeleten";
+import { usePermissions, useCreateRole } from "@/hooks/useRole";
+import { useCrudPageForm } from "@/hooks/useCrudPageForm";
+import { RoleInput } from "@/types/role.types";
 
 export default function RolesCreate() {
-  const { data: modules } = usePermissions();
-  const { mutateAsync } = useCreateRole();
-  const [isLoading, setIsLoading] = useState(false);
-  const [roleData, setRoleData] = useState<RoleInput>({
-    name: "",
-    permissions: [],
-  });
   const navigate = useNavigate();
+  const { data: modules } = usePermissions();
+  const { mutateAsync: createRole } = useCreateRole();
 
-  const handleSubmit = async () => {
-    if (!roleData.name.trim()) {
-      toast.error("Role name is required");
-      return;
-    }
+  const { form, setForm, submit, loading, initCreate } =
+    useCrudPageForm<RoleInput, RoleInput>({
+      label: "Role",
+      emptyForm: {
+        name: "",
+        permissions: [],
+      },
 
-    if (roleData.permissions.length === 0) {
-      toast.error("Please select at least one permission");
-      return;
-    }
+      mapToPayload: (form) => form,
 
-    setIsLoading(true);
-    try {
-      await mutateAsync(roleData);
-      toast.success("Role created successfully!");
-      navigate("/roles");
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to create role");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      validate: (form) => {
+        if (!form.name.trim()) return "Role name is required";
+        if (form.permissions.length === 0)
+          return "Select at least one permission";
+        return null;
+      },
 
-  if (!modules) return <Spinner />;
+      createFn: createRole,
+      updateFn: async () => Promise.resolve(),
+      redirectPath: "/roles",
+    });
+
+  // ✅ Set form awal sekali saat halaman dibuka
+  useEffect(() => {
+    if (!form) initCreate();
+  }, [form, initCreate]);
+
+  const isPageLoading = !modules || !form;
+
+  if (isPageLoading) {
+    return (
+      <>
+        <PageMeta title="Create Role" />
+        <PageBreadcrumb
+          crumbs={[
+            { name: "Home", href: "/" },
+            { name: "Roles", href: "/roles" },
+            { name: "Create" },
+          ]}
+        />
+        <ComponentCard title="Create Role">
+          <FormSkeleton
+            fields={[
+              { type: "input" },
+              { type: "select" },
+              { type: "select" },
+            ]}
+          />
+        </ComponentCard>
+      </>
+    );
+  }
 
   return (
     <>
-      <PageMeta title="Create" />
+      <PageMeta title="Create Role" />
       <PageBreadcrumb
         crumbs={[
           { name: "Home", href: "/" },
@@ -58,23 +81,15 @@ export default function RolesCreate() {
 
       <div className="space-y-6">
         <ComponentCard title="Create Role">
-          <RoleField
-            value={roleData}
-            onChange={setRoleData}
-            modules={modules}
-          />
+          <RoleField value={form} onChange={setForm} modules={modules} />
 
-          <div className="flex justify-end mt-6">
-            <Button
-            className="mr-5"
-              onClick={() => navigate("/roles")}
-              disabled={isLoading}
-              variant="danger"
-            >
+          <div className="flex justify-end mt-6 gap-3">
+            <Button variant="danger" onClick={() => navigate("/roles")}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={isLoading}>
-              {isLoading ? "Saving..." : "Create Role"}
+
+            <Button onClick={submit} disabled={loading}>
+              {loading ? "Saving..." : "Create Role"}
             </Button>
           </div>
         </ComponentCard>

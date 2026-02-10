@@ -1,5 +1,7 @@
 import GridShape from "@/components/common/GridShape";
+import useGoBack from "@/hooks/useGoBack";
 import { Link } from "react-router-dom";
+import Button from "../ui/button/Button";
 
 interface ErrorPageProps {
   code: number;
@@ -16,6 +18,9 @@ export default function ErrorPage({
   lightImage,
   darkImage,
 }: ErrorPageProps) {
+  const goBack = useGoBack();
+
+
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
       <GridShape />
@@ -38,16 +43,17 @@ export default function ErrorPage({
           {message}
         </p>
 
-        <Link
-          to="/"
+        <Button
+          type="submit"
+          onClick={goBack}
           className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
         >
           Back to Home Page
-        </Link>
+        </Button>
       </div>
 
       <p className="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
-        &copy; {new Date().getFullYear()} - TailAdmin
+        &copy; {new Date().getFullYear()} - Frieren
       </p>
     </div>
   );

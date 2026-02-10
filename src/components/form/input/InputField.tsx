@@ -16,6 +16,8 @@ interface InputProps {
   success?: boolean;
   error?: boolean;
   hint?: string;
+  onClick?: (e: React.MouseEvent<HTMLInputElement>) => void; // Tambahkan ini
+  trailingIcon?: React.ReactNode;
 }
 
 const Input: FC<InputProps> = ({
@@ -33,8 +35,10 @@ const Input: FC<InputProps> = ({
   success = false,
   error = false,
   hint,
+  trailingIcon,
+  onClick
 }) => {
-  let inputClasses = ` h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
+  let inputClasses = ` h-11 w-full rounded-lg border px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
 
   if (disabled) {
     inputClasses += ` text-gray-500 border-gray-300 opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 opacity-40`;
@@ -60,7 +64,14 @@ const Input: FC<InputProps> = ({
         step={step}
         disabled={disabled}
         className={inputClasses}
+        onClick={onClick}
       />
+
+      {trailingIcon && (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+          {trailingIcon}
+        </div>
+      )}
 
       {hint && (
         <p
@@ -68,8 +79,8 @@ const Input: FC<InputProps> = ({
             error
               ? "text-error-500"
               : success
-              ? "text-success-500"
-              : "text-gray-500"
+                ? "text-success-500"
+                : "text-gray-500"
           }`}
         >
           {hint}

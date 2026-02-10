@@ -1,50 +1,22 @@
-import {
-  useDivisions,
-  useForceDeleteDivision,
-  useRestoreDivision,
-} from "@/hooks/useDivision";
+import { useDivisions, useForceDeleteDivision, useRestoreDivision } from "@/hooks/useDivision";
+import { useTrashActions } from "@/hooks/useTrashActions";
 import { Column } from "@/types";
 import { Division } from "@/types/division.types";
 import Badge from "@/components/ui/badge/Badge";
 import { DataTable } from "../BasicTables/DataTable";
 import TableActions from "../BasicTables/TableAction";
-import toast from "react-hot-toast";
 import { RESOURCES } from "@/constants/Resource";
 
 export default function DivisionTableTrash() {
-  const {
-    data: divisions = [],
-    isError,
-    error,
-    isLoading,
-  } = useDivisions(true);
+  const { data: divisions = [], isError, error, isLoading } = useDivisions(true);
   const { mutateAsync: restoreDivision } = useRestoreDivision();
   const { mutateAsync: forceDeleteDivision } = useForceDeleteDivision();
 
-  const handleRestore = async (uuid: string) => {
-    try {
-      await restoreDivision(uuid);
-      toast.success("Division Restored Successfully!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        "Failed Restore Division: " + (err?.message.message || "Unknown error"),
-      );
-    }
-  };
-
-  const handleForceDelete = async (uuid: string) => {
-    try {
-      await forceDeleteDivision(uuid);
-      toast.success("Division Force Deleted Successfully!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(
-        "Failed Force Delete Division: " +
-          (err?.message.message || "Unknown error"),
-      );
-    }
-  };
+  const { handleRestore, handleForceDelete } = useTrashActions({
+    label: "Division",
+    restoreFn: restoreDivision,
+    forceDeleteFn: forceDeleteDivision,
+  });
 
   const columns: Column<Division>[] = [
     {
@@ -86,11 +58,9 @@ export default function DivisionTableTrash() {
   ];
 
   if (isError) {
-    return (
-      <div className="text-red-500 text-sm">
-        Failed to load trashed divisions: {(error as Error).message}
-      </div>
-    );
+    return <div className="text-red-500 text-sm">
+      Failed to load trashed divisions: {(error as Error).message}
+    </div>;
   }
 
   return (

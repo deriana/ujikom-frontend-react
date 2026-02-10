@@ -4,6 +4,7 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+import UserProfile from "../UserProfile";
 // import placeholderImg from "";
 
 export default function UserDropdown() {
@@ -39,9 +40,8 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
-        <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src="placeholder_img.jpg" alt="User" />
-        </span>
+      <UserProfile className="mr-4"/>
+
 
         <span className="block mr-1 font-medium text-theme-sm">{user?.name || "Frieren"}</span>
         <svg

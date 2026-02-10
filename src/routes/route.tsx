@@ -12,6 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
+import { Database, Settings } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -36,6 +37,12 @@ export const navItems: NavItem[] = [
     path: "/",
   },
   {
+    name: "Attendances Report",
+    icon: <Database />,
+    path: "attendances/report",
+    permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+  },
+  {
     name: "Master Data",
     icon: <PieChartIcon />,
     subItems: [
@@ -56,6 +63,18 @@ export const navItems: NavItem[] = [
         path: "/divisions",
         pro: false,
         permission: buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Allowances",
+        path: "/allowances",
+        pro: false,
+        permission: buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Positions",
+        path: "/Positions",
+        pro: false,
+        permission: buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX),
       },
     ],
   },
@@ -96,6 +115,33 @@ export const othersItems: NavItem[] = [
           PERMISSIONS.BASE.RESTORE,
         ),
       },
+      {
+        name: "Allowances",
+        path: "/trash/allowances",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.ALLOWANCE,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
+      {
+        name: "Positions",
+        path: "/trash/positions",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.POSITION,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
+      {
+        name: "Users",
+        path: "/trash/users",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.USER,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
     ],
   },
   {
@@ -126,4 +172,10 @@ export const othersItems: NavItem[] = [
       { name: "Sign Up", path: "/signup", pro: false },
     ],
   },
+  {
+    icon: <Settings />,
+    name: "Settings",
+    path: "/settings",
+    permission: buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX),
+  }
 ];

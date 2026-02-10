@@ -812,3 +812,59 @@ span.flatpickr-weekday,
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(160, 160, 160, 0.7);
 }
+
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+input[type=number] {
+  -moz-appearance: textfield !important
+}
+
+.input-delete-outline:focus {
+    outline: none;
+}
+
+@layer base {
+  input[type="time"],
+  input[type="date"] {
+    color-scheme: light !important; 
+  }
+
+  .dark input[type="time"],
+  .dark input[type="date"] {
+    color-scheme: dark !important;
+  }
+
+  ::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 2px;
+    padding: 2px;
+    transition: all 0.2s;
+  }
+
+  ::-webkit-calendar-picker-indicator:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .dark ::-webkit-calendar-picker-indicator:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
