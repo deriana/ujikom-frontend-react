@@ -30,32 +30,29 @@ export default function DatePicker({
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  useEffect(() => {
-    fpRef.current = flatpickr(`#${id}`, {
-      mode: mode,
-      static: false,
-      monthSelectorType: "static",
-      dateFormat: "Y-m-d",
-      defaultDate: value || undefined,
-      clickOpens: !disabled,
-      appendTo: document.body,
-      onChange: (selectedDates, dateStr) => {
-        if (onChangeRef.current) {
-          onChangeRef.current(selectedDates, dateStr);
-        }
-      },
-    });
-
-    if (fpRef.current?.calendarContainer) {
-      fpRef.current.calendarContainer.style.zIndex = "9999";
-    }
-
-    return () => {
-      if (fpRef.current) {
-        fpRef.current.destroy();
+ useEffect(() => {
+  fpRef.current = flatpickr(`#${id}`, {
+    mode: mode,
+    static: true, 
+    appendTo: undefined, 
+    
+    monthSelectorType: "static",
+    dateFormat: "Y-m-d",
+    defaultDate: value || undefined,
+    clickOpens: !disabled,
+    onChange: (selectedDates, dateStr) => {
+      if (onChangeRef.current) {
+        onChangeRef.current(selectedDates, dateStr);
       }
-    };
-  }, [id, mode, disabled]);
+    },
+  });
+
+  return () => {
+    if (fpRef.current) {
+      fpRef.current.destroy();
+    }
+  };
+}, [id, mode, disabled]);
 
   useEffect(() => {
     if (fpRef.current && value !== undefined) {

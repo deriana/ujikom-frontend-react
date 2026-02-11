@@ -50,6 +50,7 @@ import UsersShow from "./pages/User/Show";
 import UsersTrash from "./pages/Trash/Pages/UsersTrash";
 import FaceScanner from "./pages/Attendance/BulkFaceRecognition";
 import AttendancesReport from "./pages/AttendanceReport/Index";
+import Holidays from "./pages/Holidays/Index";
 
 
 export default function App() {
@@ -220,6 +221,19 @@ export default function App() {
                 }
               >
                 <Route path="/positions" element={<Positions />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.HOLIDAY,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/holidays" element={<Holidays />} />
               </Route>
 
               <Route

@@ -6,4 +6,5 @@ export const RESOURCES = {
   POSITION: "position",
   ALLOWANCE: "allowance",
   ATTENDANCE: "attendance",
+  HOLIDAY: "holiday",
 } as const;

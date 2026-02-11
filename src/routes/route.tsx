@@ -76,6 +76,12 @@ export const navItems: NavItem[] = [
         pro: false,
         permission: buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX),
       },
+      {
+        name: "Holidays",
+        path: "/holidays",
+        pro: false,
+        permission: buildPermission(RESOURCES.HOLIDAY, PERMISSIONS.BASE.INDEX),
+      }
     ],
   },
   {
