@@ -230,7 +230,7 @@ export default function AttendanceTable() {
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
+    <>
       <DataTable
         tableTitle="Employee Attendance"
         data={attendances}
@@ -257,6 +257,6 @@ export default function AttendanceTable() {
         isOpen={show.isOpen}
         onClose={show.close}
       />
-    </div>
+    </>
   );
 }

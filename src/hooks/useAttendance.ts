@@ -19,6 +19,9 @@ export const useAttendances = (params?: { start_date?: string; end_date?: string
     queryKey: ["attendances", params?.start_date, params?.end_date],
     queryFn: () => getAttendance(params),
     enabled: !!params?.start_date && !!params?.end_date,
+    staleTime: 1000 * 60 * 5,  // 5 menit data dianggap fresh
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,    // prevent fetch ulang saat mount
   });
 };
 
