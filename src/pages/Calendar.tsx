@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { EventInput, DateSelectArg, EventClickArg } from "@fullcalendar/core";
 import { Modal } from "../components/ui/modal";
 import { useModal } from "../hooks/useModal";
+import PageMeta from "@/components/common/PageMeta";
 
 interface CalendarEvent extends EventInput {
   extendedProps: {
@@ -116,6 +117,7 @@ const Calendar: React.FC = () => {
 
   return (
     <>
+    <PageMeta title="Calender" />
       <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
         <div className="custom-calendar">
           <FullCalendar
