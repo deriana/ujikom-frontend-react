@@ -25,21 +25,29 @@ export default function HolidaysTable() {
     label: "Holiday",
     emptyForm: {
       name: "",
-      date: "",
+      start_date: "",
+      end_date: null,
       is_recurring: false,
     },
 
     validate: (form) => {
       if (!form.name.trim()) return "Holiday name is required";
-      if (!form.date) return "Holiday date is required";
-      if (!isValidDate(form.date)) return "Invalid date format";
+      if (!form.start_date) return "Start date is required";
+      if (!isValidDate(form.start_date)) return "Invalid start date";
+
+      if (form.end_date && !isValidDate(form.end_date))
+        return "Invalid end date";
+
+      if (form.end_date && form.end_date < form.start_date)
+        return "End date cannot be before start date";
 
       return null;
     },
 
     mapToPayload: (form) => ({
       name: form.name.trim().replace(/\s+/g, " "),
-      date: form.date,
+      start_date: form.start_date,
+      end_date: form.end_date,
       is_recurring: form.is_recurring,
     }),
 
@@ -54,7 +62,8 @@ export default function HolidaysTable() {
     crud.openEdit({
       uuid: holiday.uuid,
       name: holiday.name,
-      date: holiday.date,
+      start_date: holiday.start_date,
+      end_date: holiday.end_date,
       is_recurring: holiday.is_recurring,
     });
   };
@@ -79,23 +88,29 @@ export default function HolidaysTable() {
     },
     {
       header: "Date",
-      render: (row) => (
-        <span className="text-gray-700 dark:text-white/80">
-          {formatDateID(row.date)}
-        </span>
-      ),
+      render: (row) => {
+        if (!row.end_date || row.start_date === row.end_date) {
+          return (
+            <span className="text-gray-700 dark:text-white/80">
+              {formatDateID(row.start_date)}
+            </span>
+          );
+        }
+
+        return (
+          <span className="text-gray-700 dark:text-white/80">
+            {formatDateID(row.start_date)} - {formatDateID(row.end_date)}
+          </span>
+        );
+      },
     },
     {
       header: "Type",
       render: (row) =>
         row.is_recurring ? (
-          <Badge size="sm" color="warning">
-            Recurring
-          </Badge>
+          <Badge size="sm" color="warning">Recurring</Badge>
         ) : (
-          <Badge size="sm" color="success">
-            One-time
-          </Badge>
+          <Badge size="sm" color="success">One-time</Badge>
         ),
     },
     {
