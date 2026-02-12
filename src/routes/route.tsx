@@ -39,7 +39,7 @@ export const navItems: NavItem[] = [
   {
     name: "Attendances Report",
     icon: <Database />,
-    path: "attendances/report",
+    path: "/attendances/report",
     permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
   },
   {

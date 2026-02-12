@@ -56,8 +56,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-      console.log("refreshUser called");
-
     refreshUser();
   }, []);
 
