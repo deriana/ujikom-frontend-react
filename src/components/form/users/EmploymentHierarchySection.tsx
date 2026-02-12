@@ -116,9 +116,6 @@ export default function EmploymentHierarchySection({
             id="join_date_picker"
             placeholder="Select join date"
             value={value.join_date || ""}
-            defaultDate={
-              value.join_date || new Date().toISOString().split("T")[0]
-            }
             onChange={(_, dateStr) =>
               onChange({ ...value, join_date: dateStr })
             }

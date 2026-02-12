@@ -51,6 +51,8 @@ import UsersTrash from "./pages/Trash/Pages/UsersTrash";
 import FaceScanner from "./pages/Attendance/BulkFaceRecognition";
 import AttendancesReport from "./pages/AttendanceReport/Index";
 import Holidays from "./pages/Holidays/Index";
+import WorkSchedules from "./pages/WorkSchedules/Index";
+import WorkScheduleTrash from "./pages/Trash/Pages/WorkScheduleTrash";
 
 
 export default function App() {
@@ -240,6 +242,19 @@ export default function App() {
                 element={
                   <PermissionRoute
                     permission={buildPermission(
+                      RESOURCES.WORK_SCHEDULE,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/work-schedules" element={<WorkSchedules />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
                       RESOURCES.SETTING,
                       PERMISSIONS.BASE.INDEX,
                     )}
@@ -299,6 +314,19 @@ export default function App() {
                 }
               >
                 <Route path="/trash/users" element={<UsersTrash />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.WORK_SCHEDULE,
+                      PERMISSIONS.BASE.RESTORE,
+                    )}
+                  />
+                }
+              >
+                <Route path="/trash/work-schedules" element={<WorkScheduleTrash />} />
               </Route>
 
               {/* <Route path="/trash" element={<Trash />} /> */}

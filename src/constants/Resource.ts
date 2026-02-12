@@ -7,4 +7,6 @@ export const RESOURCES = {
   ALLOWANCE: "allowance",
   ATTENDANCE: "attendance",
   HOLIDAY: "holiday",
+  WORK_SCHEDULE: "work-schedule",
+  EMPLOYEE_WORK_SCHEDULE: "employee-work-schedule",
 } as const;

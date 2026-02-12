@@ -81,6 +81,12 @@ export const navItems: NavItem[] = [
         path: "/holidays",
         pro: false,
         permission: buildPermission(RESOURCES.HOLIDAY, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Work Schedules",
+        path: "/work-schedules",
+        pro: false,
+        permission: buildPermission(RESOURCES.WORK_SCHEDULE, PERMISSIONS.BASE.INDEX),
       }
     ],
   },
@@ -145,6 +151,15 @@ export const othersItems: NavItem[] = [
         pro: false,
         permission: buildPermission(
           RESOURCES.USER,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
+      {
+        name: "Work Schedules",
+        path: "/trash/work-schedules",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.WORK_SCHEDULE,
           PERMISSIONS.BASE.RESTORE,
         ),
       },
