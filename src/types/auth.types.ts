@@ -12,6 +12,7 @@ export interface User {
       name: string;
       division?: { name: string };
     };
+    profile_photo?: string;
     manager?: {
       user?: {
         name: string;
