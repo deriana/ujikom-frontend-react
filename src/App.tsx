@@ -53,6 +53,7 @@ import AttendancesReport from "./pages/AttendanceReport/Index";
 import Holidays from "./pages/Holidays/Index";
 import WorkSchedules from "./pages/WorkSchedules/Index";
 import WorkScheduleTrash from "./pages/Trash/Pages/WorkScheduleTrash";
+import EmployeeWorkSchedule from "./pages/EmployeeWorkSchedule/Index";
 
 
 export default function App() {
@@ -249,6 +250,19 @@ export default function App() {
                 }
               >
                 <Route path="/work-schedules" element={<WorkSchedules />} />
+              </Route>
+
+              <Route
+                element={
+                  <PermissionRoute
+                    permission={buildPermission(
+                      RESOURCES.EMPLOYEE_WORK_SCHEDULE,
+                      PERMISSIONS.BASE.INDEX,
+                    )}
+                  />
+                }
+              >
+                <Route path="/employee-work-schedules" element={<EmployeeWorkSchedule />} />
               </Route>
 
               <Route
