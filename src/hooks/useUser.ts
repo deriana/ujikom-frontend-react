@@ -13,6 +13,7 @@ import {
   changeUserStatus,
   uploadProfilePhoto,
   getManager,
+  getEmployeeForInput,
 } from "@/api/user.api";
 import { UserInput } from "@/types/user.types";
 
@@ -37,6 +38,14 @@ export const useGetManager = () => {
   return useQuery({
     queryKey: ["users", "manager"],
     queryFn: getManager,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export const useGetEmployeeForInput = () => {
+  return useQuery({
+    queryKey: ["users", "employee-for-input"],
+    queryFn: getEmployeeForInput,
     staleTime: 1000 * 60 * 5,
   });
 }

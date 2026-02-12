@@ -30,12 +30,27 @@ export default function PersonalAccountSection({
             Personal & Account
           </h3>
         </div>
+        <div className="flex gap-5">
         <Checkbox
           label="Account Active"
           checked={!!value.is_active}
           onChange={() => onChange({ ...value, is_active: !value.is_active })}
           disabled={disabled}
         />
+          <Checkbox
+            label="Resigned"
+            checked={!!value.isResigned}
+            onChange={(checked) => {
+              if (!checked) {
+                onChange({ ...value, resign_date: null, isResigned: false });
+              } else {
+                onChange({ ...value, isResigned: true });
+              }
+            }}
+            disabled={disabled}
+          />
+        </div>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

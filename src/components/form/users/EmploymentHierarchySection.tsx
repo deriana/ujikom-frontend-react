@@ -116,28 +116,45 @@ export default function EmploymentHierarchySection({
             id="join_date_picker"
             placeholder="Select join date"
             value={value.join_date || ""}
-            defaultDate={
-              value.join_date || new Date().toISOString().split("T")[0]
-            }
             onChange={(_, dateStr) =>
               onChange({ ...value, join_date: dateStr })
             }
           />
         </div>
 
-        {/* Resign Date */}
+        {/* Resign Toggle */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-            <Clock size={12} /> Resign Date
-          </label>
-          <DatePicker
-            id="resign_date_picker"
-            placeholder="Select resign date"
-            value={value.resign_date || ""}
-            onChange={(_, dateStr) =>
-              onChange({ ...value, resign_date: dateStr || null })
-            }
-          />
+          {value.isResigned && (
+            <>
+              <label
+                htmlFor="resign_date_picker"
+                title="Only fill this if the employee has resigned"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-400"
+              >
+                <Clock size={12} /> Resign Date
+              </label>
+
+              <DatePicker
+                id="resign_date_picker"
+                placeholder="Select resign date"
+                value={value.resign_date || ""}
+                onChange={(_, dateStr) =>
+                  onChange({ ...value, resign_date: dateStr || null })
+                }
+                disabled={disabled}
+              />
+
+              {value.resign_date && (
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...value, resign_date: null })}
+                  className="text-sm text-red-500 hover:underline mt-1"
+                >
+                  Clear Resign Date
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
     </section>

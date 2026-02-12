@@ -39,7 +39,7 @@ export const navItems: NavItem[] = [
   {
     name: "Attendances Report",
     icon: <Database />,
-    path: "attendances/report",
+    path: "/attendances/report",
     permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
   },
   {
@@ -68,7 +68,10 @@ export const navItems: NavItem[] = [
         name: "Allowances",
         path: "/allowances",
         pro: false,
-        permission: buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.INDEX),
+        permission: buildPermission(
+          RESOURCES.ALLOWANCE,
+          PERMISSIONS.BASE.INDEX,
+        ),
       },
       {
         name: "Positions",
@@ -81,7 +84,25 @@ export const navItems: NavItem[] = [
         path: "/holidays",
         pro: false,
         permission: buildPermission(RESOURCES.HOLIDAY, PERMISSIONS.BASE.INDEX),
-      }
+      },
+      {
+        name: "Work Schedules",
+        path: "/work-schedules",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.WORK_SCHEDULE,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Employee Work Schedules",
+        path: "/employee-work-schedules",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.WORK_SCHEDULE,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
     ],
   },
   {
@@ -143,8 +164,14 @@ export const othersItems: NavItem[] = [
         name: "Users",
         path: "/trash/users",
         pro: false,
+        permission: buildPermission(RESOURCES.USER, PERMISSIONS.BASE.RESTORE),
+      },
+      {
+        name: "Work Schedules",
+        path: "/trash/work-schedules",
+        pro: false,
         permission: buildPermission(
-          RESOURCES.USER,
+          RESOURCES.WORK_SCHEDULE,
           PERMISSIONS.BASE.RESTORE,
         ),
       },
@@ -183,5 +210,5 @@ export const othersItems: NavItem[] = [
     name: "Settings",
     path: "/settings",
     permission: buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX),
-  }
+  },
 ];

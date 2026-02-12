@@ -142,7 +142,7 @@ export default function TableActions<T extends string | number>({
   };
 
   const canShow =
-    (onShow && hasPermission("INDEX")) ||
+    (onShow && hasPermission("SHOW")) ||
     (onEdit && hasPermission("EDIT")) ||
     (onDelete && hasPermission("DESTROY")) ||
     (onForceDelete && hasPermission("FORCE_DELETE")) ||
@@ -158,7 +158,7 @@ export default function TableActions<T extends string | number>({
             <Can
               value={buildPermission(
                 baseNamePermission || "",
-                PERMISSIONS.BASE.INDEX,
+                PERMISSIONS.BASE.SHOW,
               )}
             >
               <Tooltip content={`Show ${dataName}`}>

@@ -42,4 +42,5 @@ export interface UserInput {
   address?: string;
   join_date?: string;
   resign_date?: string | null;
+  isResigned?: boolean;
 }
