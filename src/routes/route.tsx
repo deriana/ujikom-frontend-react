@@ -100,7 +100,25 @@ export const navItems: NavItem[] = [
         pro: false,
         permission: buildPermission(
           RESOURCES.WORK_SCHEDULE,
-          PERMISSIONS.BASE.RESTORE,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Shift Templates",
+        path: "/shift-templates",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.SHIFT_TEMPLATE,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Employee Shifts",
+        path: "/employee-shifts",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.EMPLOYEE_SHIFT,
+          PERMISSIONS.BASE.INDEX,
         ),
       },
     ],
@@ -172,6 +190,15 @@ export const othersItems: NavItem[] = [
         pro: false,
         permission: buildPermission(
           RESOURCES.WORK_SCHEDULE,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
+      {
+        name: "Shift Templates",
+        path: "/trash/shift-templates",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.SHIFT_TEMPLATE,
           PERMISSIONS.BASE.RESTORE,
         ),
       },
