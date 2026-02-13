@@ -9,4 +9,6 @@ export const RESOURCES = {
   HOLIDAY: "holiday",
   WORK_SCHEDULE: "work-schedule",
   EMPLOYEE_WORK_SCHEDULE: "employee-work-schedule",
+  SHIFT_TEMPLATE: "shift-template",
+  EMPLOYEE_SHIFT_TEMPLATE: "employee-shift-template",
 } as const;

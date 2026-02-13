@@ -103,6 +103,15 @@ export const navItems: NavItem[] = [
           PERMISSIONS.BASE.RESTORE,
         ),
       },
+      {
+        name: "Shift Templates",
+        path: "/shift-templates",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.SHIFT_TEMPLATE,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
     ],
   },
   {
@@ -172,6 +181,15 @@ export const othersItems: NavItem[] = [
         pro: false,
         permission: buildPermission(
           RESOURCES.WORK_SCHEDULE,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
+      {
+        name: "Shift Templates",
+        path: "/trash/shift-templates",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.SHIFT_TEMPLATE,
           PERMISSIONS.BASE.RESTORE,
         ),
       },

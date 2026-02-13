@@ -54,6 +54,8 @@ import Holidays from "./pages/Holidays/Index";
 import WorkSchedules from "./pages/WorkSchedules/Index";
 import WorkScheduleTrash from "./pages/Trash/Pages/WorkScheduleTrash";
 import EmployeeWorkSchedule from "./pages/EmployeeWorkSchedule/Index";
+import ShiftTemplate from "./pages/ShiftTemplate/Index";
+import ShiftTemplateTrash from "./pages/Trash/Pages/ShiftTemplateTrash";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -159,6 +161,12 @@ export default function App() {
       permission: PERMISSIONS.BASE.INDEX,
     },
     {
+      path: "/shift-templates",
+      element: <ShiftTemplate />,
+      resource: RESOURCES.SHIFT_TEMPLATE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
       path: "/settings",
       element: <Setting />,
       resource: RESOURCES.SETTING,
@@ -193,6 +201,12 @@ export default function App() {
     {
       path: "/trash/work-schedules",
       element: <WorkScheduleTrash />,
+      resource: RESOURCES.WORK_SCHEDULE,
+      permission: PERMISSIONS.BASE.RESTORE,
+    },
+    {
+      path: "/trash/shift-templates",
+      element: <ShiftTemplateTrash />,
       resource: RESOURCES.WORK_SCHEDULE,
       permission: PERMISSIONS.BASE.RESTORE,
     },
