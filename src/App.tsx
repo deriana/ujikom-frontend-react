@@ -56,6 +56,7 @@ import WorkScheduleTrash from "./pages/Trash/Pages/WorkScheduleTrash";
 import EmployeeWorkSchedule from "./pages/EmployeeWorkSchedule/Index";
 import ShiftTemplate from "./pages/ShiftTemplate/Index";
 import ShiftTemplateTrash from "./pages/Trash/Pages/ShiftTemplateTrash";
+import EmployeeShifts from "./pages/EmployeeShift/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -163,6 +164,12 @@ export default function App() {
     {
       path: "/shift-templates",
       element: <ShiftTemplate />,
+      resource: RESOURCES.SHIFT_TEMPLATE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/employee-shifts",
+      element: <EmployeeShifts />,
       resource: RESOURCES.SHIFT_TEMPLATE,
       permission: PERMISSIONS.BASE.INDEX,
     },

@@ -10,5 +10,5 @@ export const RESOURCES = {
   WORK_SCHEDULE: "work-schedule",
   EMPLOYEE_WORK_SCHEDULE: "employee-work-schedule",
   SHIFT_TEMPLATE: "shift-template",
-  EMPLOYEE_SHIFT_TEMPLATE: "employee-shift-template",
+  EMPLOYEE_SHIFT: "employee-shift",
 } as const;

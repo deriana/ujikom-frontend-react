@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
-import Label from "./Label";
-import { CalenderIcon } from "../../icons";
+import { CalenderIcon } from "../../icons"; // Pastikan path benar atau gunakan Lucide Calendar
 
 type PropsType = {
   id: string;
@@ -12,6 +11,7 @@ type PropsType = {
   label?: string;
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 };
 
 export default function DatePicker({
@@ -22,6 +22,7 @@ export default function DatePicker({
   value,
   placeholder,
   disabled = false,
+  className = "",
 }: PropsType) {
   const fpRef = useRef<any>(null);
   const onChangeRef = useRef(onChange);
@@ -35,7 +36,6 @@ export default function DatePicker({
       mode: mode,
       static: false,
       appendTo: document.body,
-
       monthSelectorType: "static",
       dateFormat: "Y-m-d",
       defaultDate: value || undefined,
@@ -46,7 +46,7 @@ export default function DatePicker({
         }
       },
       onReady: (_selectedDates, _dateStr, instance) => {
-        instance.calendarContainer.style.zIndex = "99999999"; 
+        instance.calendarContainer.style.zIndex = "99999999";
       },
     });
 
@@ -64,19 +64,29 @@ export default function DatePicker({
   }, [value]);
 
   return (
-    <div className="w-full relative">
-      {label && <Label htmlFor={id}>{label}</Label>}
-      <div className="relative">
+    <div className={`flex flex-col gap-1 w-full ${className}`}>
+      {label && (
+        <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
+          {label}
+        </label>
+      )}
+
+      <div className="relative group">
         <input
           id={id}
           readOnly
-          placeholder={placeholder}
+          placeholder={placeholder || "Select date"}
           disabled={disabled}
-          className="h-11 w-full cursor-pointer rounded-lg border appearance-none pl-4 pr-11 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-none focus:ring-3 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90 dark:focus:border-brand-800 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+          className="w-full px-3 py-2 text-sm border rounded-lg outline-none transition-all
+                   cursor-pointer appearance-none
+                   bg-white text-gray-700 border-gray-300
+                   focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500
+                   dark:bg-white/5 dark:text-gray-300 dark:border-white/10 dark:focus:border-blue-500/50
+                   disabled:opacity-50 disabled:cursor-not-allowed pr-10"
         />
-        <span className="absolute text-gray-400 -translate-y-1/2 pointer-events-none right-3 top-1/2">
-          <CalenderIcon className="size-5" />
-        </span>
+        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+          <CalenderIcon className="size-4" />
+        </div>
       </div>
     </div>
   );

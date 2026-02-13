@@ -100,7 +100,7 @@ export const navItems: NavItem[] = [
         pro: false,
         permission: buildPermission(
           RESOURCES.WORK_SCHEDULE,
-          PERMISSIONS.BASE.RESTORE,
+          PERMISSIONS.BASE.INDEX,
         ),
       },
       {
@@ -109,7 +109,16 @@ export const navItems: NavItem[] = [
         pro: false,
         permission: buildPermission(
           RESOURCES.SHIFT_TEMPLATE,
-          PERMISSIONS.BASE.RESTORE,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Employee Shifts",
+        path: "/employee-shifts",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.EMPLOYEE_SHIFT,
+          PERMISSIONS.BASE.INDEX,
         ),
       },
     ],
