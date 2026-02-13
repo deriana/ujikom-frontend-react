@@ -12,7 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
-import { Database, Settings } from "lucide-react";
+import { Database, Settings, Table } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -41,6 +41,24 @@ export const navItems: NavItem[] = [
     icon: <Database />,
     path: "/attendances/report",
     permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Employee Shifts",
+    path: "/employee-shifts",
+    icon: <Table />,
+    permission: buildPermission(
+      RESOURCES.EMPLOYEE_SHIFT,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
+    name: "Employee Work Schedules",
+    path: "/employee-work-schedules",
+    icon: <Table />,
+    permission: buildPermission(
+      RESOURCES.WORK_SCHEDULE,
+      PERMISSIONS.BASE.INDEX,
+    ),
   },
   {
     name: "Master Data",
@@ -95,15 +113,6 @@ export const navItems: NavItem[] = [
         ),
       },
       {
-        name: "Employee Work Schedules",
-        path: "/employee-work-schedules",
-        pro: false,
-        permission: buildPermission(
-          RESOURCES.WORK_SCHEDULE,
-          PERMISSIONS.BASE.INDEX,
-        ),
-      },
-      {
         name: "Shift Templates",
         path: "/shift-templates",
         pro: false,
@@ -113,11 +122,11 @@ export const navItems: NavItem[] = [
         ),
       },
       {
-        name: "Employee Shifts",
-        path: "/employee-shifts",
+        name: "Leave Types",
+        path: "/leave-types",
         pro: false,
         permission: buildPermission(
-          RESOURCES.EMPLOYEE_SHIFT,
+          RESOURCES.LEAVE_TYPES,
           PERMISSIONS.BASE.INDEX,
         ),
       },

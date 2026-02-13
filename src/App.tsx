@@ -57,6 +57,7 @@ import EmployeeWorkSchedule from "./pages/EmployeeWorkSchedule/Index";
 import ShiftTemplate from "./pages/ShiftTemplate/Index";
 import ShiftTemplateTrash from "./pages/Trash/Pages/ShiftTemplateTrash";
 import EmployeeShifts from "./pages/EmployeeShift/Index";
+import LeaveTypes from "./pages/LeaveType/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -170,6 +171,12 @@ export default function App() {
     {
       path: "/employee-shifts",
       element: <EmployeeShifts />,
+      resource: RESOURCES.SHIFT_TEMPLATE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/leave-types",
+      element: <LeaveTypes />,
       resource: RESOURCES.SHIFT_TEMPLATE,
       permission: PERMISSIONS.BASE.INDEX,
     },
