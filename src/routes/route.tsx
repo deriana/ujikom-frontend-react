@@ -12,7 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
-import { Database, Settings, Table } from "lucide-react";
+import { Database, File, Settings, Table } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -57,6 +57,15 @@ export const navItems: NavItem[] = [
     icon: <Table />,
     permission: buildPermission(
       RESOURCES.WORK_SCHEDULE,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
+    name: "Leaves",
+    path: "/leaves",
+    icon: <File />,
+    permission: buildPermission(
+      RESOURCES.LEAVE,
       PERMISSIONS.BASE.INDEX,
     ),
   },

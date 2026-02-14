@@ -58,6 +58,7 @@ import ShiftTemplate from "./pages/ShiftTemplate/Index";
 import ShiftTemplateTrash from "./pages/Trash/Pages/ShiftTemplateTrash";
 import EmployeeShifts from "./pages/EmployeeShift/Index";
 import LeaveTypes from "./pages/LeaveType/Index";
+import Leave from "./pages/Leave/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -178,6 +179,12 @@ export default function App() {
       path: "/leave-types",
       element: <LeaveTypes />,
       resource: RESOURCES.SHIFT_TEMPLATE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/leaves",
+      element: <Leave />,
+      resource: RESOURCES.LEAVE,
       permission: PERMISSIONS.BASE.INDEX,
     },
     {

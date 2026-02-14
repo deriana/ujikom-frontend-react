@@ -12,4 +12,5 @@ export const RESOURCES = {
   SHIFT_TEMPLATE: "shift-template",
   EMPLOYEE_SHIFT: "employee-shift",
   LEAVE_TYPES: "leave-type",
+  LEAVE: "leave",
 } as const;
