@@ -46,7 +46,6 @@ export const useCreateLeave = () => {
 export const useUpdateLeave = () => {
   const qc = useQueryClient();
 
-  // Tambahkan <any, any, { uuid: string; data: FormData }> untuk mengunci tipenya
   return useMutation({
     mutationFn: ({ uuid, data }: { uuid: string; data: FormData }) => 
       updateLeave(uuid, data), 
