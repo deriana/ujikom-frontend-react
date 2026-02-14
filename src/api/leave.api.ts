@@ -35,9 +35,21 @@ export const leaveApprovals = async (uuid: string, status: 0 | 1 | 2) => {
   return res.data.data;
 };
 
-export const downloadAttachment = async (uuid: string) => {
-  const res = await api.get<ApiResponse<Leave[]>>(
-    `/leaves/download-attachment/${uuid}`,
-  );
-  return res.data.data;
+
+export const downloadAttachment = async (filename: string) => {
+  const response = await api.get(`/leaves/download-attachment/${filename}`, {
+    responseType: 'blob',
+  });
+
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  
+  const link = document.createElement('a');
+  link.href = url;
+  
+  link.setAttribute('download', filename);
+  
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
 };

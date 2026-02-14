@@ -28,7 +28,7 @@ export default function LeavesTable() {
   const { isRole } = useRoleName();
 
   const show = useShowModal<string>();
-  const crud = useCrudModalForm<LeaveInput, LeaveInput>({
+  const crud = useCrudModalForm<LeaveInput, FormData>({
     label: "Leave Request",
     emptyForm: {
       leave_type_uuid: "",
@@ -37,7 +37,7 @@ export default function LeavesTable() {
       reason: "",
       is_half_day: false,
       attachment: null,
-      employee_nik: undefined, // Tambahkan ini jika Admin/HR ingin input untuk orang lain
+      employee_nik: undefined,
     },
 
     validate: (form) => {
@@ -67,17 +67,11 @@ export default function LeavesTable() {
         formData.append("attachment", form.attachment);
       }
 
-      // 🔎 Proper way to log FormData
-      console.log("🟢 Submit Payload:");
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-
-      return formData as any;
+      return formData;
     },
 
-    createFn: createLeave,
-    updateFn: (uuid, payload) => updateLeave({ uuid, data: payload }),
+    createFn: (payload) => createLeave(payload as any),
+    updateFn: (uuid, payload) => updateLeave({ uuid, data: payload as any }),
   });
 
   const handleEdit = (uuid: string) => {
@@ -109,8 +103,6 @@ export default function LeavesTable() {
       is_half_day: leave.is_half_day,
       employee_nik: leave.employee_nik.toString(),
     };
-
-    console.log("🟡 Edit Form Payload:", editPayload);
 
     crud.openEdit(editPayload);
   };
@@ -245,10 +237,10 @@ export default function LeavesTable() {
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 
-      <LeaveShowModal 
-      uuid={show.showId}
-      isOpen={show.isOpen}
-      onClose={show.close}
+      <LeaveShowModal
+        uuid={show.showId}
+        isOpen={show.isOpen}
+        onClose={show.close}
       />
     </>
   );

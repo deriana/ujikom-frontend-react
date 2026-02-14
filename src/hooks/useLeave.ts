@@ -43,18 +43,18 @@ export const useCreateLeave = () => {
   });
 };
 
-// UPDATE with optimistic update
 export const useUpdateLeave = () => {
   const qc = useQueryClient();
 
+  // Tambahkan <any, any, { uuid: string; data: FormData }> untuk mengunci tipenya
   return useMutation({
-    mutationFn: ({ uuid, data }: { uuid: string; data: LeaveInput }) => updateLeave(uuid, data),
-    onMutate: async ({ uuid, data }) => {
+    mutationFn: ({ uuid, data }: { uuid: string; data: FormData }) => 
+      updateLeave(uuid, data), 
+    
+    onMutate: async () => {
       await qc.cancelQueries({ queryKey: ["leaves"] });
       const previous = qc.getQueryData(["leaves"]);
-      qc.setQueryData(["leaves"], (old: any[] = []) =>
-        old.map((d) => (d.uuid === uuid ? { ...d, ...data } : d))
-      );
+      
       return { previous };
     },
     onError: (_err, _variables, context: any) => {
