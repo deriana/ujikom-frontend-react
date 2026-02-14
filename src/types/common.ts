@@ -52,3 +52,5 @@ export interface WorkMode {
   id: number;
   name: string;
 }
+
+export type UserRoleType = "admin" | "hr" | "manager" | "employee";
