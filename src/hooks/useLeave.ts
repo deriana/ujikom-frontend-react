@@ -4,6 +4,7 @@ import {
   createLeave,
   updateLeave,
   deleteLeave,
+  leaveApprovals,
   getLeaveByUuid,
 } from "@/api/leave.api";
 import { LeaveInput } from "@/types/leave.types";
@@ -22,7 +23,7 @@ export const useLeaveByUuid = (uuid: string) => {
     queryFn: () => getLeaveByUuid(uuid),
     enabled: !!uuid,
   });
-}
+};
 
 // CREATE with optimistic update
 export const useCreateLeave = () => {
@@ -33,7 +34,10 @@ export const useCreateLeave = () => {
     onMutate: async (newLeave) => {
       await qc.cancelQueries({ queryKey: ["leaves"] });
       const previous = qc.getQueryData(["leaves"]);
-      qc.setQueryData(["leaves"], (old: any[] = []) => [...old, { ...newLeave, id: Date.now() }]);
+      qc.setQueryData(["leaves"], (old: any[] = []) => [
+        ...old,
+        { ...newLeave, id: Date.now() },
+      ]);
       return { previous };
     },
     onError: (_err, _newLeave, context: any) => {
@@ -47,13 +51,13 @@ export const useUpdateLeave = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uuid, data }: { uuid: string; data: FormData }) => 
-      updateLeave(uuid, data), 
-    
+    mutationFn: ({ uuid, data }: { uuid: string; data: FormData }) =>
+      updateLeave(uuid, data),
+
     onMutate: async () => {
       await qc.cancelQueries({ queryKey: ["leaves"] });
       const previous = qc.getQueryData(["leaves"]);
-      
+
       return { previous };
     },
     onError: (_err, _variables, context: any) => {
@@ -72,12 +76,34 @@ export const useDeleteLeave = () => {
     onMutate: async (uuid) => {
       await qc.cancelQueries({ queryKey: ["leaves"] });
       const previous = qc.getQueryData(["leaves"]);
-      qc.setQueryData(["leaves"], (old: any[] = []) => old.filter((d) => d.uuid !== uuid));
+      qc.setQueryData(["leaves"], (old: any[] = []) =>
+        old.filter((d) => d.uuid !== uuid),
+      );
       return { previous };
     },
     onError: (_err, _uuid, context: any) => {
       if (context?.previous) qc.setQueryData(["leaves"], context.previous);
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ["leaves"] }),
+  });
+};
+
+export const useLeaveApprovals = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    // Menggunakan value dari APPROVAL_STATS untuk pengetikan yang lebih ketat
+    mutationFn: ({ 
+      uuid, 
+      status 
+    }: { 
+      uuid: string; 
+      status: boolean;
+    }) => leaveApprovals(uuid, status),
+    
+    onSettled: () => {
+      // Pastikan list cuti di-refresh setelah ada perubahan status
+      qc.invalidateQueries({ queryKey: ["leaves"] });
+    },
   });
 };

@@ -4,6 +4,11 @@ export const APPROVAL_STATS = {
     REJECTED: 2,
 };
 
+export const APPROVAL_INPUT = {
+    APPROVED: true,
+    REJECTED: false,
+}
+
 export const APPROVAL_LABEL: Record<number, string> = {
     [APPROVAL_STATS.PENDING]: "Pending",
     [APPROVAL_STATS.APPROVED]: "Approved",

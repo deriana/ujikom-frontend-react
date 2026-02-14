@@ -1,6 +1,7 @@
 import {
   useCreateLeave,
   useDeleteLeave,
+  useLeaveApprovals,
   useLeaves,
   useUpdateLeave,
 } from "@/hooks/useLeave";
@@ -17,15 +18,58 @@ import { useLeaveTypes } from "@/hooks/useLeaveType";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
+import { useContext, useMemo, useState } from "react";
+import { APPROVAL_INPUT, APPROVAL_LABEL } from "@/constants/Approval";
+import FilterDropdown from "@/components/FilterDropdown";
+import { Check, X } from "lucide-react";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function LeavesTable() {
   const { data: leaves = [], isLoading, isError, error } = useLeaves();
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
   const { mutateAsync: deleteLeave } = useDeleteLeave();
+  const { mutateAsync: approveLeave } = useLeaveApprovals();
   const { data: employee = [] } = useGetEmployeeForInput();
   const { data: leaveTypes = [] } = useLeaveTypes();
   const { isRole } = useRoleName();
+  const { user } = useContext(AuthContext);
+  const [employeeFilter, setEmployeeFilter] = useState("all");
+  const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  // Filter Options untuk Dropdown
+  const employeeOptions = useMemo(() => {
+    const employees = Array.from(
+      new Set(leaves.map((l) => l.employee_name)),
+    ).filter(Boolean);
+
+    return [
+      { label: "All Employees", value: "all" },
+      ...employees.map((name) => ({ label: name, value: name })),
+    ];
+  }, [leaves]);
+
+  const leaveTypeOptions = useMemo(() => {
+    const types = Array.from(new Set(leaves.map((l) => l.leave_type))).filter(
+      Boolean,
+    );
+
+    return [
+      { label: "All Leave Types", value: "all" },
+      ...types.map((type) => ({ label: type, value: type })),
+    ];
+  }, [leaves]);
+
+  const statusOptions = useMemo(() => {
+    return [
+      { label: "All Status", value: "all" },
+      ...Object.entries(APPROVAL_LABEL).map(([value, label]) => ({
+        label,
+        value: value.toString(),
+      })),
+    ];
+  }, []);
 
   const show = useShowModal<string>();
   const crud = useCrudModalForm<LeaveInput, FormData>({
@@ -74,6 +118,8 @@ export default function LeavesTable() {
     updateFn: (uuid, payload) => updateLeave({ uuid, data: payload as any }),
   });
 
+  const handleCreate = () => crud.openCreate();
+
   const handleEdit = (uuid: string) => {
     const leave = leaves.find((p) => p.uuid === uuid);
     if (!leave) return;
@@ -113,6 +159,23 @@ export default function LeavesTable() {
       success: "Leave deleted successfully",
       error: "Failed to delete leave",
     });
+
+  const handleApprovalAction = (uuid: string, status: boolean) => {
+    const isApprove = status === APPROVAL_INPUT.APPROVED;
+
+    handleMutation(
+      () =>
+        approveLeave({
+          uuid,
+          status,
+        }),
+      {
+        loading: isApprove ? "Approving leave..." : "Rejecting leave...",
+        success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
+        error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
+      },
+    );
+  };
 
   const columns: Column<Leave>[] = [
     {
@@ -191,6 +254,44 @@ export default function LeavesTable() {
       },
     },
     {
+      header: "Approval",
+      render: (row) => {
+        // Syarat tombol muncul: Status Pending & Bukan pengajuan sendiri
+        const isPending = row.approval_status === 0;
+        const isNotSelf =
+          user?.employee?.nik?.toString() !== row.employee_nik?.toString();
+        const hasApprovalId = !!row.current_approval_uuid;
+
+        return (
+          <TableActions
+            id={row.current_approval_uuid || ""}
+            dataName={`Leave - ${row.employee_name}`}
+            baseNamePermission={RESOURCES.LEAVE}
+            actions={
+              isPending && isNotSelf && hasApprovalId
+                ? [
+                    {
+                      label: "Approve",
+                      variant: "success",
+                      icon: <Check size={16} />,
+                      onClick: (uuid) =>
+                        handleApprovalAction(uuid, APPROVAL_INPUT.APPROVED),
+                    },
+                    {
+                      label: "Reject",
+                      variant: "danger",
+                      icon: <X size={16} />,
+                      onClick: (uuid) =>
+                        handleApprovalAction(uuid, APPROVAL_INPUT.REJECTED),
+                    },
+                  ]
+                : []
+            }
+          />
+        );
+      },
+    },
+    {
       header: "Action",
       render: (row) => (
         <TableActions
@@ -218,13 +319,36 @@ export default function LeavesTable() {
         tableTitle="Leave Requests"
         data={leaves}
         columns={columns}
-        searchableKeys={["reason"]}
+        searchableKeys={["reason", "employee_name", "leave_type"]}
         loading={isLoading}
-        handleCreate={() => crud.openCreate()}
-        label="Leave"
+        handleCreate={handleCreate}
+        label="Leave Request"
         baseNamePermission={RESOURCES.LEAVE}
+        newFilterComponent={
+          <>
+            <FilterDropdown
+              value={employeeFilter}
+              options={employeeOptions}
+              onChange={setEmployeeFilter}
+            />
+            <FilterDropdown
+              value={leaveTypeFilter}
+              options={leaveTypeOptions}
+              onChange={setLeaveTypeFilter}
+            />
+            <FilterDropdown
+              value={statusFilter}
+              options={statusOptions}
+              onChange={setStatusFilter}
+            />
+          </>
+        }
+        extraFilters={{
+          employee_name: employeeFilter,
+          leave_type: leaveTypeFilter,
+          approval_status: statusFilter,
+        }}
       />
-
       <LeaveModal
         isOpen={crud.isOpen}
         onClose={crud.close}

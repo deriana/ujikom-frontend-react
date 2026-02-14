@@ -1,6 +1,7 @@
 import { Leave, LeaveDetail, LeaveInput } from "@/types/leave.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
+import { APPROVAL_INPUT, APPROVAL_STATS } from "@/constants/Approval";
 
 export const getLeave = async () => {
   const res = await api.get<ApiResponse<Leave[]>>("/leaves");
@@ -27,27 +28,32 @@ export const deleteLeave = async (uuid: string) => {
   return res.data.data;
 };
 
-export const leaveApprovals = async (uuid: string, status: 0 | 1 | 2) => {
+export const leaveApprovals = async (uuid: string, status: boolean) => {
+  const isApprove = status === APPROVAL_INPUT.APPROVED;
+
   const res = await api.put<ApiResponse<Leave[]>>(
     `/leaves/approvals/${uuid}/approve`,
-    { status },
+    {
+      approve: isApprove,
+      status: status,
+    },
   );
+
   return res.data.data;
 };
 
-
 export const downloadAttachment = async (filename: string) => {
   const response = await api.get(`/leaves/download-attachment/${filename}`, {
-    responseType: 'blob',
+    responseType: "blob",
   });
 
   const url = window.URL.createObjectURL(new Blob([response.data]));
-  
-  const link = document.createElement('a');
+
+  const link = document.createElement("a");
   link.href = url;
-  
-  link.setAttribute('download', filename);
-  
+
+  link.setAttribute("download", filename);
+
   document.body.appendChild(link);
   link.click();
   link.remove();

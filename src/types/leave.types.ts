@@ -14,6 +14,7 @@ export interface LeaveInput {
 
 export interface Leave {
   uuid: UUID;
+  current_approval_uuid?: string;
   employee_name: string;
   employee_nik: number;
   leave_type: string;
