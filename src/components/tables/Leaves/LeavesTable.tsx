@@ -23,6 +23,7 @@ import { APPROVAL_INPUT, APPROVAL_LABEL } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
 import { Check, X } from "lucide-react";
 import { AuthContext } from "@/context/AuthContext";
+import { formatDateID } from "@/utils/date";
 
 export default function LeavesTable() {
   const { data: leaves = [], isLoading, isError, error } = useLeaves();
@@ -204,10 +205,10 @@ export default function LeavesTable() {
         <div className="text-sm">
           <div className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-            {row.date_start}
+            {formatDateID(row.date_start)}
           </div>
           <div className="text-xs text-gray-400 dark:text-gray-500 ml-3">
-            sampai {row.date_end}
+            Until {formatDateID(row.date_end)}
           </div>
         </div>
       ),

@@ -59,6 +59,7 @@ import ShiftTemplateTrash from "./pages/Trash/Pages/ShiftTemplateTrash";
 import EmployeeShifts from "./pages/EmployeeShift/Index";
 import LeaveTypes from "./pages/LeaveType/Index";
 import Leave from "./pages/Leave/Index";
+import EarlyLeaves from "./pages/EarlyLeaves/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -185,6 +186,12 @@ export default function App() {
       path: "/leaves",
       element: <Leave />,
       resource: RESOURCES.LEAVE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/early-leaves",
+      element: <EarlyLeaves />,
+      resource: RESOURCES.EARLY_LEAVE,
       permission: PERMISSIONS.BASE.INDEX,
     },
     {

@@ -70,6 +70,15 @@ export const navItems: NavItem[] = [
     ),
   },
   {
+    name: "Early Leaves",
+    path: "/early-leaves",
+    icon: <File />,
+    permission: buildPermission(
+      RESOURCES.LEAVE,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
     name: "Master Data",
     icon: <PieChartIcon />,
     subItems: [

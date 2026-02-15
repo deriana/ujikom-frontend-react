@@ -58,9 +58,6 @@ export default function LeaveModal({
 
   const removeFile = () => setLeaveData({ ...leaveData, attachment: null });
 
-  const selectClassName =
-    "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all appearance-none cursor-pointer text-sm disabled:bg-gray-100 disabled:cursor-not-allowed dark:disabled:bg-gray-800";
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl m-4">
       <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl transition-colors duration-200">
