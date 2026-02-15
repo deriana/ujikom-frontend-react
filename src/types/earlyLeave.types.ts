@@ -9,7 +9,15 @@ export interface EarlyLeave {
   minutes_early: number;
   status: number;
   approved_at: string;
+  can: EarlyLeavePermissions;
 }
+
+export interface EarlyLeavePermissions {
+  update: boolean;
+  delete: boolean;
+  approve: boolean;
+}
+
 
 export interface EarlyLeaveInput {
   uuid?: UUID;

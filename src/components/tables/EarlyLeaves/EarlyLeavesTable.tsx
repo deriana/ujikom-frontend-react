@@ -136,9 +136,9 @@ export default function EarlyLeavesTable() {
           note,
         }),
       {
-        loading: isApprove ? "Approving leave..." : "Rejecting leave...",
-        success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
-        error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
+        loading: isApprove ? "Approving Early leave..." : "Rejecting Early leave...",
+        success: `Early Leave ${isApprove ? "approved" : "rejected"} successfully`,
+        error: `Failed to ${isApprove ? "approve" : "reject"} Early leave`,
       },
     );
   };
@@ -214,18 +214,13 @@ export default function EarlyLeavesTable() {
     {
       header: "Approval",
       render: (row) => {
-        const isPending = row.status === APPROVAL_STATS.PENDING;
-        const isNotSelf =
-          user?.employee?.nik?.toString() !== row.employee_nik?.toString();
-        const hasApprovalId = !!row.uuid;
-
         return (
           <TableActions
             id={row.uuid || ""}
             dataName={`Early Leave - ${row.employee_name}`}
             baseNamePermission={RESOURCES.EARLY_LEAVE}
             actions={
-              isPending && isNotSelf && hasApprovalId
+              row.can?.approve
                 ? [
                     {
                       label: "Approve",
@@ -268,6 +263,7 @@ export default function EarlyLeavesTable() {
           onDelete={handleDelete}
           onShow={() => show.open(row.uuid)}
           baseNamePermission={RESOURCES.EARLY_LEAVE}
+          can={row.can}
         />
       ),
     },

@@ -10,20 +10,24 @@ export async function handleMutation<T>(
   action: () => Promise<T>,
   messages: Messages
 ): Promise<T | undefined> {
-  const id = messages.loading
-    ? toast.loading(messages.loading)
-    : undefined;
+  const id = messages.loading ? toast.loading(messages.loading) : undefined;
 
   try {
     const result = await action();
-
     if (id) toast.dismiss(id);
     if (messages.success) toast.success(messages.success);
-
     return result;
   } catch (err: any) {
     if (id) toast.dismiss(id);
-    toast.error(messages.error || err?.message || "Something went wrong");
+    
+    const errorMessage = 
+      err?.response?.data?.message || 
+      err?.message || 
+      messages.error || 
+      "Something went wrong";
+
+    toast.error(errorMessage);
+    console.error(err);
     throw err;
   }
 }

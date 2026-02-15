@@ -109,6 +109,14 @@ export default function DivisionTable() {
       },
     },
     {
+      header: "System Reserve",
+      render: (row) => (
+        <Badge size="sm" color={row.system_reserve ? "warning" : "success"}>
+          {row.system_reserve ? "System" : "Custom"}
+        </Badge>
+      ),
+    },
+    {
       header: "Action",
       render: (row) => (
         <TableActions
@@ -118,6 +126,7 @@ export default function DivisionTable() {
           onDelete={handleDelete}
           onShow={handleShow}
           baseNamePermission={RESOURCES.DIVISION}
+          isSystemReserve={row.system_reserve}
         />
       ),
     },

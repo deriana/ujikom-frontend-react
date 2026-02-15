@@ -14,7 +14,7 @@ export default function UserField({
 }: {
   value: UserInput;
   onChange: (val: UserInput) => void;
-  roles: { id: number; name: string }[];
+  roles: { id: number; name: string, system_reserve: boolean}[];
   positions: Position[];
   divisions: Division[];
   managers: Manager[];

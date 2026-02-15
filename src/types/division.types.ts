@@ -17,6 +17,7 @@ export interface Division {
     name: string;
     code: string;
     teams: Team[];
+    system_reserve: boolean;
     creator: UserLite;
     created_at: string;
     updated_at: string;

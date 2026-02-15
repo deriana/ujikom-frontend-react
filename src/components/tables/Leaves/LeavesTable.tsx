@@ -19,7 +19,11 @@ import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
 import { useContext, useMemo, useState } from "react";
-import { APPROVAL_INPUT, APPROVAL_LABEL } from "@/constants/Approval";
+import {
+  APPROVAL_INPUT,
+  APPROVAL_LABEL,
+  APPROVAL_STATS,
+} from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
 import { Check, X } from "lucide-react";
 import { AuthContext } from "@/context/AuthContext";
@@ -161,7 +165,11 @@ export default function LeavesTable() {
       error: "Failed to delete leave",
     });
 
-  const handleApprovalAction = (uuid: string, status: boolean, note?: string) => {
+  const handleApprovalAction = (
+    uuid: string,
+    status: boolean,
+    note?: string,
+  ) => {
     const isApprove = status === APPROVAL_INPUT.APPROVED;
 
     handleMutation(
@@ -227,26 +235,44 @@ export default function LeavesTable() {
     {
       header: "Type",
       render: (row) => (
-        <Badge
-          size="sm"
-          variant="solid"
-          color={row.is_half_day ? "warning" : "primary"}
-        >
-          {row.is_half_day ? "Half Day" : "Full Day"}
-        </Badge>
+        <div className="flex items-center gap-1.5 text-xs font-medium">
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              row.is_half_day ? "bg-amber-500" : "bg-blue-500"
+            }`}
+          />
+          <span
+            className={row.is_half_day ? "text-amber-700" : "text-blue-700"}
+          >
+            {row.is_half_day ? "Half Day" : "Full Day"}
+          </span>
+        </div>
       ),
     },
+
     {
       header: "Status",
       render: (row) => {
         const statusConfig = {
-          0: { label: "Pending", color: "warning", dot: "bg-amber-500" },
-          1: { label: "Approved", color: "success", dot: "bg-emerald-500" },
-          2: { label: "Rejected", color: "danger", dot: "bg-rose-500" },
+          [APPROVAL_STATS.PENDING]: {
+            label: "Pending",
+            color: "warning",
+            dot: "bg-amber-500",
+          },
+          [APPROVAL_STATS.APPROVED]: {
+            label: "Approved",
+            color: "success",
+            dot: "bg-emerald-500",
+          },
+          [APPROVAL_STATS.REJECTED]: {
+            label: "Rejected",
+            color: "error",
+            dot: "bg-rose-500",
+          },
         };
-
-        const status = statusConfig[row.approval_status] || statusConfig[0];
-
+        const status =
+          statusConfig[row.approval_status as keyof typeof statusConfig] ||
+          statusConfig[0];
         return (
           <Badge size="sm" color={status.color as any} variant="light">
             <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${status.dot}`} />
@@ -258,19 +284,13 @@ export default function LeavesTable() {
     {
       header: "Approval",
       render: (row) => {
-        // Syarat tombol muncul: Status Pending & Bukan pengajuan sendiri
-        const isPending = row.approval_status === 0;
-        const isNotSelf =
-          user?.employee?.nik?.toString() !== row.employee_nik?.toString();
-        const hasApprovalId = !!row.current_approval_uuid;
-
         return (
           <TableActions
             id={row.current_approval_uuid || ""}
             dataName={`Leave - ${row.employee_name}`}
             baseNamePermission={RESOURCES.LEAVE}
             actions={
-              isPending && isNotSelf && hasApprovalId
+              row.can?.approve
                 ? [
                     {
                       label: "Approve",
@@ -278,7 +298,11 @@ export default function LeavesTable() {
                       icon: <Check size={16} />,
                       showNote: true,
                       onClick: (uuid, note) =>
-                        handleApprovalAction(uuid, APPROVAL_INPUT.APPROVED, note),
+                        handleApprovalAction(
+                          uuid,
+                          APPROVAL_INPUT.APPROVED,
+                          note,
+                        ),
                     },
                     {
                       label: "Reject",
@@ -286,7 +310,11 @@ export default function LeavesTable() {
                       icon: <X size={16} />,
                       showNote: true,
                       onClick: (uuid, note) =>
-                        handleApprovalAction(uuid, APPROVAL_INPUT.REJECTED, note),
+                        handleApprovalAction(
+                          uuid,
+                          APPROVAL_INPUT.REJECTED,
+                          note,
+                        ),
                     },
                   ]
                 : []
@@ -305,6 +333,7 @@ export default function LeavesTable() {
           onDelete={handleDelete}
           onShow={() => show.open(row.uuid)}
           baseNamePermission={RESOURCES.LEAVE}
+          can={row.can}
         />
       ),
     },

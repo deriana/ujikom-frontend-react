@@ -18,6 +18,8 @@ export interface Manager {
   uuid?: UUID;
   name: string;
   nik: string;
+  role: string;
+  position: string;
 }
 
 export interface EmployeeLite {
