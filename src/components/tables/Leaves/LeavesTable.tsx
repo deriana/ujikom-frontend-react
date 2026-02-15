@@ -160,7 +160,7 @@ export default function LeavesTable() {
       error: "Failed to delete leave",
     });
 
-  const handleApprovalAction = (uuid: string, status: boolean) => {
+  const handleApprovalAction = (uuid: string, status: boolean, note?: string) => {
     const isApprove = status === APPROVAL_INPUT.APPROVED;
 
     handleMutation(
@@ -168,6 +168,7 @@ export default function LeavesTable() {
         approveLeave({
           uuid,
           status,
+          note,
         }),
       {
         loading: isApprove ? "Approving leave..." : "Rejecting leave...",
@@ -274,15 +275,17 @@ export default function LeavesTable() {
                       label: "Approve",
                       variant: "success",
                       icon: <Check size={16} />,
-                      onClick: (uuid) =>
-                        handleApprovalAction(uuid, APPROVAL_INPUT.APPROVED),
+                      showNote: true,
+                      onClick: (uuid, note) =>
+                        handleApprovalAction(uuid, APPROVAL_INPUT.APPROVED, note),
                     },
                     {
                       label: "Reject",
                       variant: "danger",
                       icon: <X size={16} />,
-                      onClick: (uuid) =>
-                        handleApprovalAction(uuid, APPROVAL_INPUT.REJECTED),
+                      showNote: true,
+                      onClick: (uuid, note) =>
+                        handleApprovalAction(uuid, APPROVAL_INPUT.REJECTED, note),
                     },
                   ]
                 : []

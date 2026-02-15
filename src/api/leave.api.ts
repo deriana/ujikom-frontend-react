@@ -1,7 +1,7 @@
 import { Leave, LeaveDetail, LeaveInput } from "@/types/leave.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
-import { APPROVAL_INPUT, APPROVAL_STATS } from "@/constants/Approval";
+import { APPROVAL_INPUT } from "@/constants/Approval";
 
 export const getLeave = async () => {
   const res = await api.get<ApiResponse<Leave[]>>("/leaves");
@@ -28,7 +28,7 @@ export const deleteLeave = async (uuid: string) => {
   return res.data.data;
 };
 
-export const leaveApprovals = async (uuid: string, status: boolean) => {
+export const leaveApprovals = async (uuid: string, status: boolean, note?: string) => {
   const isApprove = status === APPROVAL_INPUT.APPROVED;
 
   const res = await api.put<ApiResponse<Leave[]>>(
@@ -36,6 +36,7 @@ export const leaveApprovals = async (uuid: string, status: boolean) => {
     {
       approve: isApprove,
       status: status,
+      note: note || ""
     },
   );
 

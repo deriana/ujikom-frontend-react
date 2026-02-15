@@ -27,7 +27,8 @@ interface CustomAction<T> {
     | "destructive";
   icon: React.ReactNode;
   permission?: string;
-  onClick: (id: T) => void;
+  onClick: (id: T, note?: string) => void;
+  showNote?: boolean;
 }
 
 interface TableActionsProps<T extends string | number> {
@@ -60,6 +61,7 @@ export default function TableActions<T extends string | number>({
   actions = [],
 }: TableActionsProps<T>) {
   const { isOpen, openModal, closeModal } = useModal();
+  const [note, setNote] = useState("");
 
   // State terpisah untuk menghindari bentrok logic modal
   const [activeStandardAction, setActiveStandardAction] =
@@ -141,8 +143,15 @@ export default function TableActions<T extends string | number>({
       };
       handlers[activeStandardAction]?.(id);
     } else if (activeCustomAction) {
-      activeCustomAction.onClick(id);
+      activeCustomAction.onClick(id, note);
     }
+
+    setNote("");
+    closeModal();
+  };
+
+  const handleCancel = () => {
+    setNote(""); // Reset note saat batal
     closeModal();
   };
 
@@ -246,8 +255,9 @@ export default function TableActions<T extends string | number>({
       )}
 
       {/* Satu Modal untuk Semua Aksi */}
+      {/* Di dalam Modal */}
       {modalInfo && (
-        <Modal isOpen={isOpen} onClose={closeModal} className="max-w-100 m-4">
+        <Modal isOpen={isOpen} onClose={handleCancel} className="max-w-100 m-4">
           <div className="rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-7">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
               {modalInfo.label} Confirmation
@@ -255,12 +265,27 @@ export default function TableActions<T extends string | number>({
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
               Are you sure you want to{" "}
               <strong>{modalInfo.label.toLowerCase()}</strong>{" "}
-              <strong>{dataName || "this item"}</strong>? This action cannot be
-              undone.
+              <strong>{dataName || "this item"}</strong>?
             </p>
 
+            {/* --- BAGIAN INPUT NOTE --- */}
+            {activeCustomAction?.showNote && (
+              <div className="mb-6">
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Notes / Reason (Optional)
+                </label>
+                <textarea
+                  className="w-full p-3 text-sm border border-gray-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  rows={3}
+                  placeholder="Add a reason for this decision..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </div>
+            )}
+
             <div className="flex items-center gap-3 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button onClick={handleCancel} size="sm" variant="info">
                 Cancel
               </Button>
               <Button

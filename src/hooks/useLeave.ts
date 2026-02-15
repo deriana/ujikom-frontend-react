@@ -92,17 +92,17 @@ export const useLeaveApprovals = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    // Menggunakan value dari APPROVAL_STATS untuk pengetikan yang lebih ketat
-    mutationFn: ({ 
-      uuid, 
-      status 
-    }: { 
-      uuid: string; 
+    mutationFn: ({
+      uuid,
+      status,
+      note,
+    }: {
+      uuid: string;
       status: boolean;
-    }) => leaveApprovals(uuid, status),
-    
+      note?: string; // Tambahkan '?' agar opsional
+    }) => leaveApprovals(uuid, status, note),
+
     onSettled: () => {
-      // Pastikan list cuti di-refresh setelah ada perubahan status
       qc.invalidateQueries({ queryKey: ["leaves"] });
     },
   });
