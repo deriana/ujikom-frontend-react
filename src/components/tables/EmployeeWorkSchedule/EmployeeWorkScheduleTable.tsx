@@ -245,6 +245,7 @@ export default function EmployeeWorkScheduleTable() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           baseNamePermission={RESOURCES.EMPLOYEE_WORK_SCHEDULE}
+          isSystemReserve={row.employee?.system_reserve}
         />
       ),
     },
