@@ -139,6 +139,64 @@ export default function WorkScheduleModal({
                   />
                 </div>
               </div>
+
+              {/* Break Time Range */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                    <Clock size={14} /> Break Start
+                  </label>
+                  <Input
+                    type="time"
+                    value={data.break_start_time || ""}
+                    onChange={(e) =>
+                      setData({ ...data, break_start_time: e.target.value })
+                    }
+                    onClick={(e) => e.currentTarget.showPicker()}
+                    className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 cursor-pointer"
+                    trailingIcon={<Clock size={18} />}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                    <Clock size={14} /> Break End
+                  </label>
+                  <Input
+                    type="time"
+                    value={data.break_end_time || ""}
+                    onChange={(e) =>
+                      setData({ ...data, break_end_time: e.target.value })
+                    }
+                    onClick={(e) => e.currentTarget.showPicker()}
+                    className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 cursor-pointer"
+                    trailingIcon={<Clock size={18} />}
+                  />
+                </div>
+              </div>
+
+              {/* Late Tolerance */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                  <Clock size={14} /> Late Tolerance (Minutes)
+                </label>
+                <Input
+                  type="number"
+                  min="0"
+                  // Jika null atau undefined, tampilkan string kosong agar placeholder muncul
+                  value={data.late_tolerance_minutes ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setData({
+                      ...data,
+                      // Jika kosong (""), simpan null. Jangan 0.
+                      late_tolerance_minutes: val === "" ? null : Number(val),
+                    });
+                  }}
+                  placeholder="0"
+                  className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                />
+              </div>
             </div>
 
             {/* Location Requirement Toggle */}
