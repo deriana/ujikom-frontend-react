@@ -1,61 +1,61 @@
 import {
-  useCreateEarlyLeave,
-  useDeleteEarlyLeave,
-  useEarlyLeaveApprovals,
-  useEarlyLeaves,
-  useUpdateEarlyLeave,
-} from "@/hooks/useEarlyLeave";
-import { Column, EarlyLeave, EarlyLeaveInput } from "@/types";
+  useCreateAttendanceRequest,
+  useDeleteAttendanceRequest,
+  useAttendanceRequestApprovals,
+  useAttendanceRequests,
+  useUpdateAttendanceRequest,
+} from "@/hooks/useAttendanceRequest";
+import { Column, AttendanceRequest, AttendanceRequestInput } from "@/types";
 import TableActions from "../BasicTables/TableAction";
 import { RESOURCES } from "@/constants/Resource";
 import { DataTable } from "../BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   APPROVAL_INPUT,
   APPROVAL_LABEL,
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-import { Check, X, Clock } from "lucide-react";
-import { AuthContext } from "@/context/AuthContext";
-import EarlyLeaveModal from "@/pages/EarlyLeaves/Modal";
-import EarlyLeaveShowModal from "@/pages/EarlyLeaves/ShowModal";
+import { Check, X, Calendar } from "lucide-react";
 import { formatDateID } from "@/utils/date";
+import AttendanceRequestModal from "@/pages/AttendanceRequest/Modal";
+import { useShiftTemplates } from "@/hooks/useShiftTemplate";
+import { useWorkSchedules } from "@/hooks/useWorkSchedules";
+import AttendanceRequestShowModal from "@/pages/AttendanceRequest/ShowModal";
 
-export default function EarlyLeavesTable() {
+export default function AttendanceRequestsTable() {
   const {
-    data: earlyLeaves = [],
+    data: attendanceRequests = [],
     isLoading,
     isError,
     error,
-  } = useEarlyLeaves();
-  const { mutateAsync: createEarlyLeave } = useCreateEarlyLeave();
-  const { mutateAsync: updateEarlyLeave } = useUpdateEarlyLeave();
-  const { mutateAsync: deleteEarlyLeave } = useDeleteEarlyLeave();
-  const { mutateAsync: approveEarlyLeave } = useEarlyLeaveApprovals();
-  const { data: employee = [] } = useGetEmployeeForInput();
+  } = useAttendanceRequests();
+  const { mutateAsync: createAttendanceRequest } = useCreateAttendanceRequest();
+  const { mutateAsync: updateAttendanceRequest } = useUpdateAttendanceRequest();
+  const { mutateAsync: deleteAttendanceRequest } = useDeleteAttendanceRequest();
+  const { mutateAsync: approveAttendanceRequest } =
+    useAttendanceRequestApprovals();
+  const {data: shiftTemplates = []} = useShiftTemplates();
+  const {data: workSchedules = []} = useWorkSchedules();
   const { isRole } = useRoleName();
-  const { user } = useContext(AuthContext);
-
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
-      new Set(earlyLeaves.map((l) => l.employee_name)),
+      new Set(attendanceRequests.map((l) => l.employee?.name)),
     ).filter(Boolean);
 
     return [
       { label: "All Employees", value: "all" },
       ...employees.map((name) => ({ label: name, value: name })),
     ];
-  }, [earlyLeaves]);
+  }, [attendanceRequests]);
 
   const statusOptions = useMemo(() => {
     return [
@@ -68,54 +68,58 @@ export default function EarlyLeavesTable() {
   }, []);
 
   const show = useShowModal<string>();
-  const crud = useCrudModalForm<EarlyLeaveInput, FormData>({
-    label: "Early Leave Request",
-    emptyForm: {
-      reason: "",
-      attachment: null,
-      employee_nik: undefined,
+  const crud = useCrudModalForm<AttendanceRequestInput, AttendanceRequestInput>(
+    {
+      label: "Attendance Request",
+      emptyForm: {
+        reason: "",
+        employee_nik: undefined,
+        request_type: "SHIFT",
+        start_date: new Date().toISOString().split("T")[0],
+        end_date: null,
+        shift_template_uuid: undefined,
+        work_schedule_uuid: undefined,
+      },
+      validate: (form) => {
+        if (!form.reason || form.reason.trim().length < 3)
+          return "Reason must be at least 3 characters";
+        if (!form.request_type) return "Request type is required";
+        if (!form.start_date) return "Start date is required";
+        return null;
+      },
+      mapToPayload: (form) => ({
+        ...form,
+        reason: form.reason.trim(),
+      }),
+      createFn: (payload) => createAttendanceRequest(payload),
+      updateFn: (uuid, payload) =>
+        updateAttendanceRequest({ uuid, data: payload }),
     },
-    validate: (form) => {
-      if (!form.reason || form.reason.trim().length < 3)
-        return "Reason must be at least 3 characters";
-      return null;
-    },
-    mapToPayload: (form) => {
-      const formData = new FormData();
-      formData.append("reason", form.reason.trim());
-      if (form.employee_nik) formData.append("employee_nik", form.employee_nik);
-      if (form.attachment instanceof File)
-        formData.append("attachment", form.attachment);
-      return formData;
-    },
-    createFn: (payload) => createEarlyLeave(payload as any),
-    updateFn: (uuid, payload) =>
-      updateEarlyLeave({ uuid, data: payload as any }),
-  });
+  );
 
   const handleEdit = (uuid: string) => {
-    const item = earlyLeaves.find((p) => p.uuid === uuid);
+    const item = attendanceRequests.find((p) => p.uuid === uuid);
     if (!item) return;
 
-    if (
-      !isRole(ROLES.ADMIN) &&
-      !isRole(ROLES.HR) &&
-      item.status !== APPROVAL_STATS.PENDING
-    ) {
-      alert("You cannot edit a processed request.");
+    if (!item.can.update) {
+      alert("You cannot edit this request as it has already been processed.");
       return;
     }
 
     crud.openEdit({
       uuid: item.uuid,
-      employee_nik: item.employee_nik,
+      employee_nik: item.employee.nik,
+      request_type: item.request_type,
       reason: item.reason,
-      attachment: null,
+      start_date: item.start_date,
+      end_date: item.end_date,
+      shift_template_uuid: item.shift_details?.uuid,
+      work_schedule_uuid: item.work_schedule_details?.uuid,
     });
   };
 
   const handleDelete = (uuid: string) =>
-    handleMutation(() => deleteEarlyLeave(uuid), {
+    handleMutation(() => deleteAttendanceRequest(uuid), {
       loading: "Deleting...",
       success: "Deleted successfully",
       error: "Failed to delete",
@@ -130,41 +134,48 @@ export default function EarlyLeavesTable() {
 
     handleMutation(
       () =>
-        approveEarlyLeave({
+        approveAttendanceRequest({
           uuid,
           status,
           note,
         }),
       {
-        loading: isApprove ? "Approving Early leave..." : "Rejecting Early leave...",
-        success: `Early Leave ${isApprove ? "approved" : "rejected"} successfully`,
-        error: `Failed to ${isApprove ? "approve" : "reject"} Early leave`,
+        loading: isApprove
+          ? "Approving Attendance Request..."
+          : "Rejecting Attendance Request...",
+        success: `Attendance Request ${isApprove ? "approved" : "rejected"} successfully`,
+        error: `Failed to ${isApprove ? "approve" : "reject"} Attendance Request`,
       },
     );
   };
 
-  const columns: Column<EarlyLeave>[] = [
+  const columns: Column<AttendanceRequest>[] = [
     {
       header: "Employee",
       render: (row) => (
         <div className="flex flex-col">
           <span className="font-semibold text-gray-900 dark:text-gray-100">
-            {row.employee_name}
+            {row.employee?.name} {/* Sesuai nested object employee */}
           </span>
-          <span className="text-xs text-gray-500">NIK: {row.employee_nik}</span>
+          <span className="text-xs text-gray-500">NIK: {row.employee?.nik}</span>
         </div>
       ),
     },
     {
-      header: "Early Leave Info",
+      header: "Request Info", // Ubah dari Attendance Request Info
       render: (row) => (
         <div className="text-sm">
           <div className="font-medium text-gray-700 dark:text-gray-200">
-            {formatDateID(row.date)}
+            {row.request_type === "SHIFT" ? "Shift Change" : "Work Mode Change"}
           </div>
-          <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400 text-xs font-bold">
-            <Clock size={12} />
-            {row.minutes_early} Minutes Early
+          <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-bold">
+            <Calendar size={12} />
+            {formatDateID(row.start_date)}
+            {row.end_date && ` - ${formatDateID(row.end_date)}`}
+          </div>
+          {/* Menampilkan detail shift atau jadwal jika ada */}
+          <div className="text-[10px] text-gray-500 mt-0.5">
+            {row.shift_details?.name || row.work_schedule_details?.name}
           </div>
         </div>
       ),
@@ -180,7 +191,7 @@ export default function EarlyLeavesTable() {
         </span>
       ),
     },
-    {
+     {
       header: "Status",
       render: (row) => {
         const statusConfig = {
@@ -216,9 +227,9 @@ export default function EarlyLeavesTable() {
     //   render: (row) => {
     //     return (
     //       <TableActions
-    //         id={row.uuid || ""}
-    //         dataName={`Early Leave - ${row.employee_name}`}
-    //         baseNamePermission={RESOURCES.EARLY_LEAVE}
+    //         id={row.uuid}
+    //         dataName={`Request - ${row.employee.name}`}
+    //         baseNamePermission={RESOURCES.ATTENDANCE_REQUEST} 
     //         actions={
     //           row.can?.approve
     //             ? [
@@ -258,11 +269,11 @@ export default function EarlyLeavesTable() {
       render: (row) => (
         <TableActions
           id={row.uuid}
-          dataName={row.employee_name}
+          dataName={row.employee?.name}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onShow={() => show.open(row.uuid)}
-          baseNamePermission={RESOURCES.EARLY_LEAVE}
+          baseNamePermission={RESOURCES.ATTENDANCE_REQUEST}
           can={row.can}
         />
       ),
@@ -280,13 +291,13 @@ export default function EarlyLeavesTable() {
   return (
     <>
       <DataTable
-        tableTitle="Early Leave Requests"
-        data={earlyLeaves}
+        tableTitle="Attendance Requests"
+        data={attendanceRequests}
         columns={columns}
-        searchableKeys={["employee_name", "employee_nik"]}
+        searchableKeys={["employee.name", "employee.nik"]}
         loading={isLoading}
         handleCreate={crud.openCreate}
-        label="Early Leave"
+        label="Attendance Request"
         baseNamePermission={RESOURCES.EARLY_LEAVE}
         newFilterComponent={
           <>
@@ -308,18 +319,19 @@ export default function EarlyLeavesTable() {
         }}
       />
 
-      <EarlyLeaveModal
+      <AttendanceRequestModal
         isOpen={crud.isOpen}
         onClose={crud.close}
-        earlyLeaveData={crud.form}
-        setEarlyLeaveData={crud.setForm}
+        attendanceRequestData={crud.form}
+        setAttendanceRequestData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        employees={employee}
+        shiftTemplates={shiftTemplates}
+        workSchedules={workSchedules}
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 
-      <EarlyLeaveShowModal
+      <AttendanceRequestShowModal
         uuid={show.showId}
         isOpen={show.isOpen}
         onClose={show.close}

@@ -8,6 +8,11 @@ export const getLeave = async () => {
   return res.data.data;
 };
 
+export const getLeaveApprovals = async () => {
+  const res = await api.get<ApiResponse<Leave[]>>("/approvals/leaves");
+  return res.data.data;
+}
+
 export const getLeaveByUuid = async (uuid: string) => {
   const res = await api.get<ApiResponse<LeaveDetail>>(`/leaves/${uuid}`);
   return res.data.data;
@@ -30,6 +35,8 @@ export const deleteLeave = async (uuid: string) => {
 
 export const leaveApprovals = async (uuid: string, status: boolean, note?: string) => {
   const isApprove = status === APPROVAL_INPUT.APPROVED;
+
+  console.log(isApprove)
 
   const res = await api.put<ApiResponse<Leave[]>>(
     `/leaves/approvals/${uuid}/approve`,

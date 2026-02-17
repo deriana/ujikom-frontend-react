@@ -1,0 +1,236 @@
+import {
+  useAttendanceRequestApprovals,
+  useAttendanceRequestApprovalsList,
+} from "@/hooks/useAttendanceRequest";
+import { Column, AttendanceRequest } from "@/types";
+import TableActions from "../BasicTables/TableAction";
+import { RESOURCES } from "@/constants/Resource";
+import { DataTable } from "../BasicTables/DataTable";
+import Badge from "@/components/ui/badge/Badge";
+import { useShowModal } from "@/hooks/useCrudForm";
+import { handleMutation } from "@/utils/handleMutation";
+import { useMemo, useState } from "react";
+import { APPROVAL_INPUT, APPROVAL_STATS } from "@/constants/Approval";
+import FilterDropdown from "@/components/FilterDropdown";
+import { Check, X, Calendar } from "lucide-react";
+import { formatDateID } from "@/utils/date";
+import AttendanceRequestShowModal from "@/pages/AttendanceRequest/ShowModal";
+
+export default function AttendanceRequestsApprovalTable() {
+  const {
+    data: attendanceRequests = [],
+    isLoading,
+    isError,
+    error,
+  } = useAttendanceRequestApprovalsList();
+  const { mutateAsync: approveAttendanceRequest } =
+    useAttendanceRequestApprovals();
+  const [employeeFilter, setEmployeeFilter] = useState("all");
+
+  const employeeOptions = useMemo(() => {
+    const employees = Array.from(
+      new Set(attendanceRequests.map((l) => l.employee?.name)),
+    ).filter(Boolean);
+
+    return [
+      { label: "All Employees", value: "all" },
+      ...employees.map((name) => ({ label: name, value: name })),
+    ];
+  }, [attendanceRequests]);
+
+  const show = useShowModal<string>();
+  const handleApprovalAction = (
+    uuid: string,
+    status: boolean,
+    note?: string,
+  ) => {
+    const isApprove = status === APPROVAL_INPUT.APPROVED;
+
+    handleMutation(
+      () =>
+        approveAttendanceRequest({
+          uuid,
+          status,
+          note,
+        }),
+      {
+        loading: isApprove
+          ? "Approving Attendance Request..."
+          : "Rejecting Attendance Request...",
+        success: `Attendance Request ${isApprove ? "approved" : "rejected"} successfully`,
+        error: `Failed to ${isApprove ? "approve" : "reject"} Attendance Request`,
+      },
+    );
+  };
+
+  const columns: Column<AttendanceRequest>[] = [
+    {
+      header: "Employee",
+      render: (row) => (
+        <div className="flex flex-col">
+          <span className="font-semibold text-gray-900 dark:text-gray-100">
+            {row.employee?.name} {/* Sesuai nested object employee */}
+          </span>
+          <span className="text-xs text-gray-500">
+            NIK: {row.employee?.nik}
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: "Request Info", // Ubah dari Attendance Request Info
+      render: (row) => (
+        <div className="text-sm">
+          <div className="font-medium text-gray-700 dark:text-gray-200">
+            {row.request_type === "SHIFT" ? "Shift Change" : "Work Mode Change"}
+          </div>
+          <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-bold">
+            <Calendar size={12} />
+            {formatDateID(row.start_date)}
+            {row.end_date && ` - ${formatDateID(row.end_date)}`}
+          </div>
+          {/* Menampilkan detail shift atau jadwal jika ada */}
+          <div className="text-[10px] text-gray-500 mt-0.5">
+            {row.shift_details?.name || row.work_schedule_details?.name}
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Reason",
+      render: (row) => (
+        <span
+          className="text-sm text-gray-600 dark:text-gray-300 truncate max-w-45 block italic"
+          title={row.reason}
+        >
+          "{row.reason}"
+        </span>
+      ),
+    },
+    {
+      header: "Status",
+      render: (row) => {
+        const statusConfig = {
+          [APPROVAL_STATS.PENDING]: {
+            label: "Pending",
+            color: "warning",
+            dot: "bg-amber-500",
+          },
+          [APPROVAL_STATS.APPROVED]: {
+            label: "Approved",
+            color: "success",
+            dot: "bg-emerald-500",
+          },
+          [APPROVAL_STATS.REJECTED]: {
+            label: "Rejected",
+            color: "error",
+            dot: "bg-rose-500",
+          },
+        };
+        const status =
+          statusConfig[row.status as keyof typeof statusConfig] ||
+          statusConfig[0];
+        return (
+          <Badge size="sm" color={status.color as any} variant="light">
+            <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${status.dot}`} />
+            {status.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      header: "Approval",
+      render: (row) => {
+        return (
+          <TableActions
+            id={row.uuid}
+            dataName={`Request - ${row.employee.name}`}
+            baseNamePermission={RESOURCES.ATTENDANCE_REQUEST}
+            actions={
+              row.can?.approve
+                ? [
+                    {
+                      label: "Approve",
+                      variant: "success",
+                      icon: <Check size={16} />,
+                      showNote: true,
+                      onClick: (uuid, note) =>
+                        handleApprovalAction(
+                          uuid,
+                          APPROVAL_INPUT.APPROVED,
+                          note,
+                        ),
+                    },
+                    {
+                      label: "Reject",
+                      variant: "danger",
+                      icon: <X size={16} />,
+                      showNote: true,
+                      onClick: (uuid, note) =>
+                        handleApprovalAction(
+                          uuid,
+                          APPROVAL_INPUT.REJECTED,
+                          note,
+                        ),
+                    },
+                  ]
+                : []
+            }
+          />
+        );
+      },
+    },
+    {
+      header: "Detail",
+      render: (row) => (
+        <TableActions
+          id={row.uuid}
+          dataName={row.employee?.name}
+          onShow={() => show.open(row.uuid)}
+          baseNamePermission={RESOURCES.LEAVE}
+          can={row.can}
+        />
+      ),
+    },
+  ];
+
+  if (isError) {
+    return (
+      <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200">
+        <strong>Error:</strong> {(error as Error).message}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <DataTable
+        tableTitle="Attendance Requests"
+        data={attendanceRequests}
+        columns={columns}
+        searchableKeys={["employee.name", "employee.nik"]}
+        loading={isLoading}
+        label="Attendance Request"
+        baseNamePermission={RESOURCES.EARLY_LEAVE}
+        newFilterComponent={
+          <>
+            <FilterDropdown
+              value={employeeFilter}
+              options={employeeOptions}
+              onChange={setEmployeeFilter}
+            />
+          </>
+        }
+        extraFilters={{
+          employee_name: employeeFilter,
+        }}
+      />
+
+      <AttendanceRequestShowModal
+        uuid={show.showId}
+        isOpen={show.isOpen}
+        onClose={show.close}
+      />
+    </>
+  );
+}

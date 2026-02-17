@@ -13,5 +13,6 @@ export const RESOURCES = {
   EMPLOYEE_SHIFT: "employee-shift",
   LEAVE_TYPES: "leave-type",
   LEAVE: "leave",
-  EARLY_LEAVE: "early-leave"
+  EARLY_LEAVE: "early-leave",
+  ATTENDANCE_REQUEST: "attendance-request"
 } as const;

@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getEarlyLeave,
+  earlyLeaveApprovalsList,
   createEarlyLeave,
   updateEarlyLeave,
   deleteEarlyLeave,
@@ -16,6 +17,14 @@ export const useEarlyLeaves = () => {
     staleTime: 1000 * 60 * 5,
   });
 };
+
+export const useEarlyLeaveApprovalsList = () => {
+  return useQuery({
+    queryKey: ["earlyLeaves", "approvals"],
+    queryFn: earlyLeaveApprovalsList,
+    staleTime: 1000 * 60 * 5,
+  });
+}
 
 export const useEarlyLeaveByUuid = (uuid: string) => {
   return useQuery({

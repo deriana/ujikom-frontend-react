@@ -64,19 +64,46 @@ export const navItems: NavItem[] = [
     name: "Leaves",
     path: "/leaves",
     icon: <File />,
-    permission: buildPermission(
-      RESOURCES.LEAVE,
-      PERMISSIONS.BASE.INDEX,
-    ),
+    permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Early Leaves",
     path: "/early-leaves",
     icon: <File />,
+    permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Attendance Requests",
+    path: "/attendance-requests",
+    icon: <File />,
     permission: buildPermission(
-      RESOURCES.LEAVE,
+      RESOURCES.ATTENDANCE_REQUEST,
       PERMISSIONS.BASE.INDEX,
     ),
+  },
+  {
+    name: "Approval",
+    icon: <File />,
+    subItems: [
+      {
+        name: "Leave Approval",
+        path: "/approval/leave",
+        pro: false,
+        permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Early Leave Approval",
+        path: "/approval/early-leave",
+        pro: false,
+        permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Attendance Request Approval",
+        path: "/approval/attendance-request",
+        pro: false,
+        permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.APPROVE)
+      },
+    ],
   },
   {
     name: "Master Data",

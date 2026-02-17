@@ -1,41 +1,30 @@
 import {
-  useCreateLeave,
-  useDeleteLeave,
-  // useLeaveApprovals,
-  useLeaves,
-  useUpdateLeave,
+  useLeaveApprovals,
+  useLeaveApprovalsList,
 } from "@/hooks/useLeave";
-import { Column, Leave, LeaveInput } from "@/types";
 import TableActions from "../BasicTables/TableAction";
 import { RESOURCES } from "@/constants/Resource";
 import { DataTable } from "../BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
-import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
-import LeaveModal from "@/pages/Leave/Modal";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
-import { useLeaveTypes } from "@/hooks/useLeaveType";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
 import { useMemo, useState } from "react";
 import {
-  // APPROVAL_INPUT,
+  APPROVAL_INPUT,
   APPROVAL_LABEL,
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-// import { Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { formatDateID } from "@/utils/date";
+import { useShowModal } from "@/hooks/useShowModal";
+import { Column, Leave } from "@/types";
 
-export default function LeavesTable() {
-  const { data: leaves = [], isLoading, isError, error } = useLeaves();
-  const { mutateAsync: createLeave } = useCreateLeave();
-  const { mutateAsync: updateLeave } = useUpdateLeave();
-  const { mutateAsync: deleteLeave } = useDeleteLeave();
-  // const { mutateAsync: approveLeave } = useLeaveApprovals();
-  const { data: employee = [] } = useGetEmployeeForInput();
-  const { data: leaveTypes = [] } = useLeaveTypes();
+export default function LeavesApprovalTable() {
+  const { data: leaves = [], isLoading, isError, error } = useLeaveApprovalsList();
+  const { mutateAsync: approveLeave } = useLeaveApprovals();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
@@ -75,115 +64,28 @@ export default function LeavesTable() {
   }, []);
 
   const show = useShowModal<string>();
-  const crud = useCrudModalForm<LeaveInput, FormData>({
-    label: "Leave Request",
-    emptyForm: {
-      leave_type_uuid: "",
-      date_start: "",
-      date_end: "",
-      reason: "",
-      is_half_day: false,
-      attachment: null,
-      employee_nik: undefined,
-    },
 
-    validate: (form) => {
-      if (!form.leave_type_uuid) return "Leave type is required";
-      if (!form.date_start) return "Start date is required";
-      if (!form.date_end) return "End date is required";
-      if (new Date(form.date_start) > new Date(form.date_end))
-        return "Start date cannot be after end date";
-      if (!form.reason || form.reason.trim().length < 3)
-        return "Reason must be at least 3 characters";
-      return null;
-    },
+  const handleApprovalAction = (
+    uuid: string,
+    status: boolean,
+    note?: string,
+  ) => {
+    const isApprove = status === APPROVAL_INPUT.APPROVED;
 
-    mapToPayload: (form) => {
-      const formData = new FormData();
-      formData.append("leave_type_uuid", form.leave_type_uuid);
-      formData.append("date_start", form.date_start);
-      formData.append("date_end", form.date_end);
-      formData.append("reason", form.reason.trim());
-      formData.append("is_half_day", form.is_half_day ? "1" : "0");
-
-      if (form.employee_nik) {
-        formData.append("employee_nik", form.employee_nik);
-      }
-
-      if (form.attachment instanceof File) {
-        formData.append("attachment", form.attachment);
-      }
-
-      return formData;
-    },
-
-    createFn: (payload) => createLeave(payload as any),
-    updateFn: (uuid, payload) => updateLeave({ uuid, data: payload as any }),
-  });
-
-  const handleCreate = () => crud.openCreate();
-
-  const handleEdit = (uuid: string) => {
-    const leave = leaves.find((p) => p.uuid === uuid);
-    if (!leave) return;
-
-    if (
-      !isRole(ROLES.ADMIN) &&
-      !isRole(ROLES.HR) &&
-      leave.approval_status !== 0
-    ) {
-      alert("You cannot edit a processed leave request.");
-      return;
-    }
-
-    const editPayload = {
-      uuid: leave.uuid,
-      leave_type_uuid: leave.leave_type_uuid,
-      date_start: leave.date_start,
-      date_end: leave.date_end,
-      reason: leave.reason,
-      attachment: leave.attachment
-        ? {
-            exists: true,
-            filename: leave.attachment.filename,
-            download_url: leave.attachment.download_url,
-          }
-        : null,
-      is_half_day: leave.is_half_day,
-      employee_nik: leave.employee_nik.toString(),
-    };
-
-    crud.openEdit(editPayload);
+    handleMutation(
+      () =>
+        approveLeave({
+          uuid,
+          status,
+          note,
+        }),
+      {
+        loading: isApprove ? "Approving leave..." : "Rejecting leave...",
+        success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
+        error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
+      },
+    );
   };
-
-  const handleDelete = (uuid: string) =>
-    handleMutation(() => deleteLeave(uuid), {
-      loading: "Deleting leave...",
-      success: "Leave deleted successfully",
-      error: "Failed to delete leave",
-    });
-
-  // const handleApprovalAction = (
-  //   uuid: string,
-  //   status: boolean,
-  //   note?: string,
-  // ) => {
-  //   const isApprove = status === APPROVAL_INPUT.APPROVED;
-
-  //   handleMutation(
-  //     () =>
-  //       approveLeave({
-  //         uuid,
-  //         status,
-  //         note,
-  //       }),
-  //     {
-  //       loading: isApprove ? "Approving leave..." : "Rejecting leave...",
-  //       success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
-  //       error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
-  //     },
-  //   );
-  // };
 
   const columns: Column<Leave>[] = [
     {
@@ -279,62 +181,60 @@ export default function LeavesTable() {
         );
       },
     },
-    // {
-    //   header: "Approval",
-    //   render: (row) => {
-    //     return (
-    //       <TableActions
-    //         id={row.current_approval_uuid || ""}
-    //         dataName={`Leave - ${row.employee_name}`}
-    //         baseNamePermission={RESOURCES.LEAVE}
-    //         actions={
-    //           row.can?.approve
-    //             ? [
-    //                 {
-    //                   label: "Approve",
-    //                   variant: "success",
-    //                   icon: <Check size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.APPROVED,
-    //                       note,
-    //                     ),
-    //                 },
-    //                 {
-    //                   label: "Reject",
-    //                   variant: "danger",
-    //                   icon: <X size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.REJECTED,
-    //                       note,
-    //                     ),
-    //                 },
-    //               ]
-    //             : []
-    //         }
-    //       />
-    //     );
-    //   },
-    // },
     {
-      header: "Action",
+      header: "Approval",
+      render: (row) => {
+        return (
+          <TableActions
+            id={row.current_approval_uuid || ""}
+            dataName={`Leave - ${row.employee_name}`}
+            baseNamePermission={RESOURCES.LEAVE}
+            actions={
+              row.can?.approve
+                ? [
+                    {
+                      label: "Approve",
+                      variant: "success",
+                      icon: <Check size={16} />,
+                      showNote: true,
+                      onClick: (uuid, note) =>
+                        handleApprovalAction(
+                          uuid,
+                          APPROVAL_INPUT.APPROVED,
+                          note,
+                        ),
+                    },
+                    {
+                      label: "Reject",
+                      variant: "danger",
+                      icon: <X size={16} />,
+                      showNote: true,
+                      onClick: (uuid, note) =>
+                        handleApprovalAction(
+                          uuid,
+                          APPROVAL_INPUT.REJECTED,
+                          note,
+                        ),
+                    },
+                  ]
+                : []
+            }
+          />
+        );
+      },
+    },
+    {
+      header: "Detail",
       render: (row) => (
         <TableActions
           id={row.uuid}
           dataName={row.employee_name}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
           onShow={() => show.open(row.uuid)}
           baseNamePermission={RESOURCES.LEAVE}
           can={row.can}
         />
       ),
-    },
+    }
   ];
   if (isError) {
     return (
@@ -352,7 +252,6 @@ export default function LeavesTable() {
         columns={columns}
         searchableKeys={["reason", "employee_name", "leave_type"]}
         loading={isLoading}
-        handleCreate={handleCreate}
         label="Leave Request"
         baseNamePermission={RESOURCES.LEAVE}
         newFilterComponent={
@@ -379,17 +278,6 @@ export default function LeavesTable() {
           leave_type: leaveTypeFilter,
           approval_status: statusFilter,
         }}
-      />
-      <LeaveModal
-        isOpen={crud.isOpen}
-        onClose={crud.close}
-        leaveData={crud.form}
-        setLeaveData={crud.setForm}
-        onSubmit={crud.submit}
-        isLoading={crud.loading}
-        employees={employee}
-        leaveTypes={leaveTypes}
-        isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 
       <LeaveShowModal

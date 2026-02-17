@@ -6,6 +6,7 @@ import {
   deleteLeave,
   leaveApprovals,
   getLeaveByUuid,
+  getLeaveApprovals,
 } from "@/api/leave.api";
 import { LeaveInput } from "@/types/leave.types";
 
@@ -16,6 +17,14 @@ export const useLeaves = () => {
     staleTime: 1000 * 60 * 5,
   });
 };
+
+export const useLeaveApprovalsList = () => {
+  return useQuery({
+    queryKey: ["leaves", "approvals"],
+    queryFn: getLeaveApprovals,
+    staleTime: 1000 * 60 * 5,
+  });
+}
 
 export const useLeaveByUuid = (uuid: string) => {
   return useQuery({

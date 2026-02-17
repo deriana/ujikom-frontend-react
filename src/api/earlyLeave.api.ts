@@ -1,4 +1,8 @@
-import { EarlyLeave, EarlyLeaveDetail, EarlyLeaveInput } from "@/types/earlyLeave.types";
+import {
+  EarlyLeave,
+  EarlyLeaveDetail,
+  EarlyLeaveInput,
+} from "@/types/earlyLeave.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
 import { APPROVAL_INPUT } from "@/constants/Approval";
@@ -9,12 +13,17 @@ export const getEarlyLeave = async () => {
 };
 
 export const getEarlyLeaveByUuid = async (uuid: string) => {
-  const res = await api.get<ApiResponse<EarlyLeaveDetail>>(`/early_leaves/${uuid}`);
+  const res = await api.get<ApiResponse<EarlyLeaveDetail>>(
+    `/early_leaves/${uuid}`,
+  );
   return res.data.data;
 };
 
 export const createEarlyLeave = async (payload: EarlyLeaveInput) => {
-  const res = await api.post<ApiResponse<EarlyLeave[]>>("/early_leaves", payload);
+  const res = await api.post<ApiResponse<EarlyLeave[]>>(
+    "/early_leaves",
+    payload,
+  );
   return res.data.data;
 };
 
@@ -24,11 +33,17 @@ export const updateEarlyLeave = async (uuid: string, payload: FormData) => {
 };
 
 export const deleteEarlyLeave = async (uuid: string) => {
-  const res = await api.delete<ApiResponse<EarlyLeave[]>>(`/early_leaves/${uuid}`);
+  const res = await api.delete<ApiResponse<EarlyLeave[]>>(
+    `/early_leaves/${uuid}`,
+  );
   return res.data.data;
 };
 
-export const earlyLeaveApprovals = async (uuid: string, status: boolean, note?: string) => {
+export const earlyLeaveApprovals = async (
+  uuid: string,
+  status: boolean,
+  note?: string,
+) => {
   const isApprove = status === APPROVAL_INPUT.APPROVED;
 
   const res = await api.put<ApiResponse<EarlyLeave[]>>(
@@ -36,7 +51,7 @@ export const earlyLeaveApprovals = async (uuid: string, status: boolean, note?: 
     {
       approve: isApprove,
       status: status,
-      note: note || ""
+      note: note || "",
     },
   );
 
@@ -44,9 +59,12 @@ export const earlyLeaveApprovals = async (uuid: string, status: boolean, note?: 
 };
 
 export const downloadAttachment = async (filename: string) => {
-  const response = await api.get(`/early_leaves/download-attachment/${filename}`, {
-    responseType: "blob",
-  });
+  const response = await api.get(
+    `/early_leaves/download-attachment/${filename}`,
+    {
+      responseType: "blob",
+    },
+  );
 
   const url = window.URL.createObjectURL(new Blob([response.data]));
 
@@ -59,4 +77,11 @@ export const downloadAttachment = async (filename: string) => {
   link.click();
   link.remove();
   window.URL.revokeObjectURL(url);
+};
+
+export const earlyLeaveApprovalsList = async () => {
+  const response = await api.get<ApiResponse<EarlyLeave[]>>(
+    "/approvals/early_leaves",
+  );
+  return response.data.data;
 };
