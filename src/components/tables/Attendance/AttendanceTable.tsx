@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Column } from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
-import { useAttendances } from "@/hooks/useAttendance";
+import { useAttendances, useExportAttendance } from "@/hooks/useAttendance";
 import { Attendance } from "@/types/attendance.types";
 import DatePicker from "@/components/form/date-picker";
 import TableActions from "../BasicTables/TableAction";
@@ -15,6 +15,7 @@ import {
 } from "@/constants/Attendance";
 import FilterDropdown from "@/components/FilterDropdown";
 import { formatDateID } from "@/utils/date";
+import { handleMutation } from "@/utils/handleMutation";
 
 export default function AttendanceTable() {
   const today = new Date().toISOString().split("T")[0];
@@ -37,9 +38,24 @@ export default function AttendanceTable() {
     end_date: endDate,
   });
 
+  const { mutateAsync: exportAttendance } = useExportAttendance();
+
   const handleShow = (id: number) => {
     show.open(id);
   };
+
+  const handleExport = () =>
+    handleMutation(
+      () =>
+        exportAttendance({
+          start_date: startDate,
+          end_date: endDate,
+        }),
+      {
+      loading: "Exporting...",
+      success: "Export successfully",
+      error: "Failed to export",
+    });
 
   // Generate options for employee filter dynamically
   const employeeOptions = useMemo(() => {
@@ -239,6 +255,7 @@ export default function AttendanceTable() {
         searchableKeys={["employee.name", "employee.nik", "status"]}
         loading={isLoading}
         label="Attendance"
+        handleExport={handleExport}
         newFilterComponent={
           <>
             {StartDateFilter}
