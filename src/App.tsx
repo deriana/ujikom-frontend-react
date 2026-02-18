@@ -66,6 +66,7 @@ import EarlyLeaveApproval from "./pages/Approval/EarlyLeaveApproval";
 import AttendanceRequestApproval from "./pages/Approval/AttendanceRequestApproval";
 import Overtime from "./pages/Overtime/Index";
 import OvertimeApproval from "./pages/Approval/OvertimeApproval";
+import Payroll from "./pages/Payroll/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -210,6 +211,12 @@ export default function App() {
       path: "/overtimes",
       element: <Overtime />,
       resource: RESOURCES.OVERTIME,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/payroll",
+      element: <Payroll />,
+      resource: RESOURCES.PAYROLL,
       permission: PERMISSIONS.BASE.INDEX,
     },
     {

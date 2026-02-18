@@ -16,4 +16,5 @@ export const RESOURCES = {
   EARLY_LEAVE: "early-leave",
   ATTENDANCE_REQUEST: "attendance-request",
   OVERTIME: "overtime",
+  PAYROLL: "payroll"
 } as const;

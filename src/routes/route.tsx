@@ -12,7 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
-import { Clock10Icon, Database, File, Settings, Table } from "lucide-react";
+import { Clock10Icon, Database, DollarSign, File, Settings, Table } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -89,6 +89,12 @@ export const navItems: NavItem[] = [
       RESOURCES.OVERTIME,
       PERMISSIONS.BASE.INDEX,
     ),
+  },
+  {
+    name: "Payroll",
+    path: "/payroll",
+    icon: <DollarSign />,
+    permission: buildPermission(RESOURCES.PAYROLL, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Approval",

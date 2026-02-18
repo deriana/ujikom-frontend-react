@@ -6,8 +6,8 @@ interface CrudConfig<TForm, TPayload> {
   emptyForm: TForm;
   mapToPayload: (form: TForm) => TPayload;
   validate?: (form: TForm) => string | null;
-  createFn: (payload: TPayload) => Promise<any>;
-  updateFn: (id: string, payload: TPayload) => Promise<any>;
+  createFn?: (payload: TPayload) => Promise<any>;
+  updateFn?: (id: string, payload: TPayload) => Promise<any>;
 }
 
 export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
@@ -51,7 +51,7 @@ export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
 
     setLoading(true);
     try {
-      if (isEdit && form.uuid) {
+      if (isEdit && form.uuid && updateFn) {
         await handleMutation(
           () => updateFn(form.uuid!, payload),
           {
@@ -60,7 +60,7 @@ export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
             error: `Failed to update ${label}`,
           }
         );
-      } else {
+      } else if (!isEdit && createFn) {
         await handleMutation(
           () => createFn(payload),
           {

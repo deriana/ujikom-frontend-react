@@ -1,6 +1,6 @@
 import {
-    useOvertimeApprovals,
-    useOvertimeApprovalsList,
+  useOvertimeApprovals,
+  useOvertimeApprovalsList,
 } from "@/hooks/useOvertime";
 import { Column, Overtime } from "@/types";
 import TableActions from "../BasicTables/TableAction";
@@ -17,8 +17,13 @@ import OvertimeShowModal from "@/pages/Overtime/ShowModal";
 import { handleMutation } from "@/utils/handleMutation";
 
 export default function OvertimesApprovalTable() {
-  const { data: overtimes = [], isLoading, isError, error } = useOvertimeApprovalsList();
-  const {mutateAsync: approveOvertime } = useOvertimeApprovals()
+  const {
+    data: overtimes = [],
+    isLoading,
+    isError,
+    error,
+  } = useOvertimeApprovalsList();
+  const { mutateAsync: approveOvertime } = useOvertimeApprovals();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -44,29 +49,28 @@ export default function OvertimesApprovalTable() {
   );
 
   const show = useShowModal<string>();
-    const handleApprovalAction = (
-      uuid: string,
-      status: boolean,
-      note?: string,
-    ) => {
-      const isApprove = status === APPROVAL_INPUT.APPROVED;
   
-      handleMutation(
-        () =>
-          approveOvertime({
-            uuid,
-            status,
-            note,
-          }),
-        {
-          loading: isApprove
-            ? "Approving Overtime..."
-            : "Rejecting Overtime...",
-          success: `Overtime ${isApprove ? "approved" : "rejected"} successfully`,
-          error: `Failed to ${isApprove ? "approve" : "reject"} Overtime`,
-        },
-      );
-    };
+  const handleApprovalAction = (
+    uuid: string,
+    status: boolean,
+    note?: string,
+  ) => {
+    const isApprove = status === APPROVAL_INPUT.APPROVED;
+
+    handleMutation(
+      () =>
+        approveOvertime({
+          uuid,
+          status,
+          note,
+        }),
+      {
+        loading: isApprove ? "Approving Overtime..." : "Rejecting Overtime...",
+        success: `Overtime ${isApprove ? "approved" : "rejected"} successfully`,
+        error: `Failed to ${isApprove ? "approve" : "reject"} Overtime`,
+      },
+    );
+  };
 
   const columns: Column<Overtime>[] = [
     {
@@ -167,7 +171,7 @@ export default function OvertimesApprovalTable() {
         );
       },
     },
-       {
+    {
       header: "Approval",
       render: (row) => {
         return (
@@ -261,7 +265,11 @@ export default function OvertimesApprovalTable() {
         }}
       />
 
-      <OvertimeShowModal uuid={show.showId} isOpen={show.isOpen} onClose={show.close} />
+      <OvertimeShowModal
+        uuid={show.showId}
+        isOpen={show.isOpen}
+        onClose={show.close}
+      />
     </>
   );
 }

@@ -13,6 +13,9 @@ export const PERMISSIONS = {
     UNARCHIVE: "unarchive",
     APPROVE: "approve"
   },
+  PAYROLL: {
+    pay: "pay"
+  }
 } as const;
 
 export const buildPermission = (
