@@ -4,7 +4,8 @@ import {
   getPayrollByUuid,
   updatePayroll,
   finalizePayroll,
-  voidPayroll
+  voidPayroll,
+  downloadPayroll
 } from "@/api/payroll.api";
 import { PayrollUpdateInput } from "@/types/payroll.types";
 
@@ -26,6 +27,12 @@ export const useFinalizePayroll = () => {
     },
   });
 };
+
+export const useDownloadPayroll = () => {
+  return useMutation({
+    mutationFn: (uuid: string) => downloadPayroll(uuid),
+  });
+}
 
 export const useVoidPayroll = () => {
   const qc = useQueryClient();

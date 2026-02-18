@@ -34,6 +34,24 @@ export const finalizePayroll = async (uuid: string) => {
   return res.data.data;
 };
 
+export const downloadPayroll = async (uuid: string) => {
+  const response = await api.get(`/payrolls/${uuid}/download`, {
+    responseType: "blob",
+  });
+
+  const blob = new Blob([response.data], { type: "application/pdf" });
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", `payroll-${uuid}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
 export const voidPayroll = async (uuid: string, note: string) => {
   const res = await api.put<ApiResponse<Payroll[]>>(`/payrolls/${uuid}/void`, {
     note,

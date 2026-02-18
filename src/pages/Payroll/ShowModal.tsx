@@ -11,9 +11,11 @@ import {
   FileText,
   DollarSign,
 } from "lucide-react";
-import { usePayrollByUuid } from "@/hooks/usePayroll";
+import { useDownloadPayroll, usePayrollByUuid } from "@/hooks/usePayroll";
 import { formatRupiah } from "@/utils/currency";
 import { PayrollStatusEnum } from "@/types/payroll.types";
+import Button from "@/components/ui/button/Button";
+import { handleMutation } from "@/utils/handleMutation";
 
 interface PayrollShowModalProps {
   uuid: string | null;
@@ -32,6 +34,17 @@ export default function PayrollShowModal({
     isError,
     error,
   } = usePayrollByUuid(uuid as string);
+
+  const {mutateAsync: downloadPayroll} = useDownloadPayroll()
+
+  const handleDownload = (uuid: string) => {
+    handleMutation(() => downloadPayroll(uuid), {
+      loading: "Downloading payroll...",
+      success: "Payroll downloaded successfully",
+      error: "Failed to download payroll"
+    })
+  }
+
 
   if (!uuid) return null;
 
@@ -282,18 +295,18 @@ export default function PayrollShowModal({
 
         {/* FOOTER ACTIONS */}
         <div className="mt-10 flex gap-4">
-          <button
+          <Button
             onClick={onClose}
             className="flex-1 py-4 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
           >
             Selesai
-          </button>
-          <button
+          </Button>
+          <Button
             className="px-8 py-4 rounded-2xl border-2 border-gray-200 dark:border-gray-800 font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
-            onClick={() => window.print()}
+            onClick={() => handleDownload(uuid)}
           >
-            Cetak Slip
-          </button>
+            Download PDF
+          </Button>
         </div>
       </div>
     </Modal>
