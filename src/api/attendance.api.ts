@@ -32,4 +32,9 @@ export const getAttendance = async (params?: { start_date?: string; end_date?: s
 export const getDetailAttendance = async (id: number) => {
   const res = await api.get<ApiResponse<Attendance>>(`/attendances/${id}`);
   return res.data.data;
-};  
+};
+
+export const exportAttendances = async (params: { start_date?: string; end_date?: string }) => {
+  const res = await api.get("/attendances/export", { params, responseType: "blob" });
+  return res;
+};

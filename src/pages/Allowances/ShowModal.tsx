@@ -4,6 +4,7 @@ import Badge from "@/components/ui/badge/Badge";
 import Currency from "@/components/ui/currency/Currency";
 import { allowanceTypeMap } from "@/constants/Allowance";
 import { Calendar, User, Briefcase, Info, Clock } from "lucide-react"; // Gunakan icon (opsional)
+import { formatDateID } from "@/utils/date";
 
 interface AllowanceShowModalProps {
   uuid: string | null;
@@ -118,10 +119,10 @@ export default function AllowanceShowModal({
                     <Calendar size={14} /> Date Created
                   </div>
                   <p className="text-gray-900 dark:text-gray-200 font-medium">
-                    {allowance.created_at}
+                    {formatDateID(allowance.created_at)}
                   </p>
                   <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-1">
-                    <Clock size={10} /> Updated: {allowance.updated_at}
+                    <Clock size={10} /> Updated: {formatDateID(allowance.updated_at)}
                   </div>
                 </div>
               </div>

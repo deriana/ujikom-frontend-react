@@ -12,7 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
-import { Database, Settings } from "lucide-react";
+import { Clock10Icon, Database, DollarSign, File, Settings, Table } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -39,8 +39,92 @@ export const navItems: NavItem[] = [
   {
     name: "Attendances Report",
     icon: <Database />,
-    path: "attendances/report",
+    path: "/attendances/report",
     permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Employee Shifts",
+    path: "/employee-shifts",
+    icon: <Table />,
+    permission: buildPermission(
+      RESOURCES.EMPLOYEE_SHIFT,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
+    name: "Employee Work Schedules",
+    path: "/employee-work-schedules",
+    icon: <Table />,
+    permission: buildPermission(
+      RESOURCES.WORK_SCHEDULE,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
+    name: "Leaves",
+    path: "/leaves",
+    icon: <File />,
+    permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Early Leaves",
+    path: "/early-leaves",
+    icon: <File />,
+    permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Attendance Requests",
+    path: "/attendance-requests",
+    icon: <File />,
+    permission: buildPermission(
+      RESOURCES.ATTENDANCE_REQUEST,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
+    name: "Overtimes",
+    path: "/overtimes",
+    icon: <Clock10Icon />,
+    permission: buildPermission(
+      RESOURCES.OVERTIME,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
+    name: "Payroll",
+    path: "/payroll",
+    icon: <DollarSign />,
+    permission: buildPermission(RESOURCES.PAYROLL, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Approval",
+    icon: <File />,
+    subItems: [
+      {
+        name: "Leave Approval",
+        path: "/approval/leave",
+        pro: false,
+        permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Early Leave Approval",
+        path: "/approval/early-leave",
+        pro: false,
+        permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Attendance Request Approval",
+        path: "/approval/attendance-request",
+        pro: false,
+        permission: buildPermission(RESOURCES.ATTENDANCE_REQUEST, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Overtime Approval",
+        path: "/approval/overtime",
+        pro: false,
+        permission: buildPermission(RESOURCES.OVERTIME, PERMISSIONS.BASE.APPROVE)
+      },
+    ],
   },
   {
     name: "Master Data",
@@ -68,13 +152,49 @@ export const navItems: NavItem[] = [
         name: "Allowances",
         path: "/allowances",
         pro: false,
-        permission: buildPermission(RESOURCES.ALLOWANCE, PERMISSIONS.BASE.INDEX),
+        permission: buildPermission(
+          RESOURCES.ALLOWANCE,
+          PERMISSIONS.BASE.INDEX,
+        ),
       },
       {
         name: "Positions",
         path: "/Positions",
         pro: false,
         permission: buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Holidays",
+        path: "/holidays",
+        pro: false,
+        permission: buildPermission(RESOURCES.HOLIDAY, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Work Schedules",
+        path: "/work-schedules",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.WORK_SCHEDULE,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Shift Templates",
+        path: "/shift-templates",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.SHIFT_TEMPLATE,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Leave Types",
+        path: "/leave-types",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.LEAVE_TYPES,
+          PERMISSIONS.BASE.INDEX,
+        ),
       },
     ],
   },
@@ -137,8 +257,23 @@ export const othersItems: NavItem[] = [
         name: "Users",
         path: "/trash/users",
         pro: false,
+        permission: buildPermission(RESOURCES.USER, PERMISSIONS.BASE.RESTORE),
+      },
+      {
+        name: "Work Schedules",
+        path: "/trash/work-schedules",
+        pro: false,
         permission: buildPermission(
-          RESOURCES.USER,
+          RESOURCES.WORK_SCHEDULE,
+          PERMISSIONS.BASE.RESTORE,
+        ),
+      },
+      {
+        name: "Shift Templates",
+        path: "/trash/shift-templates",
+        pro: false,
+        permission: buildPermission(
+          RESOURCES.SHIFT_TEMPLATE,
           PERMISSIONS.BASE.RESTORE,
         ),
       },
@@ -177,5 +312,5 @@ export const othersItems: NavItem[] = [
     name: "Settings",
     path: "/settings",
     permission: buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX),
-  }
+  },
 ];

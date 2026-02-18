@@ -33,7 +33,7 @@ export default function AllowanceTable() {
       const name = form.name.trim();
       if (!name) return "Allowance name is required";
       if (name.length < 3) return "Allowance name must be at least 3 characters";
-      if (form.amount < 0) return "Amount cannot be negative";
+      // if (form.amount < 0) return "Amount cannot be negative";
       return null;
     },
     mapToPayload: (form) => ({

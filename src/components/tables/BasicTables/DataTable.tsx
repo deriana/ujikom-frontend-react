@@ -11,7 +11,7 @@ import {
 import Tooltip from "@/components/ui/tooltip";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { Column } from "@/types";
-import { Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 
 type NestedKeys<T> = {
@@ -32,6 +32,7 @@ interface DataTableProps<T> {
   loading?: boolean;
   newFilterComponent?: React.ReactNode;
   handleCreate?: () => void;
+  handleExport?: () => void;
   tableTitle?: string;
   label?: string;
   baseNamePermission?: string;
@@ -47,6 +48,7 @@ export function DataTable<T extends object>({
   loading = false,
   newFilterComponent,
   handleCreate,
+  handleExport,
   tableTitle = "Data Table",
   label = "Data",
   baseNamePermission,
@@ -205,6 +207,24 @@ export function DataTable<T extends object>({
             }))}
           />
 
+          {handleExport && (
+            <Can
+              value={buildPermission(
+                baseNamePermission!,
+                PERMISSIONS.BASE.EXPORT,
+              )}
+            >
+              <Tooltip content={`Export ${label}`} position="bottom">
+                <button
+                  onClick={handleExport}
+                  className="inline-flex items-center justify-center gap-2 px-4 h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <Download size={16} />
+                  <span className="sm:hidden">Export {label}</span>
+                </button>
+              </Tooltip>
+            </Can>
+          )}
           {handleCreate && (
             <Can
               value={buildPermission(

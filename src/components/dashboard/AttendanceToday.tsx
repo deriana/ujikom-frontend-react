@@ -1,0 +1,66 @@
+export default function AttendanceTodayCard() {
+  const data = {
+    hadir: 102,
+    telat: 8,
+    izin: 6,
+    alpha: 4,
+  };
+
+  const total = data.hadir + data.telat + data.izin + data.alpha;
+
+  // Helper untuk menghitung persentase
+  const getWidth = (value : any) => `${(value / total) * 100}%`;
+
+  const stats = [
+    { label: "Hadir", value: data.hadir, color: "bg-emerald-500", text: "text-emerald-600" },
+    { label: "Terlambat", value: data.telat, color: "bg-amber-500", text: "text-amber-600" },
+    { label: "Izin/Sakit", value: data.izin, color: "bg-blue-500", text: "text-blue-600" },
+    { label: "Tanpa Keterangan", value: data.alpha, color: "bg-rose-500", text: "text-rose-600" },
+  ];
+
+  return (
+    <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg tracking-tight">
+          Kehadiran Hari Ini
+        </h3>
+        <span className="text-xs font-medium px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full">
+          Total: {total} Karyawan
+        </span>
+      </div>
+
+      {/* Progress Bar Group */}
+      <div className="flex h-3 w-full rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 mb-8">
+        {stats.map((item, idx) => (
+          <div
+            key={idx}
+            style={{ width: getWidth(item.value) }}
+            className={`${item.color} transition-all duration-500 ease-out border-r border-white dark:border-slate-900 last:border-0`}
+          />
+        ))}
+      </div>
+
+      {/* Legend & Details */}
+      <div className="grid grid-cols-2 gap-4">
+        {stats.map((item, idx) => (
+          <div key={idx} className="flex flex-col">
+            <div className="flex items-center gap-2 mb-1">
+              <div className={`w-2 h-2 rounded-full ${item.color}`} />
+              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                {item.label}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-xl font-bold text-slate-900 dark:text-white">
+                {item.value}
+              </span>
+              <span className="text-xs text-slate-400">
+                ({Math.round((item.value / total) * 100)}%)
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

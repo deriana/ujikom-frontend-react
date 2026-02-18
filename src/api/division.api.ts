@@ -12,7 +12,6 @@ export const getDivisionByUuid = async (uuid: string) => {
   return res.data.data;
 }
 
-
 export const createDivision = async (payload: DivisionInput) => {
   const res = await api.post<ApiResponse<Division[]>>("/divisions",payload);
   return res.data.data;

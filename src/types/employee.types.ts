@@ -1,23 +1,31 @@
-import { AllowancePositionPivot } from "./common";
+import { AllowancePositionPivot, UUID } from "./common";
 
 /** ===== Position & Team ===== */
 export interface Position {
-  uuid?: string;
+  uuid?: UUID;
   name: string;
   base_salary: string;
   allowances?: AllowancePositionPivot[];
 }
 
 export interface Team {
-  uuid?: string;
+  uuid?: UUID;
   name: string;
   division: string;
 }
 
 export interface Manager {
-  uuid?: string;
+  uuid?: UUID;
   name: string;
   nik: string;
+  role: string;
+  position: string;
+}
+
+export interface EmployeeLite {
+  nik: string;
+  name: string;
+  profile_photo?: string;
 }
 
 /** ===== Employee Status (from backend enum EmployeeStatus) ===== */

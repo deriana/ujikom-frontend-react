@@ -2,6 +2,7 @@ import { usePositionByUuid } from "@/hooks/usePosition";
 import { Modal } from "@/components/ui/modal";
 import Currency from "@/components/ui/currency/Currency";
 import { Calendar, User, Briefcase, Info, Clock } from "lucide-react";
+import { formatDateID } from "@/utils/date";
 
 interface PositionShowModalProps {
   uuid: string | null;
@@ -78,10 +79,10 @@ export default function PositionShowModal({
                     <Calendar size={14} /> Date Created
                   </div>
                   <p className="text-gray-900 dark:text-gray-200 font-medium">
-                    {position.created_at}
+                    {formatDateID(position.created_at)}
                   </p>
                   <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-1">
-                    <Clock size={10} /> Updated: {position.updated_at}
+                    <Clock size={10} /> Updated: {formatDateID(position.updated_at)}
                   </div>
                 </div>
               </div>

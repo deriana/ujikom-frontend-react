@@ -50,7 +50,23 @@ import UsersShow from "./pages/User/Show";
 import UsersTrash from "./pages/Trash/Pages/UsersTrash";
 import FaceScanner from "./pages/Attendance/BulkFaceRecognition";
 import AttendancesReport from "./pages/AttendanceReport/Index";
-
+import Holidays from "./pages/Holidays/Index";
+import WorkSchedules from "./pages/WorkSchedules/Index";
+import WorkScheduleTrash from "./pages/Trash/Pages/WorkScheduleTrash";
+import EmployeeWorkSchedule from "./pages/EmployeeWorkSchedule/Index";
+import ShiftTemplate from "./pages/ShiftTemplate/Index";
+import ShiftTemplateTrash from "./pages/Trash/Pages/ShiftTemplateTrash";
+import EmployeeShifts from "./pages/EmployeeShift/Index";
+import LeaveTypes from "./pages/LeaveType/Index";
+import Leave from "./pages/Leave/Index";
+import EarlyLeaves from "./pages/EarlyLeaves/Index";
+import AttendancRequests from "./pages/AttendanceRequest/Index";
+import LeaveApproval from "./pages/Approval/LeaveApproval";
+import EarlyLeaveApproval from "./pages/Approval/EarlyLeaveApproval";
+import AttendanceRequestApproval from "./pages/Approval/AttendanceRequestApproval";
+import Overtime from "./pages/Overtime/Index";
+import OvertimeApproval from "./pages/Approval/OvertimeApproval";
+import Payroll from "./pages/Payroll/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -63,6 +79,218 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  const publicRoutes = [
+    { path: "/", element: <Home /> },
+    { path: "/profile", element: <UserProfiles /> },
+    { path: "/calendar", element: <Calendar /> },
+    { path: "/blank", element: <Blank /> },
+  ];
+
+  const protectedRoutes = [
+    {
+      path: "/attendances/report",
+      element: <AttendancesReport />,
+      resource: RESOURCES.ATTENDANCE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/roles",
+      element: <Roles />,
+      resource: RESOURCES.ROLE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/roles/create",
+      element: <RolesCreate />,
+      resource: RESOURCES.ROLE,
+      permission: PERMISSIONS.BASE.CREATE,
+    },
+    {
+      path: "/roles/:id/edit",
+      element: <RolesUpdate />,
+      resource: RESOURCES.ROLE,
+      permission: PERMISSIONS.BASE.EDIT,
+    },
+    {
+      path: "/users",
+      element: <Users />,
+      resource: RESOURCES.USER,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/users/create",
+      element: <UsersCreate />,
+      resource: RESOURCES.USER,
+      permission: PERMISSIONS.BASE.CREATE,
+    },
+    {
+      path: "/users/:uuid/show",
+      element: <UsersShow />,
+      resource: RESOURCES.USER,
+      permission: PERMISSIONS.BASE.SHOW,
+    },
+    {
+      path: "/users/:uuid/edit",
+      element: <UsersUpdate />,
+      resource: RESOURCES.USER,
+      permission: PERMISSIONS.BASE.EDIT,
+    },
+    {
+      path: "/divisions",
+      element: <Divisions />,
+      resource: RESOURCES.DIVISION,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/allowances",
+      element: <Allowances />,
+      resource: RESOURCES.ALLOWANCE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/positions",
+      element: <Positions />,
+      resource: RESOURCES.POSITION,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/holidays",
+      element: <Holidays />,
+      resource: RESOURCES.HOLIDAY,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/work-schedules",
+      element: <WorkSchedules />,
+      resource: RESOURCES.WORK_SCHEDULE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/employee-work-schedules",
+      element: <EmployeeWorkSchedule />,
+      resource: RESOURCES.EMPLOYEE_WORK_SCHEDULE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/shift-templates",
+      element: <ShiftTemplate />,
+      resource: RESOURCES.SHIFT_TEMPLATE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/employee-shifts",
+      element: <EmployeeShifts />,
+      resource: RESOURCES.SHIFT_TEMPLATE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/leave-types",
+      element: <LeaveTypes />,
+      resource: RESOURCES.SHIFT_TEMPLATE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/leaves",
+      element: <Leave />,
+      resource: RESOURCES.LEAVE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/early-leaves",
+      element: <EarlyLeaves />,
+      resource: RESOURCES.EARLY_LEAVE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/attendance-requests",
+      element: <AttendancRequests />,
+      resource: RESOURCES.EARLY_LEAVE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/overtimes",
+      element: <Overtime />,
+      resource: RESOURCES.OVERTIME,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/payroll",
+      element: <Payroll />,
+      resource: RESOURCES.PAYROLL,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/settings",
+      element: <Setting />,
+      resource: RESOURCES.SETTING,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    /** Approval Route */
+    {
+      path: "/approval/leave",
+      element: <LeaveApproval />,
+      resource: RESOURCES.LEAVE,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/early-leave",
+      element: <EarlyLeaveApproval />,
+      resource: RESOURCES.EARLY_LEAVE,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/attendance-request",
+      element: <AttendanceRequestApproval />,
+      resource: RESOURCES.ATTENDANCE_REQUEST,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/overtime",
+      element: <OvertimeApproval />,
+      resource: RESOURCES.OVERTIME,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+
+    /** Trash Route */
+    {
+      path: "/trash/divisions",
+      element: <DivisionsTrash />,
+      resource: RESOURCES.DIVISION,
+      permission: PERMISSIONS.BASE.RESTORE,
+    },
+    {
+      path: "/trash/allowances",
+      element: <AllowancesTrash />,
+      resource: RESOURCES.ALLOWANCE,
+      permission: PERMISSIONS.BASE.RESTORE,
+    },
+    {
+      path: "/trash/positions",
+      element: <PositionsTrash />,
+      resource: RESOURCES.POSITION,
+      permission: PERMISSIONS.BASE.RESTORE,
+    },
+    {
+      path: "/trash/users",
+      element: <UsersTrash />,
+      resource: RESOURCES.USER,
+      permission: PERMISSIONS.BASE.RESTORE,
+    },
+    {
+      path: "/trash/work-schedules",
+      element: <WorkScheduleTrash />,
+      resource: RESOURCES.WORK_SCHEDULE,
+      permission: PERMISSIONS.BASE.RESTORE,
+    },
+    {
+      path: "/trash/shift-templates",
+      element: <ShiftTemplateTrash />,
+      resource: RESOURCES.WORK_SCHEDULE,
+      permission: PERMISSIONS.BASE.RESTORE,
+    },
+  ];
+
   return (
     <>
       {loading && <Spinner />}
@@ -74,222 +302,27 @@ export default function App() {
           {/* 🔒 Protected Area */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
-              {/* ===== PUBLIC AFTER LOGIN (tanpa permission khusus) ===== */}
-              <Route index path="/" element={<Home />} />
-              <Route path="/profile" element={<UserProfiles />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/blank" element={<Blank />} />
+              {publicRoutes.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
 
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.ATTENDANCE,
-                      PERMISSIONS.BASE.INDEX,
-                    )}
-                  />
-                }
-              >
-                <Route path="/attendances/report" element={<AttendancesReport />} />
-              </Route>
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.ROLE,
-                      PERMISSIONS.BASE.INDEX,
-                    )}
-                  />
-                }
-              >
-                <Route path="/roles" element={<Roles />} />
-              </Route>
+              {protectedRoutes.map(({ path, element, resource, permission }) =>
+                resource && permission ? (
+                  <Route
+                    key={path}
+                    element={
+                      <PermissionRoute
+                        permission={buildPermission(resource, permission)}
+                      />
+                    }
+                  >
+                    <Route path={path} element={element} />
+                  </Route>
+                ) : (
+                  <Route key={path} path={path} element={element} />
+                ),
+              )}
 
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.ROLE,
-                      PERMISSIONS.BASE.CREATE,
-                    )}
-                  />
-                }
-              >
-                <Route path="/roles/create" element={<RolesCreate />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.ROLE,
-                      PERMISSIONS.BASE.EDIT,
-                    )}
-                  />
-                }
-              >
-                <Route path="/roles/:id/edit" element={<RolesUpdate />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.USER,
-                      PERMISSIONS.BASE.INDEX,
-                    )}
-                  />
-                }
-              >
-                <Route path="/users" element={<Users />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.USER,
-                      PERMISSIONS.BASE.CREATE,
-                    )}
-                  />
-                }
-              >
-                <Route path="/users/create" element={<UsersCreate />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.USER,
-                      PERMISSIONS.BASE.SHOW,
-                    )}
-                  />
-                }
-              >
-                <Route path="/users/:uuid/show" element={<UsersShow />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.USER,
-                      PERMISSIONS.BASE.EDIT,
-                    )}
-                  />
-                }
-              >
-                <Route path="/users/:uuid/edit" element={<UsersUpdate />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.DIVISION,
-                      PERMISSIONS.BASE.INDEX,
-                    )}
-                  />
-                }
-              >
-                <Route path="/divisions" element={<Divisions />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.ALLOWANCE,
-                      PERMISSIONS.BASE.INDEX,
-                    )}
-                  />
-                }
-              >
-                <Route path="/allowances" element={<Allowances />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.POSITION,
-                      PERMISSIONS.BASE.INDEX,
-                    )}
-                  />
-                }
-              >
-                <Route path="/positions" element={<Positions />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.SETTING,
-                      PERMISSIONS.BASE.INDEX,
-                    )}
-                  />
-                }
-              >
-                <Route path="/settings" element={<Setting />} />
-              </Route>
-
-              {/* ===== TRASH ===== */}
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.DIVISION,
-                      PERMISSIONS.BASE.RESTORE,
-                    )}
-                  />
-                }
-              >
-                <Route path="/trash/divisions" element={<DivisionsTrash />} />
-              </Route>
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.ALLOWANCE,
-                      PERMISSIONS.BASE.RESTORE,
-                    )}
-                  />
-                }
-              >
-                <Route path="/trash/allowances" element={<AllowancesTrash />} />
-              </Route>
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.POSITION,
-                      PERMISSIONS.BASE.RESTORE,
-                    )}
-                  />
-                }
-              >
-                <Route path="/trash/positions" element={<PositionsTrash />} />
-              </Route>
-
-              <Route
-                element={
-                  <PermissionRoute
-                    permission={buildPermission(
-                      RESOURCES.USER,
-                      PERMISSIONS.BASE.RESTORE,
-                    )}
-                  />
-                }
-              >
-                <Route path="/trash/users" element={<UsersTrash />} />
-              </Route>
-
-              {/* <Route path="/trash" element={<Trash />} /> */}
-
-              {/* ===== UI DEMO PAGES (optional protect or not) ===== */}
               <Route path="/form-elements" element={<FormElements />} />
               <Route path="/basic-tables" element={<BasicTables />} />
               <Route path="/alerts" element={<Alerts />} />
@@ -302,8 +335,8 @@ export default function App() {
               <Route path="/bar-chart" element={<BarChart />} />
             </Route>
           </Route>
-          
-            <Route path="/attendance" element={<FaceScanner />} />
+
+          <Route path="/attendance" element={<FaceScanner />} />
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />

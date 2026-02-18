@@ -6,4 +6,15 @@ export const RESOURCES = {
   POSITION: "position",
   ALLOWANCE: "allowance",
   ATTENDANCE: "attendance",
+  HOLIDAY: "holiday",
+  WORK_SCHEDULE: "work-schedule",
+  EMPLOYEE_WORK_SCHEDULE: "employee-work-schedule",
+  SHIFT_TEMPLATE: "shift-template",
+  EMPLOYEE_SHIFT: "employee-shift",
+  LEAVE_TYPES: "leave-type",
+  LEAVE: "leave",
+  EARLY_LEAVE: "early-leave",
+  ATTENDANCE_REQUEST: "attendance-request",
+  OVERTIME: "overtime",
+  PAYROLL: "payroll"
 } as const;

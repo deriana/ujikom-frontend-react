@@ -16,6 +16,7 @@ export interface User {
   is_active: boolean;
   roles: string[];
   employee: Employee;
+  system_reserve: boolean;
 }
 
 export interface UserInput {
@@ -42,4 +43,5 @@ export interface UserInput {
   address?: string;
   join_date?: string;
   resign_date?: string | null;
+  isResigned?: boolean;
 }

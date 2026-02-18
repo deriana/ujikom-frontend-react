@@ -1,5 +1,8 @@
 import { ArrowLeft, Mail, ShieldCheck, DollarSign } from "lucide-react";
 import { SectionCard, StatusBadge } from "./ProfileComponent";
+import { Can } from "@/components/auth/Can";
+import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
+import { RESOURCES } from "@/constants/Resource";
 
 export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50 dark:bg-white/2 p-6 rounded-3xl border border-gray-100 dark:border-gray-800">
@@ -49,12 +52,14 @@ export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
         Back to List
       </button>
 
-      <button
-        onClick={onChangePhoto}
-        className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
-      >
-        Change Photo
-      </button>
+      <Can value={buildPermission(RESOURCES.USER, PERMISSIONS.BASE.EDIT)}>
+        <button
+          onClick={onChangePhoto}
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
+        >
+          Change Photo
+        </button>
+      </Can>
     </div>
   </div>
 );

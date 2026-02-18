@@ -1,7 +1,8 @@
 import type React from "react";
 
 interface CheckboxProps {
-  label?: string;
+  // Ubah dari string menjadi React.ReactNode
+  label?: React.ReactNode; 
   checked: boolean;
   className?: string;
   id?: string;
@@ -23,7 +24,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
         disabled ? "cursor-not-allowed opacity-60" : ""
       }`}
     >
-      <div className="relative w-5 h-5">
+      <div className="relative w-5 h-5 shrink-0"> {/* Tambah flex-shrink-0 agar box tidak gepeng saat teks panjang */}
         <input
           id={id}
           type="checkbox"
@@ -71,9 +72,9 @@ const Checkbox: React.FC<CheckboxProps> = ({
         )}
       </div>
       {label && (
-        <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+        <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
           {label}
-        </span>
+        </div>
       )}
     </label>
   );

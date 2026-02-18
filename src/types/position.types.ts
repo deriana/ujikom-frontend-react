@@ -15,4 +15,5 @@ export interface Position {
     created_at: string;
     updated_at: string;
     allowances: AllowancePositionPivot[];
+    system_reserve: boolean;
 }
