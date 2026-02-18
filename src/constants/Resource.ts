@@ -14,5 +14,6 @@ export const RESOURCES = {
   LEAVE_TYPES: "leave-type",
   LEAVE: "leave",
   EARLY_LEAVE: "early-leave",
-  ATTENDANCE_REQUEST: "attendance-request"
+  ATTENDANCE_REQUEST: "attendance-request",
+  OVERTIME: "overtime",
 } as const;

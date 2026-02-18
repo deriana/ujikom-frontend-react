@@ -12,7 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
-import { Database, File, Settings, Table } from "lucide-react";
+import { Clock10Icon, Database, File, Settings, Table } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -82,6 +82,15 @@ export const navItems: NavItem[] = [
     ),
   },
   {
+    name: "Overtimes",
+    path: "/overtimes",
+    icon: <Clock10Icon />,
+    permission: buildPermission(
+      RESOURCES.OVERTIME,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
     name: "Approval",
     icon: <File />,
     subItems: [
@@ -101,7 +110,13 @@ export const navItems: NavItem[] = [
         name: "Attendance Request Approval",
         path: "/approval/attendance-request",
         pro: false,
-        permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.APPROVE)
+        permission: buildPermission(RESOURCES.ATTENDANCE_REQUEST, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Overtime Approval",
+        path: "/approval/overtime",
+        pro: false,
+        permission: buildPermission(RESOURCES.OVERTIME, PERMISSIONS.BASE.APPROVE)
       },
     ],
   },
