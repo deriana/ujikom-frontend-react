@@ -168,7 +168,6 @@ export default function ShiftTemplatesTable() {
     {
       header: "Action",
       render: (row) => (
-        <div className="flex justify-end">
           <TableActions
             id={row.uuid}
             dataName={row.name}
@@ -176,7 +175,6 @@ export default function ShiftTemplatesTable() {
             onDelete={handleDelete}
             baseNamePermission={RESOURCES.SHIFT_TEMPLATE}
           />
-        </div>
       ),
     },
   ];

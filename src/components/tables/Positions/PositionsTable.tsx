@@ -129,6 +129,14 @@ export default function PositionsTable() {
       },
     },
     {
+      header: "System Reserve",
+      render: (row) => (
+        <Badge size="sm" color={row.system_reserve ? "warning" : "success"}>
+          {row.system_reserve ? "System" : "Custom"}
+        </Badge>
+      ),
+    },
+    {
       header: "Action",
       render: (row) => (
         <TableActions
@@ -138,6 +146,7 @@ export default function PositionsTable() {
           onDelete={handleDelete}
           onShow={handleShow}
           baseNamePermission={RESOURCES.POSITION}
+          isSystemReserve={row.system_reserve}
         />
       ),
     },

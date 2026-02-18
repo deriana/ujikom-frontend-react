@@ -37,6 +37,9 @@ export default function WorkScheduleTable() {
       work_mode_id: undefined,
       work_start_time: "",
       work_end_time: "",
+      break_start_time: "",
+      break_end_time: "",
+      late_tolerance_minutes: 0,
       requires_office_location: false,
     },
     validate: (form) => {
@@ -47,6 +50,16 @@ export default function WorkScheduleTable() {
         return "Time range is required";
       if (form.work_end_time <= form.work_start_time)
         return "End time must be after start time";
+      if (!form.break_start_time || !form.break_end_time)
+        return "Break time range is required";
+      if (form.break_end_time <= form.break_start_time)
+        return "End time must be after start time";
+      if (
+        form.late_tolerance_minutes !== null &&
+        form.late_tolerance_minutes !== undefined &&
+        form.late_tolerance_minutes < 0
+      )
+        return "Late tolerance must be a positive number";
       return null;
     },
     mapToPayload: (form) => ({
@@ -54,6 +67,9 @@ export default function WorkScheduleTable() {
       work_mode_id: form.work_mode_id,
       work_start_time: form.work_start_time?.slice(0, 5) ?? "",
       work_end_time: form.work_end_time?.slice(0, 5) ?? "",
+      break_start_time: form.break_start_time?.slice(0, 5) ?? "",
+      break_end_time: form.break_end_time?.slice(0, 5) ?? "",
+      late_tolerance_minutes: form.late_tolerance_minutes,
       requires_office_location: form.requires_office_location,
     }),
     createFn: createWorkSchedule,
@@ -96,6 +112,9 @@ export default function WorkScheduleTable() {
       work_mode_id: ws.work_mode?.id,
       work_start_time: ws.work_start_time || "",
       work_end_time: ws.work_end_time || "",
+      break_start_time: ws.break_start_time || "",
+      break_end_time: ws.break_end_time || "",
+      late_tolerance_minutes: ws.late_tolerance_minutes ?? 0,
       requires_office_location: ws.requires_office_location ?? false,
     });
   };
@@ -141,6 +160,31 @@ export default function WorkScheduleTable() {
           <span className="text-sm font-mono">
             {row.work_start_time?.slice(0, 5) || "00:00"} -{" "}
             {row.work_end_time?.slice(0, 5) || "00:00"}
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: "Late Tolerance",
+      render: (row) => (
+        <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium">
+            {row.late_tolerance_minutes ?? 0}{" "}
+            <span className="text-gray-500 dark:text-gray-400 font-normal">
+              mins
+            </span>
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: "Break Hours",
+      render: (row) => (
+        <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+          <Clock className="w-4 h-4 text-gray-400" />
+          <span className="text-sm font-mono">
+            {row.break_start_time?.slice(0, 5) || "00:00"} -{" "}
+            {row.break_end_time?.slice(0, 5) || "00:00"}
           </span>
         </div>
       ),

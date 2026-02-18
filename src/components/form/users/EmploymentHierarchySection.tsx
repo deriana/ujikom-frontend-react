@@ -7,7 +7,7 @@ import { Briefcase, ShieldCheck, Calendar, Clock } from "lucide-react";
 interface Props {
   value: UserInput;
   onChange: (val: UserInput) => void;
-  roles: { id: number; name: string }[];
+  roles: { id: number; name: string; system_reserve: boolean}[];
   positions: Position[];
   divisions: Division[];
   managers: Manager[];
@@ -23,50 +23,56 @@ export default function EmploymentHierarchySection({
   managers,
   disabled = false,
 }: Props) {
-  // helper function untuk cek role manager
-  const isManagerRole = (role?: string) => {
-    return role?.toLowerCase() === "manager";
-  };
+  // 1. Filter Divisions & Positions yang bukan System Reserve
+  const filteredDivisions = divisions.filter((d) => !!d.system_reserve !== true);
+  const filteredPositions = positions.filter((p) => !!p.system_reserve !== true);
+  const filteredRoles = roles.filter((r) => !!r.system_reserve !== true);
+
+  // - Kalau role 'manager', atasan cuma boleh 'director'
+  // - Kalau role 'employee'/'staff', atasan boleh 'manager' atau 'director'
+  const filteredManagers = managers.filter((m) => {
+    if (value.role?.toLowerCase() === "manager") {
+      return m.role?.toLowerCase() === "director";
+    }
+    // Default: tampilkan semua manager & director untuk staff biasa
+    return true;
+  });
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800">
-        <Briefcase size={20} className="text-brand-500" />
-        <h3 className="text-lg font-bold text-gray-800 dark:text-white/90">
-          Employment & Hierarchy
-        </h3>
-      </div>
+      {/* ... bagian header tetap sama ... */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* Access Role */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-            <ShieldCheck size={12} /> Access Role
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
+            Access Role
           </label>
           <Select
-            options={roles.map((r) => ({
-              value: r.name.toLowerCase(), // langsung pakai name sebagai string
+            options={filteredRoles.map((r) => ({
+              value: r.name.toLowerCase(),
               label: r.name.charAt(0).toUpperCase() + r.name.slice(1),
             }))}
-            value={value.role || ""} // pakai role, bukan role_id
+            value={value.role || ""}
             onChange={(val) => {
               onChange({
                 ...value,
                 role: val || undefined,
-                manager_nik: val === "manager" ? value.manager_nik : undefined,
+                // Reset manager_nik jika role berubah supaya tidak salah atasan
+                manager_nik: undefined,
               });
             }}
             disabled={disabled}
           />
         </div>
 
-        {/* Division & Team */}
+        {/* Division & Team - Menggunakan data yang sudah difilter */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
             Division & Team
           </label>
           <SelectDivisionTeam
-            divisions={divisions}
+            divisions={filteredDivisions} // Pakai yang sudah di-filter
             value={value.team_uuid || ""}
             onChange={(val) =>
               onChange({ ...value, team_uuid: val || undefined })
@@ -75,13 +81,16 @@ export default function EmploymentHierarchySection({
           />
         </div>
 
-        {/* Job Position */}
+        {/* Job Position - Menggunakan data yang sudah difilter */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
             Job Position
           </label>
           <Select
-            options={positions.map((p) => ({ value: p.uuid, label: p.name }))}
+            options={filteredPositions.map((p) => ({
+              value: p.uuid,
+              label: p.name,
+            }))}
             value={value.position_uuid || ""}
             onChange={(val) =>
               onChange({ ...value, position_uuid: val || undefined })
@@ -90,19 +99,27 @@ export default function EmploymentHierarchySection({
           />
         </div>
 
-        {/* Direct Manager (conditional) */}
-        {!isManagerRole(value.role) && (
+        {/* Direct Manager - Selalu tampilkan kecuali role Director */}
+        {value.role?.toLowerCase() !== "director" && (
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
               Direct Manager
             </label>
             <Select
-              options={managers.map((m) => ({ value: m.nik, label: m.name }))}
+              options={filteredManagers.map((m) => ({
+                value: m.nik,
+                label: `${m.name} (${m.position})`,
+              }))}
               value={value.manager_nik || ""}
               onChange={(val) =>
                 onChange({ ...value, manager_nik: val || undefined })
               }
               disabled={disabled}
+              placeholder={
+                value.role?.toLowerCase() === "manager"
+                  ? "Select Director"
+                  : "Select Manager/Director"
+              }
             />
           </div>
         )}

@@ -17,6 +17,7 @@ import { ApprovalStatus } from "@/types";
 import { useState } from "react";
 import { downloadAttachment } from "@/api/leave.api";
 import toast from "react-hot-toast";
+import { formatDateID } from "@/utils/date";
 
 interface LeaveShowModalProps {
   uuid: string | null;
@@ -111,7 +112,7 @@ export default function LeaveShowModal({
                   <div className="flex items-center gap-2 text-gray-900 dark:text-white font-semibold">
                     <Calendar size={16} className="text-blue-500" />
                     <span className="text-sm">
-                      {leave.date_start} - {leave.date_end}
+                      {formatDateID(leave.date_start)} - {formatDateID(leave.date_end)}
                     </span>
                   </div>
                   {leave.is_half_day && (

@@ -14,6 +14,7 @@ import {
   ATTENDANCE_STATUS_LABEL,
 } from "@/constants/Attendance";
 import FilterDropdown from "@/components/FilterDropdown";
+import { formatDateID } from "@/utils/date";
 
 export default function AttendanceTable() {
   const today = new Date().toISOString().split("T")[0];
@@ -81,7 +82,7 @@ export default function AttendanceTable() {
       header: "Date",
       render: (row) => (
         <span className="text-gray-700 dark:text-gray-300 font-medium">
-          {row.date}
+          {formatDateID(row.date)}
         </span>
       ),
     },

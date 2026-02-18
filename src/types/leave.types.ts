@@ -12,6 +12,12 @@ export interface LeaveInput {
   approval_status?: 0 | 1 | 2;
 }
 
+export interface LeavePermissions {
+  update: boolean;
+  delete: boolean;
+  approve: boolean;
+}
+
 export interface Leave {
   uuid: UUID;
   current_approval_uuid?: string;
@@ -25,12 +31,14 @@ export interface Leave {
   attachment?: LeaveAttachment | null;
   approval_status: 0 | 1 | 2;
   is_half_day: boolean;
+
+  can: LeavePermissions;
 }
 
 export interface LeaveAttachment {
   exists: boolean;
   filename: string;
-  download_url?: string; 
+  download_url?: string;
   path?: string;
 }
 
@@ -74,7 +82,7 @@ export interface LeaveDetail {
     requires_family_status: boolean;
   };
   date_start: string; // format Y-m-d
-  date_end: string;   // format Y-m-d
+  date_end: string; // format Y-m-d
   is_half_day: boolean;
   reason: string;
   attachment: LeaveAttachment | null;
@@ -89,4 +97,3 @@ export interface LeaveDetail {
   } | null;
   leave_balance: LeaveBalance | null;
 }
-

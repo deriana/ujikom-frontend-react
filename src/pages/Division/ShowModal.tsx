@@ -2,6 +2,7 @@ import { Modal } from "@/components/ui/modal";
 import { Calendar, User, Users, Info, Clock, Hash } from "lucide-react";
 import { useDivisionByUuid } from "@/hooks/useDivision";
 import Badge from "@/components/ui/badge/Badge";
+import { formatDateID } from "@/utils/date";
 
 interface DivisionShowModalProps {
   uuid: string | null;
@@ -80,10 +81,10 @@ export default function DivisionShowModal({
                     <Calendar size={14} /> Date Created
                   </div>
                   <p className="text-gray-900 dark:text-gray-200 font-medium">
-                    {division.created_at}
+                    {formatDateID(division.created_at)}
                   </p>
                   <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-1">
-                    <Clock size={10} /> Updated: {division.updated_at}
+                    <Clock size={10} /> Updated: {formatDateID(division.updated_at)}
                   </div>
                 </div>
               </div>

@@ -74,6 +74,31 @@ export default function WorkScheduleTableTrash() {
       ),
     },
     {
+      header: "Late Tolerance",
+      render: (row) => (
+        <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium">
+            {row.late_tolerance_minutes ?? 0}{" "}
+            <span className="text-gray-500 dark:text-gray-400 font-normal">
+              mins
+            </span>
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: "Break Hours",
+      render: (row) => (
+        <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+          <Clock className="w-4 h-4 text-gray-400" />
+          <span className="text-sm font-mono">
+            {row.break_start_time?.slice(0, 5) || "00:00"} -{" "}
+            {row.break_end_time?.slice(0, 5) || "00:00"}
+          </span>
+        </div>
+      ),
+    },
+    {
       header: "Location Rule",
       render: (row) => (
         <div className="flex items-center gap-1.5">

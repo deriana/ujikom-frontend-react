@@ -6,6 +6,7 @@ import {
   deleteLeave,
   leaveApprovals,
   getLeaveByUuid,
+  getLeaveApprovals,
 } from "@/api/leave.api";
 import { LeaveInput } from "@/types/leave.types";
 
@@ -16,6 +17,14 @@ export const useLeaves = () => {
     staleTime: 1000 * 60 * 5,
   });
 };
+
+export const useLeaveApprovalsList = () => {
+  return useQuery({
+    queryKey: ["leaves", "approvals"],
+    queryFn: getLeaveApprovals,
+    staleTime: 1000 * 60 * 5,
+  });
+}
 
 export const useLeaveByUuid = (uuid: string) => {
   return useQuery({
@@ -92,17 +101,17 @@ export const useLeaveApprovals = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    // Menggunakan value dari APPROVAL_STATS untuk pengetikan yang lebih ketat
-    mutationFn: ({ 
-      uuid, 
-      status 
-    }: { 
-      uuid: string; 
+    mutationFn: ({
+      uuid,
+      status,
+      note,
+    }: {
+      uuid: string;
       status: boolean;
-    }) => leaveApprovals(uuid, status),
-    
+      note?: string; // Tambahkan '?' agar opsional
+    }) => leaveApprovals(uuid, status, note),
+
     onSettled: () => {
-      // Pastikan list cuti di-refresh setelah ada perubahan status
       qc.invalidateQueries({ queryKey: ["leaves"] });
     },
   });

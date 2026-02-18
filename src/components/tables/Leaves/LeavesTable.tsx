@@ -1,7 +1,7 @@
 import {
   useCreateLeave,
   useDeleteLeave,
-  useLeaveApprovals,
+  // useLeaveApprovals,
   useLeaves,
   useUpdateLeave,
 } from "@/hooks/useLeave";
@@ -18,22 +18,25 @@ import { useLeaveTypes } from "@/hooks/useLeaveType";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
-import { useContext, useMemo, useState } from "react";
-import { APPROVAL_INPUT, APPROVAL_LABEL } from "@/constants/Approval";
+import { useMemo, useState } from "react";
+import {
+  // APPROVAL_INPUT,
+  APPROVAL_LABEL,
+  APPROVAL_STATS,
+} from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-import { Check, X } from "lucide-react";
-import { AuthContext } from "@/context/AuthContext";
+// import { Check, X } from "lucide-react";
+import { formatDateID } from "@/utils/date";
 
 export default function LeavesTable() {
   const { data: leaves = [], isLoading, isError, error } = useLeaves();
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
   const { mutateAsync: deleteLeave } = useDeleteLeave();
-  const { mutateAsync: approveLeave } = useLeaveApprovals();
+  // const { mutateAsync: approveLeave } = useLeaveApprovals();
   const { data: employee = [] } = useGetEmployeeForInput();
   const { data: leaveTypes = [] } = useLeaveTypes();
   const { isRole } = useRoleName();
-  const { user } = useContext(AuthContext);
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -160,22 +163,27 @@ export default function LeavesTable() {
       error: "Failed to delete leave",
     });
 
-  const handleApprovalAction = (uuid: string, status: boolean) => {
-    const isApprove = status === APPROVAL_INPUT.APPROVED;
+  // const handleApprovalAction = (
+  //   uuid: string,
+  //   status: boolean,
+  //   note?: string,
+  // ) => {
+  //   const isApprove = status === APPROVAL_INPUT.APPROVED;
 
-    handleMutation(
-      () =>
-        approveLeave({
-          uuid,
-          status,
-        }),
-      {
-        loading: isApprove ? "Approving leave..." : "Rejecting leave...",
-        success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
-        error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
-      },
-    );
-  };
+  //   handleMutation(
+  //     () =>
+  //       approveLeave({
+  //         uuid,
+  //         status,
+  //         note,
+  //       }),
+  //     {
+  //       loading: isApprove ? "Approving leave..." : "Rejecting leave...",
+  //       success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
+  //       error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
+  //     },
+  //   );
+  // };
 
   const columns: Column<Leave>[] = [
     {
@@ -203,10 +211,10 @@ export default function LeavesTable() {
         <div className="text-sm">
           <div className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-            {row.date_start}
+            {formatDateID(row.date_start)}
           </div>
           <div className="text-xs text-gray-400 dark:text-gray-500 ml-3">
-            sampai {row.date_end}
+            Until {formatDateID(row.date_end)}
           </div>
         </div>
       ),
@@ -225,26 +233,44 @@ export default function LeavesTable() {
     {
       header: "Type",
       render: (row) => (
-        <Badge
-          size="sm"
-          variant="solid"
-          color={row.is_half_day ? "warning" : "primary"}
-        >
-          {row.is_half_day ? "Half Day" : "Full Day"}
-        </Badge>
+        <div className="flex items-center gap-1.5 text-xs font-medium">
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              row.is_half_day ? "bg-amber-500" : "bg-blue-500"
+            }`}
+          />
+          <span
+            className={row.is_half_day ? "text-amber-700" : "text-blue-700"}
+          >
+            {row.is_half_day ? "Half Day" : "Full Day"}
+          </span>
+        </div>
       ),
     },
+
     {
       header: "Status",
       render: (row) => {
         const statusConfig = {
-          0: { label: "Pending", color: "warning", dot: "bg-amber-500" },
-          1: { label: "Approved", color: "success", dot: "bg-emerald-500" },
-          2: { label: "Rejected", color: "danger", dot: "bg-rose-500" },
+          [APPROVAL_STATS.PENDING]: {
+            label: "Pending",
+            color: "warning",
+            dot: "bg-amber-500",
+          },
+          [APPROVAL_STATS.APPROVED]: {
+            label: "Approved",
+            color: "success",
+            dot: "bg-emerald-500",
+          },
+          [APPROVAL_STATS.REJECTED]: {
+            label: "Rejected",
+            color: "error",
+            dot: "bg-rose-500",
+          },
         };
-
-        const status = statusConfig[row.approval_status] || statusConfig[0];
-
+        const status =
+          statusConfig[row.approval_status as keyof typeof statusConfig] ||
+          statusConfig[0];
         return (
           <Badge size="sm" color={status.color as any} variant="light">
             <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${status.dot}`} />
@@ -253,44 +279,48 @@ export default function LeavesTable() {
         );
       },
     },
-    {
-      header: "Approval",
-      render: (row) => {
-        // Syarat tombol muncul: Status Pending & Bukan pengajuan sendiri
-        const isPending = row.approval_status === 0;
-        const isNotSelf =
-          user?.employee?.nik?.toString() !== row.employee_nik?.toString();
-        const hasApprovalId = !!row.current_approval_uuid;
-
-        return (
-          <TableActions
-            id={row.current_approval_uuid || ""}
-            dataName={`Leave - ${row.employee_name}`}
-            baseNamePermission={RESOURCES.LEAVE}
-            actions={
-              isPending && isNotSelf && hasApprovalId
-                ? [
-                    {
-                      label: "Approve",
-                      variant: "success",
-                      icon: <Check size={16} />,
-                      onClick: (uuid) =>
-                        handleApprovalAction(uuid, APPROVAL_INPUT.APPROVED),
-                    },
-                    {
-                      label: "Reject",
-                      variant: "danger",
-                      icon: <X size={16} />,
-                      onClick: (uuid) =>
-                        handleApprovalAction(uuid, APPROVAL_INPUT.REJECTED),
-                    },
-                  ]
-                : []
-            }
-          />
-        );
-      },
-    },
+    // {
+    //   header: "Approval",
+    //   render: (row) => {
+    //     return (
+    //       <TableActions
+    //         id={row.current_approval_uuid || ""}
+    //         dataName={`Leave - ${row.employee_name}`}
+    //         baseNamePermission={RESOURCES.LEAVE}
+    //         actions={
+    //           row.can?.approve
+    //             ? [
+    //                 {
+    //                   label: "Approve",
+    //                   variant: "success",
+    //                   icon: <Check size={16} />,
+    //                   showNote: true,
+    //                   onClick: (uuid, note) =>
+    //                     handleApprovalAction(
+    //                       uuid,
+    //                       APPROVAL_INPUT.APPROVED,
+    //                       note,
+    //                     ),
+    //                 },
+    //                 {
+    //                   label: "Reject",
+    //                   variant: "danger",
+    //                   icon: <X size={16} />,
+    //                   showNote: true,
+    //                   onClick: (uuid, note) =>
+    //                     handleApprovalAction(
+    //                       uuid,
+    //                       APPROVAL_INPUT.REJECTED,
+    //                       note,
+    //                     ),
+    //                 },
+    //               ]
+    //             : []
+    //         }
+    //       />
+    //     );
+    //   },
+    // },
     {
       header: "Action",
       render: (row) => (
@@ -301,6 +331,7 @@ export default function LeavesTable() {
           onDelete={handleDelete}
           onShow={() => show.open(row.uuid)}
           baseNamePermission={RESOURCES.LEAVE}
+          can={row.can}
         />
       ),
     },

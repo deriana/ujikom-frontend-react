@@ -7,6 +7,15 @@ export interface EmployeeWorkSchedule {
     uuid?: string;
     name: string;
     nik: string;
+    position: {
+      name: string;
+    };
+    team: {
+      name: string;
+      division: string;
+    };
+
+    system_reserve?: boolean;
   };
   work_schedule: {
     uuid: string;

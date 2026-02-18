@@ -59,6 +59,13 @@ import ShiftTemplateTrash from "./pages/Trash/Pages/ShiftTemplateTrash";
 import EmployeeShifts from "./pages/EmployeeShift/Index";
 import LeaveTypes from "./pages/LeaveType/Index";
 import Leave from "./pages/Leave/Index";
+import EarlyLeaves from "./pages/EarlyLeaves/Index";
+import AttendancRequests from "./pages/AttendanceRequest/Index";
+import LeaveApproval from "./pages/Approval/LeaveApproval";
+import EarlyLeaveApproval from "./pages/Approval/EarlyLeaveApproval";
+import AttendanceRequestApproval from "./pages/Approval/AttendanceRequestApproval";
+import Overtime from "./pages/Overtime/Index";
+import OvertimeApproval from "./pages/Approval/OvertimeApproval";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -188,10 +195,54 @@ export default function App() {
       permission: PERMISSIONS.BASE.INDEX,
     },
     {
+      path: "/early-leaves",
+      element: <EarlyLeaves />,
+      resource: RESOURCES.EARLY_LEAVE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/attendance-requests",
+      element: <AttendancRequests />,
+      resource: RESOURCES.EARLY_LEAVE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/overtimes",
+      element: <Overtime />,
+      resource: RESOURCES.OVERTIME,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
       path: "/settings",
       element: <Setting />,
       resource: RESOURCES.SETTING,
       permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    /** Approval Route */
+    {
+      path: "/approval/leave",
+      element: <LeaveApproval />,
+      resource: RESOURCES.LEAVE,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/early-leave",
+      element: <EarlyLeaveApproval />,
+      resource: RESOURCES.EARLY_LEAVE,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/attendance-request",
+      element: <AttendanceRequestApproval />,
+      resource: RESOURCES.ATTENDANCE_REQUEST,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/overtime",
+      element: <OvertimeApproval />,
+      resource: RESOURCES.OVERTIME,
+      permission: PERMISSIONS.BASE.APPROVE,
     },
 
     /** Trash Route */

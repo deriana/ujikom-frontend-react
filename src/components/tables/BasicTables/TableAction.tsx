@@ -27,7 +27,8 @@ interface CustomAction<T> {
     | "destructive";
   icon: React.ReactNode;
   permission?: string;
-  onClick: (id: T) => void;
+  onClick: (id: T, note?: string) => void;
+  showNote?: boolean;
 }
 
 interface TableActionsProps<T extends string | number> {
@@ -43,6 +44,16 @@ interface TableActionsProps<T extends string | number> {
   onEdit?: (id: T) => void;
   newComponent?: React.ReactNode;
   actions?: CustomAction<T>[];
+  can?: {
+    update?: boolean;
+    delete?: boolean;
+    restore?: boolean;
+    archive?: boolean;
+    unarchive?: boolean;
+    forceDelete?: boolean;
+    show?: boolean;
+  };
+  isSystemReserve?: boolean;
 }
 
 export default function TableActions<T extends string | number>({
@@ -58,8 +69,11 @@ export default function TableActions<T extends string | number>({
   onEdit,
   newComponent,
   actions = [],
+  can,
+  isSystemReserve,
 }: TableActionsProps<T>) {
   const { isOpen, openModal, closeModal } = useModal();
+  const [note, setNote] = useState("");
 
   // State terpisah untuk menghindari bentrok logic modal
   const [activeStandardAction, setActiveStandardAction] =
@@ -141,27 +155,83 @@ export default function TableActions<T extends string | number>({
       };
       handlers[activeStandardAction]?.(id);
     } else if (activeCustomAction) {
-      activeCustomAction.onClick(id);
+      activeCustomAction.onClick(id, note);
     }
+
+    setNote("");
     closeModal();
   };
+
+  const handleCancel = () => {
+    setNote("");
+    closeModal();
+  };
+
+  const shouldShowEdit =
+    onEdit &&
+    hasPermission("EDIT") &&
+    can?.update !== false &&
+    !isSystemReserve;
+
+  const shouldShowView = onShow && hasPermission("SHOW") && can?.show !== false;
+  // Apakah user punya izin secara permission & policy?
+  const canEdit = hasPermission("EDIT") && can?.update !== false;
+  const canView = hasPermission("SHOW") && can?.show !== false;
+
+  // Apakah tombol Edit harus di-disable? (Karena tidak punya izin ATAU System Reserve)
+  const isEditDisabled = !canEdit || isSystemReserve;
+
+  // Apakah tombol View harus di-disable?
+  const isViewDisabled = !canView;
 
   // --- Render Logic ---
   const renderStandardButton = (type: StandardActionType, exists: boolean) => {
     if (!exists) return null;
+
     const config = standardConfig[type];
+    const hasPerm = hasPermission(config.perm);
+    const isLocked =
+      isSystemReserve && (type === "delete" || type === "forceDelete");
+
+    const policyMap: Record<StandardActionType, boolean | undefined> = {
+      delete: can?.delete,
+      forceDelete: can?.forceDelete,
+      restore: can?.restore,
+      archive: can?.archive,
+      unarchive: can?.unarchive,
+    };
+
+    const isRestrictedByPolicy = policyMap[type] === false;
+
+    const isDisabled = !hasPerm || isLocked || isRestrictedByPolicy;
+
     return (
-      <Can key={type} value={getFullPerm(config.perm)}>
-        <Tooltip content={`${config.label} ${dataName}`}>
+      <Tooltip
+        key={type}
+        content={
+          !hasPerm
+            ? `You don't have permission to ${config.label.toLowerCase()}`
+            : isLocked
+              ? `System Reserved: Cannot ${config.label.toLowerCase()}`
+              : isRestrictedByPolicy
+                ? `Action not allowed: The current status or rules prevent this action.`
+                : `${config.label} ${dataName}`
+        }
+      >
+        <div className="inline-block">
           <Button
-            onClick={() => handleOpenStandard(type)}
+            onClick={() => !isDisabled && handleOpenStandard(type)}
             size="sm"
             variant={config.variant as any}
+            disabled={isDisabled}
+            className={
+              isDisabled ? "opacity-30 cursor-not-allowed grayscale" : ""
+            }
           >
             {config.icon}
           </Button>
-        </Tooltip>
-      </Can>
+        </div>
+      </Tooltip>
     );
   };
 
@@ -170,13 +240,15 @@ export default function TableActions<T extends string | number>({
   );
 
   const canShow = !!(
-    (onShow && hasPermission("SHOW")) ||
-    (onEdit && hasPermission("EDIT")) ||
-    (onDelete && hasPermission("DESTROY")) ||
-    (onForceDelete && hasPermission("FORCE_DELETE")) ||
-    (onRestore && hasPermission("RESTORE")) ||
-    (onArchive && hasPermission("ARCHIVE")) ||
-    (onUnarchive && hasPermission("UNARCHIVE")) ||
+    shouldShowView ||
+    shouldShowEdit ||
+    (onDelete && hasPermission("DESTROY") && can?.delete !== false) ||
+    (onForceDelete &&
+      hasPermission("FORCE_DELETE") &&
+      can?.forceDelete !== false) ||
+    (onRestore && hasPermission("RESTORE") && can?.restore !== false) ||
+    (onArchive && hasPermission("ARCHIVE") && can?.archive !== false) ||
+    (onUnarchive && hasPermission("UNARCHIVE") && can?.unarchive !== false) ||
     hasAnyVisibleCustom ||
     newComponent
   );
@@ -192,19 +264,55 @@ export default function TableActions<T extends string | number>({
       {canShow ? (
         <>
           {/* Show & Edit (Aksi Utama) */}
-          {onShow && hasPermission("SHOW") && (
-            <Tooltip content={`Show ${dataName}`}>
-              <Button onClick={() => onShow(id)} size="sm">
-                <Eye size={16} />
-              </Button>
+          {onShow && (
+            <Tooltip
+              content={
+                !canView ? "No access to view details" : `Show ${dataName}`
+              }
+            >
+              <div className="inline-block">
+                <Button
+                  onClick={() => !isViewDisabled && onShow(id)}
+                  size="sm"
+                  disabled={isViewDisabled}
+                  className={
+                    isViewDisabled
+                      ? "opacity-30 grayscale cursor-not-allowed"
+                      : ""
+                  }
+                >
+                  <Eye size={16} />
+                </Button>
+              </div>
             </Tooltip>
           )}
 
-          {onEdit && hasPermission("EDIT") && (
-            <Tooltip content={`Edit ${dataName}`}>
-              <Button onClick={() => onEdit(id)} size="sm" variant="warning">
-                <Pencil size={16} />
-              </Button>
+          {/* TOMBOL EDIT */}
+          {onEdit && (
+            <Tooltip
+              content={
+                !canEdit
+                  ? "No access to edit"
+                  : isSystemReserve
+                    ? "System Reserved: Cannot edit"
+                    : `Edit ${dataName}`
+              }
+            >
+              <div className="inline-block">
+                <Button
+                  onClick={() => !isEditDisabled && onEdit(id)}
+                  size="sm"
+                  variant="warning"
+                  disabled={isEditDisabled}
+                  className={
+                    isEditDisabled
+                      ? "opacity-30 grayscale cursor-not-allowed"
+                      : ""
+                  }
+                >
+                  <Pencil size={16} />
+                </Button>
+              </div>
             </Tooltip>
           )}
 
@@ -246,8 +354,9 @@ export default function TableActions<T extends string | number>({
       )}
 
       {/* Satu Modal untuk Semua Aksi */}
+      {/* Di dalam Modal */}
       {modalInfo && (
-        <Modal isOpen={isOpen} onClose={closeModal} className="max-w-100 m-4">
+        <Modal isOpen={isOpen} onClose={handleCancel} className="max-w-100 m-4">
           <div className="rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-7">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
               {modalInfo.label} Confirmation
@@ -255,12 +364,27 @@ export default function TableActions<T extends string | number>({
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
               Are you sure you want to{" "}
               <strong>{modalInfo.label.toLowerCase()}</strong>{" "}
-              <strong>{dataName || "this item"}</strong>? This action cannot be
-              undone.
+              <strong>{dataName || "this item"}</strong>?
             </p>
 
+            {/* --- BAGIAN INPUT NOTE --- */}
+            {activeCustomAction?.showNote && (
+              <div className="mb-6">
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Notes / Reason (Optional)
+                </label>
+                <textarea
+                  className="w-full p-3 text-sm border border-gray-300 rounded-xl focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                  rows={3}
+                  placeholder="Add a reason for this decision..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </div>
+            )}
+
             <div className="flex items-center gap-3 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button onClick={handleCancel} size="sm" variant="info">
                 Cancel
               </Button>
               <Button

@@ -9,6 +9,7 @@ import { handleMutation } from "@/utils/handleMutation";
 import { useMemo, useState } from "react";
 import FilterDropdown from "@/components/FilterDropdown";
 import UserProfile from "@/components/UserProfile";
+import Badge from "@/components/ui/badge/Badge";
 
 export default function UsersTable() {
   const { data: users = [], isLoading, isError, error } = useUsers();
@@ -160,6 +161,14 @@ export default function UsersTable() {
       ),
     },
     {
+      header: "System Reserve",
+      render: (row) => (
+        <Badge size="sm" color={row.system_reserve ? "warning" : "success"}>
+          {row.system_reserve ? "System" : "Custom"}
+        </Badge>
+      ),
+    },
+    {
       header: "Actions",
       render: (row) => (
         <TableActions
@@ -169,6 +178,7 @@ export default function UsersTable() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           baseNamePermission={RESOURCES.USER}
+          isSystemReserve={row.system_reserve}
         />
       ),
     },

@@ -11,6 +11,7 @@ export const PERMISSIONS = {
     IMPORT: "import",
     ARCHIVE: "archive",
     UNARCHIVE: "unarchive",
+    APPROVE: "approve"
   },
 } as const;
 

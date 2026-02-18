@@ -12,7 +12,7 @@ import {
 } from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
-import { Database, File, Settings, Table } from "lucide-react";
+import { Clock10Icon, Database, File, Settings, Table } from "lucide-react";
 
 export type NavSubItem = {
   name: string;
@@ -64,10 +64,61 @@ export const navItems: NavItem[] = [
     name: "Leaves",
     path: "/leaves",
     icon: <File />,
+    permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Early Leaves",
+    path: "/early-leaves",
+    icon: <File />,
+    permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Attendance Requests",
+    path: "/attendance-requests",
+    icon: <File />,
     permission: buildPermission(
-      RESOURCES.LEAVE,
+      RESOURCES.ATTENDANCE_REQUEST,
       PERMISSIONS.BASE.INDEX,
     ),
+  },
+  {
+    name: "Overtimes",
+    path: "/overtimes",
+    icon: <Clock10Icon />,
+    permission: buildPermission(
+      RESOURCES.OVERTIME,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
+    name: "Approval",
+    icon: <File />,
+    subItems: [
+      {
+        name: "Leave Approval",
+        path: "/approval/leave",
+        pro: false,
+        permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Early Leave Approval",
+        path: "/approval/early-leave",
+        pro: false,
+        permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Attendance Request Approval",
+        path: "/approval/attendance-request",
+        pro: false,
+        permission: buildPermission(RESOURCES.ATTENDANCE_REQUEST, PERMISSIONS.BASE.APPROVE)
+      },
+      {
+        name: "Overtime Approval",
+        path: "/approval/overtime",
+        pro: false,
+        permission: buildPermission(RESOURCES.OVERTIME, PERMISSIONS.BASE.APPROVE)
+      },
+    ],
   },
   {
     name: "Master Data",

@@ -21,6 +21,7 @@ import UserProfile from "@/components/UserProfile";
 import EmployeeWorkScheduleModal from "@/pages/EmployeeWorkSchedule/Modal";
 import { useWorkSchedules } from "@/hooks/useWorkSchedules";
 import { useGetEmployeeForInput } from "@/hooks/useUser";
+import { formatDateID } from "@/utils/date";
 
 export default function EmployeeWorkScheduleTable() {
   const {
@@ -197,7 +198,7 @@ export default function EmployeeWorkScheduleTable() {
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <Calendar className="w-4 h-4" />
-            <span className="tabular-nums">{row.start_date}</span>
+            <span className="tabular-nums">{formatDateID(row.start_date)}</span>
             <span className="text-gray-400">→</span>
             <span
               className={
@@ -206,7 +207,7 @@ export default function EmployeeWorkScheduleTable() {
                   : "italic text-blue-500 font-medium"
               }
             >
-              {row.end_date || "Present"}
+              {row.end_date ? formatDateID(row.end_date) : "Present"}
             </span>
           </div>
           <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase italic">
@@ -244,6 +245,7 @@ export default function EmployeeWorkScheduleTable() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           baseNamePermission={RESOURCES.EMPLOYEE_WORK_SCHEDULE}
+          isSystemReserve={row.employee?.system_reserve}
         />
       ),
     },
