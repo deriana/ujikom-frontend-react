@@ -1,23 +1,32 @@
-import React from "react";
-import {
-  BoxCubeIcon,
-  CalenderIcon,
-  GridIcon,
-  ListIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
-  TrashBinIcon,
-  UserCircleIcon,
-} from "../icons";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
-import { Clock10Icon, Database, DollarSign, File, Settings, Table } from "lucide-react";
-
+import {
+  LayoutGrid,
+  ClipboardCheck,
+  CalendarClock,
+  CalendarDays,
+  FileText,
+  FileSpreadsheet,
+  FileClock,
+  Clock,
+  DollarSign,
+  FileCheck2,
+  Database,
+  ShieldCheck,
+  Users,
+  Network,
+  Wallet,
+  Briefcase,
+  Palmtree,
+  Settings,
+  Calendar,
+  Trash2,
+} from "lucide-react";
 export type NavSubItem = {
   name: string;
   path: string;
   permission?: string;
+  icon: React.ReactNode;
   pro?: boolean;
   new?: boolean;
 };
@@ -32,20 +41,20 @@ export type NavItem = {
 
 export const navItems: NavItem[] = [
   {
-    icon: <GridIcon />,
+    icon: <LayoutGrid size={20} />,
     name: "Dashboard",
     path: "/",
   },
   {
     name: "Attendances Report",
-    icon: <Database />,
+    icon: <ClipboardCheck size={20} />,
     path: "/attendances/report",
     permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Employee Shifts",
     path: "/employee-shifts",
-    icon: <Table />,
+    icon: <CalendarClock size={20} />,
     permission: buildPermission(
       RESOURCES.EMPLOYEE_SHIFT,
       PERMISSIONS.BASE.INDEX,
@@ -54,7 +63,7 @@ export const navItems: NavItem[] = [
   {
     name: "Employee Work Schedules",
     path: "/employee-work-schedules",
-    icon: <Table />,
+    icon: <CalendarDays size={20} />,
     permission: buildPermission(
       RESOURCES.WORK_SCHEDULE,
       PERMISSIONS.BASE.INDEX,
@@ -63,19 +72,19 @@ export const navItems: NavItem[] = [
   {
     name: "Leaves",
     path: "/leaves",
-    icon: <File />,
+    icon: <Palmtree size={20} />,
     permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Early Leaves",
     path: "/early-leaves",
-    icon: <File />,
+    icon: <FileClock size={20} />,
     permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Attendance Requests",
     path: "/attendance-requests",
-    icon: <File />,
+    icon: <FileSpreadsheet size={20} />,
     permission: buildPermission(
       RESOURCES.ATTENDANCE_REQUEST,
       PERMISSIONS.BASE.INDEX,
@@ -84,74 +93,80 @@ export const navItems: NavItem[] = [
   {
     name: "Overtimes",
     path: "/overtimes",
-    icon: <Clock10Icon />,
-    permission: buildPermission(
-      RESOURCES.OVERTIME,
-      PERMISSIONS.BASE.INDEX,
-    ),
+    icon: <Clock size={20} />,
+    permission: buildPermission(RESOURCES.OVERTIME, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Payroll",
     path: "/payroll",
-    icon: <DollarSign />,
+    icon: <DollarSign size={20} />,
     permission: buildPermission(RESOURCES.PAYROLL, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Approval",
-    icon: <File />,
+    icon: <FileCheck2 size={20} />,
     subItems: [
       {
         name: "Leave Approval",
         path: "/approval/leave",
-        pro: false,
-        permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.APPROVE)
+        icon: <Palmtree size={18} />,
+        permission: buildPermission(RESOURCES.LEAVE, PERMISSIONS.BASE.APPROVE),
       },
       {
         name: "Early Leave Approval",
         path: "/approval/early-leave",
-        pro: false,
-        permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.APPROVE)
+        icon: <FileClock size={18} />,
+        permission: buildPermission(
+          RESOURCES.EARLY_LEAVE,
+          PERMISSIONS.BASE.APPROVE,
+        ),
       },
       {
         name: "Attendance Request Approval",
         path: "/approval/attendance-request",
-        pro: false,
-        permission: buildPermission(RESOURCES.ATTENDANCE_REQUEST, PERMISSIONS.BASE.APPROVE)
+        icon: <FileSpreadsheet size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE_REQUEST,
+          PERMISSIONS.BASE.APPROVE,
+        ),
       },
       {
         name: "Overtime Approval",
         path: "/approval/overtime",
-        pro: false,
-        permission: buildPermission(RESOURCES.OVERTIME, PERMISSIONS.BASE.APPROVE)
+        icon: <Clock size={18} />,
+        permission: buildPermission(
+          RESOURCES.OVERTIME,
+          PERMISSIONS.BASE.APPROVE,
+        ),
       },
     ],
   },
   {
     name: "Master Data",
-    icon: <PieChartIcon />,
+    icon: <Database size={20} />,
     subItems: [
       {
         name: "Roles",
         path: "/roles",
-        pro: false,
+        icon: <ShieldCheck size={18} />,
         permission: buildPermission(RESOURCES.ROLE, PERMISSIONS.BASE.INDEX),
       },
       {
         name: "Users",
         path: "/users",
-        pro: false,
+        icon: <Users size={18} />,
         permission: buildPermission(RESOURCES.USER, PERMISSIONS.BASE.INDEX),
       },
       {
         name: "Divisions",
         path: "/divisions",
-        pro: false,
+        icon: <Network size={18} />,
         permission: buildPermission(RESOURCES.DIVISION, PERMISSIONS.BASE.INDEX),
       },
       {
         name: "Allowances",
         path: "/allowances",
-        pro: false,
+        icon: <Wallet size={18} />,
         permission: buildPermission(
           RESOURCES.ALLOWANCE,
           PERMISSIONS.BASE.INDEX,
@@ -160,19 +175,19 @@ export const navItems: NavItem[] = [
       {
         name: "Positions",
         path: "/Positions",
-        pro: false,
+        icon: <Briefcase size={18} />,
         permission: buildPermission(RESOURCES.POSITION, PERMISSIONS.BASE.INDEX),
       },
       {
         name: "Holidays",
         path: "/holidays",
-        pro: false,
+        icon: <Calendar size={18} />,
         permission: buildPermission(RESOURCES.HOLIDAY, PERMISSIONS.BASE.INDEX),
       },
       {
         name: "Work Schedules",
         path: "/work-schedules",
-        pro: false,
+        icon: <CalendarDays size={18} />,
         permission: buildPermission(
           RESOURCES.WORK_SCHEDULE,
           PERMISSIONS.BASE.INDEX,
@@ -181,7 +196,7 @@ export const navItems: NavItem[] = [
       {
         name: "Shift Templates",
         path: "/shift-templates",
-        pro: false,
+        icon: <CalendarClock size={18} />,
         permission: buildPermission(
           RESOURCES.SHIFT_TEMPLATE,
           PERMISSIONS.BASE.INDEX,
@@ -190,7 +205,7 @@ export const navItems: NavItem[] = [
       {
         name: "Leave Types",
         path: "/leave-types",
-        pro: false,
+        icon: <FileText size={18} />,
         permission: buildPermission(
           RESOURCES.LEAVE_TYPES,
           PERMISSIONS.BASE.INDEX,
@@ -199,37 +214,21 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <CalenderIcon />,
+    icon: <Calendar size={20} />,
     name: "Calendar",
     path: "/calendar",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
   },
 ];
 
 export const othersItems: NavItem[] = [
   {
-    icon: <TrashBinIcon />,
+    icon: <Trash2 size={20} />,
     name: "Trash",
     subItems: [
-      // { name: "Trash", path: "/trash", pro: false },
       {
         name: "Divisions",
         path: "/trash/divisions",
-        pro: false,
+        icon: <Network size={18} />,
         permission: buildPermission(
           RESOURCES.DIVISION,
           PERMISSIONS.BASE.RESTORE,
@@ -238,7 +237,7 @@ export const othersItems: NavItem[] = [
       {
         name: "Allowances",
         path: "/trash/allowances",
-        pro: false,
+        icon: <Wallet size={18} />,
         permission: buildPermission(
           RESOURCES.ALLOWANCE,
           PERMISSIONS.BASE.RESTORE,
@@ -247,7 +246,7 @@ export const othersItems: NavItem[] = [
       {
         name: "Positions",
         path: "/trash/positions",
-        pro: false,
+        icon: <Briefcase size={18} />,
         permission: buildPermission(
           RESOURCES.POSITION,
           PERMISSIONS.BASE.RESTORE,
@@ -256,13 +255,13 @@ export const othersItems: NavItem[] = [
       {
         name: "Users",
         path: "/trash/users",
-        pro: false,
+        icon: <Users size={18} />,
         permission: buildPermission(RESOURCES.USER, PERMISSIONS.BASE.RESTORE),
       },
       {
         name: "Work Schedules",
         path: "/trash/work-schedules",
-        pro: false,
+        icon: <CalendarDays size={18} />,
         permission: buildPermission(
           RESOURCES.WORK_SCHEDULE,
           PERMISSIONS.BASE.RESTORE,
@@ -271,7 +270,7 @@ export const othersItems: NavItem[] = [
       {
         name: "Shift Templates",
         path: "/trash/shift-templates",
-        pro: false,
+        icon: <CalendarClock size={18} />,
         permission: buildPermission(
           RESOURCES.SHIFT_TEMPLATE,
           PERMISSIONS.BASE.RESTORE,
@@ -280,35 +279,7 @@ export const othersItems: NavItem[] = [
     ],
   },
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
-  },
-  {
-    icon: <Settings />,
+    icon: <Settings size={20} />,
     name: "Settings",
     path: "/settings",
     permission: buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX),

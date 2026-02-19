@@ -6,18 +6,7 @@ import {
 } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import NotFound from "./pages/Error/NotFound";
-import UserProfiles from "./pages/UserProfiles";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
 import Calendar from "./pages/Calendar";
-import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -67,6 +56,7 @@ import AttendanceRequestApproval from "./pages/Approval/AttendanceRequestApprova
 import Overtime from "./pages/Overtime/Index";
 import OvertimeApproval from "./pages/Approval/OvertimeApproval";
 import Payroll from "./pages/Payroll/Index";
+import Notification from "./pages/Notification/Notification";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -81,7 +71,6 @@ export default function App() {
 
   const publicRoutes = [
     { path: "/", element: <Home /> },
-    { path: "/profile", element: <UserProfiles /> },
     { path: "/calendar", element: <Calendar /> },
     { path: "/blank", element: <Blank /> },
   ];
@@ -226,6 +215,11 @@ export default function App() {
       permission: PERMISSIONS.BASE.INDEX,
     },
 
+    {
+      path: "/notifications",
+      element: <Notification />,
+    },
+
     /** Approval Route */
     {
       path: "/approval/leave",
@@ -322,17 +316,6 @@ export default function App() {
                   <Route key={path} path={path} element={element} />
                 ),
               )}
-
-              <Route path="/form-elements" element={<FormElements />} />
-              <Route path="/basic-tables" element={<BasicTables />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              <Route path="/buttons" element={<Buttons />} />
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
-              <Route path="/line-chart" element={<LineChart />} />
-              <Route path="/bar-chart" element={<BarChart />} />
             </Route>
           </Route>
 
