@@ -1,47 +1,50 @@
-import { useEffect, useRef } from "react";
+import { useMemo, useState } from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import flatpickr from "flatpickr";
-import ChartTab from "../common/ChartTab";
-import { CalenderIcon } from "../../icons";
+import { MonthlyChart } from "@/types";
+// import DatePicker from "../form/date-picker";
 
-export default function StatisticsChart() {
-  const datePickerRef = useRef<HTMLInputElement>(null);
+interface StatisticsChartProps {
+  chartData?: MonthlyChart;
+  // Tambahkan prop ini untuk komunikasi ke Parent
+  onDateChange?: (date: string) => void;
+}
 
-  useEffect(() => {
-    if (!datePickerRef.current) return;
-    const today = new Date();
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 6);
-
-    const fp = flatpickr(datePickerRef.current, {
-      mode: "range",
-      static: true,
-      monthSelectorType: "static",
-      dateFormat: "M d",
-      defaultDate: [sevenDaysAgo, today],
-      // ... (rest of your flatpickr config)
-    });
-
-    return () => { if (!Array.isArray(fp)) fp.destroy(); };
+export default function StatisticsChart({
+  chartData,
+  onDateChange,
+}: StatisticsChartProps) {
+  const defaultRange = useMemo(() => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const formatDate = (date: Date) => date.toISOString().split("T")[0];
+    return `${formatDate(firstDay)} to ${formatDate(now)}`;
   }, []);
 
+  const [dateRange, setDateRange] = useState<string>(defaultRange);
+
+  const handleDateChange = (selectedDates: Date[], dateStr: string) => {
+    setDateRange(dateStr);
+
+    // Pemicu fetch ulang: Kirim tanggal pertama dari range ke backend
+    if (selectedDates.length > 0 && onDateChange) {
+      const formattedDate = selectedDates[0].toISOString().split("T")[0];
+      onDateChange(formattedDate);
+    }
+  };
+
+  // ... (options dan series tetap sama seperti kode kamu)
   const options: ApexOptions = {
     legend: { show: false },
-    // Warna yang lebih vibrant untuk modern look
-    colors: ["#465FFF", "#34D399"], 
+    colors: ["#465FFF", "#F43F5E"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       height: 310,
-      type: "area", // Pastikan type area agar gradient bekerja
+      type: "area",
       toolbar: { show: false },
       sparkline: { enabled: false },
     },
-    stroke: {
-      curve: "smooth", // Jauh lebih modern daripada 'straight'
-      width: [3, 3],
-      lineCap: "round",
-    },
+    stroke: { curve: "smooth", width: [3, 3], lineCap: "round" },
     fill: {
       type: "gradient",
       gradient: {
@@ -51,56 +54,40 @@ export default function StatisticsChart() {
         stops: [0, 90, 100],
       },
     },
-    markers: {
-      size: 0,
-      hover: { size: 5 },
-    },
     grid: {
-      borderColor: "rgba(148, 163, 184, 0.1)", // Garis tipis transparan
+      borderColor: "rgba(148, 163, 184, 0.1)",
       strokeDashArray: 4,
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
-      padding: { top: 0, right: 0, bottom: 0, left: 0 },
     },
     dataLabels: { enabled: false },
-    tooltip: {
-      theme: "dark", // Memaksa tooltip gelap agar terlihat pro
-      fixed: { enabled: false },
-      x: { show: true },
-      y: { title: { formatter: (seriesName) => seriesName } },
-      marker: { show: true },
-    },
+    tooltip: { theme: "dark", x: { show: true } },
     xaxis: {
       type: "category",
-      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
       axisBorder: { show: false },
       axisTicks: { show: false },
-      labels: {
-        style: {
-          colors: "#94a3b8",
-          fontSize: "12px",
-        },
-      },
+      labels: { style: { colors: "#94a3b8", fontSize: "12px" } },
     },
-    yaxis: {
-      labels: {
-        style: {
-          colors: "#94a3b8",
-          fontSize: "12px",
-        },
-      },
-    },
+    yaxis: { labels: { style: { colors: "#94a3b8", fontSize: "12px" } } },
   };
 
   const series = [
-    {
-      name: "Hadir",
-      data: [180, 190, 170, 160, 175, 165, 170, 205, 230, 210, 240, 235],
-    },
-    {
-      name: "Izin/Sakit",
-      data: [40, 30, 50, 40, 55, 40, 70, 100, 110, 120, 150, 140],
-    },
+    { name: "Hadir", data: chartData?.hadir || Array(12).fill(0) },
+    { name: "Tidak Hadir", data: chartData?.absent || Array(12).fill(0) },
   ];
 
   return (
@@ -114,21 +101,22 @@ export default function StatisticsChart() {
             Visualisasi tren kehadiran karyawan tahun ini
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
-          <ChartTab />
-          <div className="relative group">
-            <CalenderIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 group-focus-within:text-blue-500 transition-colors pointer-events-none z-10" />
-            <input
-              ref={datePickerRef}
-              className="h-10 pl-9 pr-3 py-2 rounded-xl border border-gray-200 bg-gray-50/50 text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition-all cursor-pointer w-full sm:w-44"
-              placeholder="Pilih Tanggal"
+          {/* <div className="w-full sm:w-60">
+            <DatePicker
+              id="attendance-date-picker"
+              mode="range"
+              placeholder="Select date range"
+              value={dateRange}
+              onChange={handleDateChange}
+              className="gap-0!"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
-      <div className="max-w-full overflow-x-auto custom-scrollbar">
+      <div className="max-w-full overflow-hidden">
         <div className="min-w-150 xl:min-w-full">
           <Chart options={options} series={series} type="area" height={310} />
         </div>

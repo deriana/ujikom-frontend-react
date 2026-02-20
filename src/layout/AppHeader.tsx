@@ -117,7 +117,7 @@ const AppHeader: React.FC = () => {
           </button>
 
           <div className="hidden lg:block">
-            <form>
+            {/* <form>
               <div className="relative">
                 <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                   <svg
@@ -148,7 +148,7 @@ const AppHeader: React.FC = () => {
                   <span> K </span>
                 </button>
               </div>
-            </form>
+            </form> */}
           </div>
         </div>
         <div

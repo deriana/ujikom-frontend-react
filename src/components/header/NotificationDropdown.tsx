@@ -11,7 +11,7 @@ export default function NotificationDropdown() {
   // 1. Ambil data unread menggunakan React Query Hook
   const { data: unreadNotifications = [], isLoading } = useUnreadNotifications();
 
-  console.log(unreadNotifications)
+  // console.log(unreadNotifications)
   
   // 2. Setup Mutation Hooks
   const markAsReadMutation = useMarkAsRead();

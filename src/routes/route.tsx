@@ -20,7 +20,9 @@ import {
   Palmtree,
   Settings,
   Calendar,
+  UserCircle,
   Trash2,
+  LayoutDashboard,
 } from "lucide-react";
 export type NavSubItem = {
   name: string;
@@ -42,8 +44,16 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   {
     icon: <LayoutGrid size={20} />,
-    name: "Dashboard",
-    path: "/",
+    name: "Admin Dashboard",
+    path: "/dashboard/admin",
+    permission: buildPermission(RESOURCES.DASHBOARD, PERMISSIONS.DASHBOARD.admin),
+  },
+  {
+    icon: <LayoutDashboard size={20} />,
+    name: "Employee Dashboard",
+    path: "/dashboard/employee",
+    permission: buildPermission(RESOURCES.DASHBOARD, PERMISSIONS.DASHBOARD.employee),
+    
   },
   {
     name: "Attendances Report",
@@ -277,6 +287,11 @@ export const othersItems: NavItem[] = [
         ),
       },
     ],
+  },
+  {
+    icon: <UserCircle size={20} />,
+    name: "Profile",
+    path: "/profile",
   },
   {
     icon: <Settings size={20} />,

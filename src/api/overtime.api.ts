@@ -24,7 +24,7 @@ export const getOvertimeByUuid = async (uuid: string) => {
 export const createOvertime = async (
   payload: OvertimeInput,
 ) => {
-  console.log(payload);
+  // console.log(payload);
   const res = await api.post<ApiResponse<Overtime[]>>(
     "/overtime",
     payload,

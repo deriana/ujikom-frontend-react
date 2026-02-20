@@ -36,7 +36,7 @@ export const deleteLeave = async (uuid: string) => {
 export const leaveApprovals = async (uuid: string, status: boolean, note?: string) => {
   const isApprove = status === APPROVAL_INPUT.APPROVED;
 
-  console.log(isApprove)
+  // console.log(isApprove)
 
   const res = await api.put<ApiResponse<Leave[]>>(
     `/leaves/approvals/${uuid}/approve`,

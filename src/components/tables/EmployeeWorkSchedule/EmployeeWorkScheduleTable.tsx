@@ -127,7 +127,7 @@ export default function EmployeeWorkScheduleTable() {
     });
 
   const handleEdit = (uuid: string) => {
-    console.log("Editing UUID:", uuid); // <-- ini log UUID
+    // console.log("Editing UUID:", uuid); // <-- ini log UUID
     const ws = employeeWorkSchedules.find((w) => w.uuid === uuid);
     if (!ws) return;
     crud.openEdit({

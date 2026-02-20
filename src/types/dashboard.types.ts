@@ -1,0 +1,136 @@
+export interface EmployeeStats {
+  total: number;
+  aktif: number;
+  resign_bulan_ini: number;
+  baru_bulan_ini: number;
+}
+
+export interface AttendanceToday {
+  hadir: number;
+  cuti: number;
+  terlambat: number;
+  tanpa_keterangan: number;
+}
+
+export interface LeaveSummary {
+  disetujui: number;
+  ditolak: number;
+  pending: number;
+  sisa_cuti: number;
+}
+
+export interface PendingTasks {
+  cuti: number;
+  lembur: number;
+  attendance_request: number;
+}
+
+export interface MapLocation {
+  name: string;
+  lat: string | number | null;
+  lng: string | number | null;
+  time: string;
+}
+
+export interface MonthlyChart {
+  hadir: number[];
+  absent: number[];
+}
+
+export interface AdminDashboardData {
+  employee_stats: EmployeeStats;
+  attendance_today: AttendanceToday;
+  leave_summary: LeaveSummary;
+  pending_tasks: PendingTasks;
+  map_locations: MapLocation[];
+  monthly_chart: MonthlyChart;
+}
+
+export interface EmployeeProfile {
+  name: string;
+  nik: string;
+  position: string;
+  team: string;
+  division: string;
+  profile_photo: string | null;
+}
+
+export interface PersonalStats {
+  sisa_cuti: number;
+  total_terlambat: number;
+  total_menit_lembur: number;
+  total_menit_kerja: number;
+  kehadiran_bulan_ini: number;
+}
+
+export interface OvertimeLog {
+  date: string;
+  duration: string;
+  reason: string;
+  status: "pending" | "approved" | "rejected" | string;
+}
+
+export interface LeaveLog {
+  type: string;
+  date_range: string;
+  status: string;
+  reason: string;
+}
+
+export interface Attendance {
+  id: number;
+  employee_id: number;
+  date: string;
+  status: string;
+  late_minutes: number;
+  work_minutes: number;
+  overtime_minutes: number;
+}
+
+export interface YearlyAttendanceChart {
+  presence: number[];
+  late: number[];
+}
+
+export interface PendingRequest {
+  leave: number;
+  overtime: number;
+  attendance_request: number;
+  // total: number;
+}
+
+export interface PendingApprovalItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  type: 'leave' | 'overtime' | 'attendance';
+  status: string;
+}
+
+export interface PendingCounts {
+  leave: number;
+  overtime: number;
+  attendance_request: number;
+}
+
+export interface SalaryLog {
+  uuid: string;
+  period: string;
+  payment_date: string;
+  net_salary: number;
+  formatted_net_salary: string;
+  status: number;
+}
+
+export interface EmployeeDashboardData {
+  profile: EmployeeProfile;
+  personal_stats: PersonalStats;
+  recent_attendance: Attendance[];
+  pending_requests: PendingRequest;
+  yearly_attendance_chart: YearlyAttendanceChart;
+  logs: {
+    overtime: OvertimeLog[];
+    leave: LeaveLog[];
+    salary: SalaryLog[];
+  };
+}
