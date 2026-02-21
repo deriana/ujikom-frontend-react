@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+import { EyeClosedIcon, EyeIcon } from "lucide-react";
 
 export default function SignInForm() {
   const { login } = useAuth();
@@ -42,15 +42,6 @@ export default function SignInForm() {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="w-full max-w-md pt-10 mx-auto">
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-        >
-          <ChevronLeftIcon className="size-5" />
-          Back to dashboard
-        </Link>
-      </div>
 
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
@@ -87,9 +78,9 @@ export default function SignInForm() {
                   className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2"
                 >
                   {showPassword ? (
-                    <EyeIcon className="size-5" />
+                    <EyeIcon className="size-5 dark:text-white/90" />
                   ) : (
-                    <EyeCloseIcon className="size-5" />
+                    <EyeClosedIcon className="size-5 dark:text-white/90" />
                   )}
                 </span>
               </div>
@@ -115,13 +106,6 @@ export default function SignInForm() {
             </Button>
           </div>
         </form>
-
-        <p className="mt-5 text-sm text-center text-gray-700 dark:text-gray-400 sm:text-start">
-          Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-brand-500 hover:text-brand-600">
-            Sign Up
-          </Link>
-        </p>
       </div>
     </div>
   );

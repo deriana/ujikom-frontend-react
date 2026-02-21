@@ -294,6 +294,11 @@ export const othersItems: NavItem[] = [
     path: "/profile",
   },
   {
+    icon: <Clock size={20} />,
+    name: "Single Attendance",
+    path: "/attendance/single",
+  },
+  {
     icon: <Settings size={20} />,
     name: "Settings",
     path: "/settings",

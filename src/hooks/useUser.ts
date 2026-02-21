@@ -14,8 +14,10 @@ import {
   uploadProfilePhoto,
   getManager,
   getEmployeeForInput,
+  getProfile,
+  updatePassword,
 } from "@/api/user.api";
-import { UserInput } from "@/types/user.types";
+import { PasswordUpdateInput, UserInput } from "@/types/user.types";
 
 /** ===== Queries ===== */
 export const useUsers = (trashed = false) => {
@@ -40,7 +42,7 @@ export const useGetManager = () => {
     queryFn: getManager,
     staleTime: 1000 * 60 * 5,
   });
-}
+};
 
 export const useGetEmployeeForInput = () => {
   return useQuery({
@@ -48,7 +50,7 @@ export const useGetEmployeeForInput = () => {
     queryFn: getEmployeeForInput,
     staleTime: 1000 * 60 * 5,
   });
-}
+};
 
 /** ===== Mutations ===== */
 export const useCreateUser = () => {
@@ -82,7 +84,7 @@ export const useUpdateUser = () => {
       await qc.cancelQueries({ queryKey: ["users"] });
       const previous = qc.getQueryData(["users"]);
       qc.setQueryData(["users"], (old: any[] = []) =>
-        old.map((d) => (d.uuid === uuid ? { ...d, ...data } : d))
+        old.map((d) => (d.uuid === uuid ? { ...d, ...data } : d)),
       );
       return { previous };
     },
@@ -102,7 +104,7 @@ export const useDeleteUser = () => {
       await qc.cancelQueries({ queryKey: ["users"] });
       const previous = qc.getQueryData(["users"]);
       qc.setQueryData(["users"], (old: any[] = []) =>
-        old.filter((d) => d.uuid !== uuid)
+        old.filter((d) => d.uuid !== uuid),
       );
       return { previous };
     },
@@ -122,7 +124,7 @@ export const useRestoreUser = () => {
       await qc.cancelQueries({ queryKey: ["users", { trashed: true }] });
       const previousTrashed = qc.getQueryData(["users", { trashed: true }]);
       qc.setQueryData(["users", { trashed: true }], (old: any[] = []) =>
-        old.filter((d) => d.uuid !== uuid)
+        old.filter((d) => d.uuid !== uuid),
       );
       return { previousTrashed };
     },
@@ -130,7 +132,8 @@ export const useRestoreUser = () => {
       if (context?.previousTrashed)
         qc.setQueryData(["users", { trashed: true }], context.previousTrashed);
     },
-    onSettled: () => qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["users"], exact: false }),
   });
 };
 
@@ -143,14 +146,16 @@ export const useForceDeleteUser = () => {
       await qc.cancelQueries({ queryKey: ["users", { trashed: true }] });
       const previous = qc.getQueryData(["users", { trashed: true }]);
       qc.setQueryData(["users", { trashed: true }], (old: any[] = []) =>
-        old.filter((d) => d.uuid !== uuid)
+        old.filter((d) => d.uuid !== uuid),
       );
       return { previous };
     },
     onError: (_err, _uuid, context: any) => {
-      if (context?.previous) qc.setQueryData(["users", { trashed: true }], context.previous);
+      if (context?.previous)
+        qc.setQueryData(["users", { trashed: true }], context.previous);
     },
-    onSettled: () => qc.invalidateQueries({ queryKey: ["users", { trashed: true }] }),
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["users", { trashed: true }] }),
   });
 };
 
@@ -161,17 +166,30 @@ export const useTerminateEmployment = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uuid, state, date }: { uuid: string; state: "resigned" | "terminated"; date?: string }) =>
-      terminateEmployment(uuid, state, date),
-    onSettled: () => qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+    mutationFn: ({
+      uuid,
+      state,
+      date,
+    }: {
+      uuid: string;
+      state: "resigned" | "terminated";
+      date?: string;
+    }) => terminateEmployment(uuid, state, date),
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["users"], exact: false }),
   });
 };
 
 /** Change Password */
 export const useChangePassword = () => {
   return useMutation({
-    mutationFn: ({ uuid, newPassword }: { uuid: string; newPassword: string }) =>
-      changePassword(uuid, newPassword),
+    mutationFn: ({
+      uuid,
+      newPassword,
+    }: {
+      uuid: string;
+      newPassword: string;
+    }) => changePassword(uuid, newPassword),
   });
 };
 
@@ -182,7 +200,8 @@ export const useChangeUserStatus = () => {
   return useMutation({
     mutationFn: ({ uuid, isActive }: { uuid: string; isActive: boolean }) =>
       changeUserStatus(uuid, isActive),
-    onSettled: () => qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["users"], exact: false }),
   });
 };
 
@@ -193,6 +212,21 @@ export const useUploadProfilePhoto = () => {
   return useMutation({
     mutationFn: ({ uuid, file }: { uuid: string; file: File }) =>
       uploadProfilePhoto(uuid, file),
-    onSettled: () => qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+  });
+};
+
+export const useGetProfile = () => {
+  return useQuery({
+    queryKey: ["users", "profile"],
+    queryFn: getProfile,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useUpdatePassword = () => {
+  return useMutation({
+    mutationFn: (payload: PasswordUpdateInput) => updatePassword(payload),
   });
 };

@@ -41,25 +41,28 @@ export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
 
     {/* Tombol action di kanan */}
     <div className="flex gap-2">
-      <button
-        onClick={onBack}
-        className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
-      >
-        <ArrowLeft
-          size={16}
-          className="group-hover:-translate-x-1 transition-transform"
-        />
-        Back to List
-      </button>
+      <Can value={buildPermission(RESOURCES.USER, PERMISSIONS.BASE.INDEX)}>
+        <button
+          onClick={onBack}
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
+        >
+          <ArrowLeft
+            size={16}
+            className="group-hover:-translate-x-1 transition-transform"
+          />
+          Back to List
+        </button>
+      </Can>
 
-      <Can value={buildPermission(RESOURCES.USER, PERMISSIONS.BASE.EDIT)}>
+      {(user?.can.update ||
+        buildPermission(RESOURCES.USER, PERMISSIONS.BASE.EDIT)) && (
         <button
           onClick={onChangePhoto}
           className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
         >
           Change Photo
         </button>
-      </Can>
+      )}
     </div>
   </div>
 );

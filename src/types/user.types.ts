@@ -15,6 +15,7 @@ export interface User {
   updated_at: string;
   is_active: boolean;
   roles: string[];
+  can: UserCan;
   employee: Employee;
   system_reserve: boolean;
 }
@@ -37,6 +38,7 @@ export interface UserInput {
   contract_end?: string | null;
   base_salary?: number;
 
+  has_face_descriptor?: boolean;
   phone?: string;
   gender?: "male" | "female";
   date_of_birth?: string;
@@ -44,4 +46,14 @@ export interface UserInput {
   join_date?: string;
   resign_date?: string | null;
   isResigned?: boolean;
+}
+
+export interface UserCan {
+  update: boolean;
+}
+
+export interface PasswordUpdateInput {
+  current_password: string;
+  new_password: string;
+  new_password_confirmation: string;
 }

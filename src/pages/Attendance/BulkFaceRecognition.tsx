@@ -173,7 +173,7 @@ const FaceAttendance: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Camera Container */}
+      {/* Main Container */}
       <div className="relative w-[90vw] max-w-7xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800 mx-auto">
         {/* CCTV Overlay: Corners */}
         <div className="absolute inset-0 pointer-events-none z-20">

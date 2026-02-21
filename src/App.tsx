@@ -59,6 +59,8 @@ import Notification from "./pages/Notification/Notification";
 import AdminDashboard from "./pages/Dashboard/AdminDashboard";
 import { LandingPage } from "./pages/Landing/Index";
 import EmployeeDashboard from "./pages/Dashboard/EmployeeDashboard";
+import Profile from "./pages/Employee/Profile";
+import SingleAttendance from "./pages/Attendance/SingleFaceRecognition";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -74,6 +76,8 @@ export default function App() {
   const publicRoutes = [
     { path: "/calendar", element: <Calendar /> },
     { path: "/blank", element: <Blank /> },
+    { path: "/profile", element: <Profile /> },
+    { path: "/attendance/single", element: <SingleAttendance /> },
   ];
 
   const protectedRoutes = [

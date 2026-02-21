@@ -1,4 +1,4 @@
-import { User, UserInput } from "@/types/user.types";
+import { PasswordUpdateInput, User, UserInput } from "@/types/user.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
 import { EmployeeLite, Manager } from "@/types/employee.types";
@@ -116,3 +116,15 @@ export const getEmployeeForInput = async () => {
   const res = await api.get<ApiResponse<EmployeeLite[]>>("/users/employees-lite");
   return res.data.data;
 };
+
+/** Get Profile Users */
+export const getProfile = async () => {
+  const res = await api.get<ApiResponse<User>>("/users/profile");
+  return res.data.data;
+}
+
+export const updatePassword = async (payload: PasswordUpdateInput) => {
+  const res = await api.put<ApiResponse<User>>("/users/change-password", payload);
+  localStorage.removeItem("token");
+  return res.data.data;
+}
