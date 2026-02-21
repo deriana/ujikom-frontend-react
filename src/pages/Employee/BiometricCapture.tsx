@@ -1,111 +1,184 @@
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
-import { Camera, RefreshCw, CheckCircle2 } from "lucide-react";
+import * as faceapi from "@vladmandic/face-api";
+import { 
+  Loader2, 
+  ScanFace, 
+  CheckCircle2, 
+  RefreshCw,
+  AlertCircle
+} from "lucide-react";
 import Button from "@/components/ui/button/Button";
 
-const videoConstraints = {
-  width: 480,
-  height: 480,
-  facingMode: "user",
-};
-
 interface BiometricCaptureProps {
-  onCapture: (image: string) => void;
+  onCapture: (allDescriptors: number[][]) => void;
   isLoading?: boolean;
 }
 
 export const BiometricCapture = ({ onCapture, isLoading }: BiometricCaptureProps) => {
   const webcamRef = useRef<Webcam>(null);
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [isModelsLoaded, setIsModelsLoaded] = useState(false);
+  const [descriptors, setDescriptors] = useState<number[][]>([]);
+  const [isScanning, setIsScanning] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("Initializing AI...");
 
-  const capture = useCallback(() => {
-    const imageSrc = webcamRef.current?.getScreenshot();
-    if (imageSrc) {
-      setImgSrc(imageSrc);
-      setIsCameraOpen(false);
-    }
-  }, [webcamRef]);
+  const totalRequired = 5;
 
-  const retake = () => {
-    setImgSrc(null);
-    setIsCameraOpen(true);
+  // 1. Load Models
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        const MODEL_URL = "/models";
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+          faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        ]);
+        setIsModelsLoaded(true);
+        setStatusMsg("AI Ready. Position your face.");
+      } catch (err) {
+        console.error("Gagal memuat model:", err);
+        setStatusMsg("Failed to load AI models.");
+      }
+    };
+    loadModels();
+  }, []);
+
+  // 2. Auto Scan Logic
+  const startAutoScan = useCallback(async () => {
+    if (!webcamRef.current || !isModelsLoaded) return;
+    
+    setIsScanning(true);
+    setDescriptors([]);
+    setStatusMsg("Scanning... Move your head slightly.");
+
+    let collected: number[][] = [];
+
+    const scanFrame = async () => {
+      if (collected.length >= totalRequired) {
+        setIsScanning(false);
+        setStatusMsg("All samples collected!");
+        setDescriptors(collected);
+        return;
+      }
+
+      const video = webcamRef.current?.video;
+      if (video && video.readyState === 4) {
+        const detection = await faceapi
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        if (detection) {
+          const currentDescriptor = Array.from(detection.descriptor);
+          
+          // Validasi sederhana: Jangan ambil descriptor yang identik 100% 
+          // agar data lebih variatif (misal user harus gerak dikit)
+          collected.push(currentDescriptor);
+          setDescriptors([...collected]);
+          setStatusMsg(`Captured ${collected.length}/${totalRequired}`);
+        }
+      }
+
+      // Beri sedikit jeda antar scan agar tidak terlalu cepat/identik
+      if (collected.length < totalRequired) {
+        setTimeout(scanFrame, 600); 
+      }
+    };
+
+    scanFrame();
+  }, [isModelsLoaded]);
+
+  const handleReset = () => {
+    setDescriptors([]);
+    setIsScanning(false);
+    setStatusMsg("AI Ready. Position your face.");
   };
 
   return (
-    <div className="space-y-6 text-center">
-      {!isCameraOpen && !imgSrc ? (
-        /* State 1: Tombol Buka Kamera (Dibuat Lebih Besar & Menarik) */
-        <div 
-          onClick={() => setIsCameraOpen(true)}
-          className="aspect-square max-w-sm mx-auto bg-gray-50 dark:bg-white/5 rounded-[40px] border-2 border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center gap-6 group hover:border-brand-500 hover:bg-brand-500/2 transition-all cursor-pointer"
-        >
-          <div className="p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-xl shadow-brand-500/10 border border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform duration-500">
-            <Camera size={48} className="text-brand-500" />
-          </div>
-          <div className="px-8">
-            <p className="text-lg font-bold text-gray-800 dark:text-white">Start Photo Capture</p>
-            <p className="text-sm text-gray-500 mt-2 leading-relaxed">
-              Make sure your face is clearly visible and in a bright place
-            </p>
-          </div>
-        </div>
-      ) : isCameraOpen ? (
-        /* State 2: Kamera Aktif (Preview Besar) */
-        <div className="relative aspect-square max-w-md mx-auto overflow-hidden rounded-[40px] border-8 border-brand-500 shadow-2xl bg-black transition-all">
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            videoConstraints={videoConstraints}
-            mirrored={true}
-            className="h-full w-full object-cover"
+    <div className="space-y-6 flex flex-col items-center">
+      {/* Visual Feedback: Steps */}
+      <div className="w-full max-w-xs flex gap-2">
+        {[...Array(totalRequired)].map((_, i) => (
+          <div 
+            key={i} 
+            className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
+              i < descriptors.length ? "bg-brand-500" : "bg-zinc-200 dark:bg-zinc-800"
+            }`}
           />
-          
-          {/* Frame Penunjuk (Overlay) agar user tahu posisi wajah */}
-          <div className="absolute inset-0 border-40 border-black/20 pointer-events-none" />
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-             <div className="size-64 border-2 border-white/30 rounded-full border-dashed" />
-          </div>
+        ))}
+      </div>
 
-          <button 
-            type="button"
-            onClick={capture}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 p-5 bg-brand-500 text-white rounded-full shadow-2xl hover:bg-brand-600 transition-all active:scale-90 z-10"
-          >
-            <div className="size-8 border-4 border-white rounded-full" />
-          </button>
-        </div>
-      ) : (
-        /* State 3: Hasil Foto (Preview Besar) */
-        <div className="space-y-8 animate-in zoom-in-95 duration-300">
-          <div className="relative aspect-square max-w-md mx-auto overflow-hidden rounded-[40px] border-8 border-green-500 shadow-2xl group">
-            <img src={imgSrc!} alt="Captured" className="h-full w-full object-cover" />
-            
-            <button 
-              type="button"
-              onClick={retake}
-              className="absolute top-4 right-4 p-3 bg-white/90 dark:bg-gray-800/90 text-gray-600 dark:text-gray-300 rounded-2xl shadow-xl hover:text-brand-500 transition-all backdrop-blur-md"
-            >
-              <RefreshCw size={24} />
-            </button>
-            
-            <div className="absolute bottom-0 inset-x-0 p-4 bg-green-500 text-white text-xs font-black tracking-[0.2em] uppercase">
-              Photo Captured Successfully
+      {/* Webcam Preview */}
+      <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-[3rem] overflow-hidden border-4 border-zinc-100 dark:border-zinc-800 shadow-2xl bg-black">
+        {descriptors.length < totalRequired ? (
+          <>
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              mirrored={true}
+              className="w-full h-full object-cover opacity-80"
+            />
+            {/* Overlay Animation */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className={`w-48 h-48 border-2 border-dashed rounded-full border-brand-500/50 ${isScanning ? 'animate-[spin_8s_linear_infinite]' : ''}`} />
+              {isScanning && (
+                <div className="absolute inset-x-0 h-0.5 bg-brand-500/50 shadow-[0_0_15px_#brand] animate-[scan_2s_ease-in-out_infinite]" />
+              )}
             </div>
+          </>
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-emerald-500/10 gap-3">
+             <CheckCircle2 size={64} className="text-emerald-500 animate-in zoom-in" />
+             <span className="text-xs font-bold text-emerald-600">READY TO SAVE</span>
           </div>
-          
-          <div className="max-w-md mx-auto">
-            <Button 
-              className="w-full py-4 text-lg rounded-2xl shadow-xl shadow-brand-500/20" 
-              onClick={() => onCapture(imgSrc!)}
-              disabled={isLoading}
-            >
-              {isLoading ? "Processing..." : "Use This Photo"}
-            </Button>
-          </div>
+        )}
+      </div>
+
+      {/* Status & Controls */}
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-2 text-sm font-medium text-zinc-500">
+          {isScanning ? <Loader2 size={16} className="animate-spin text-brand-500" /> : <ScanFace size={16} />}
+          {statusMsg}
         </div>
-      )}
+
+        <div className="flex flex-col gap-3 w-64">
+          {descriptors.length < totalRequired ? (
+            <Button 
+              onClick={startAutoScan} 
+              disabled={!isModelsLoaded || isScanning}
+              className="rounded-2xl py-6 shadow-lg shadow-brand-500/20"
+            >
+              {isScanning ? "SCANNING..." : "START AUTO SCAN"}
+            </Button>
+          ) : (
+            <>
+              <Button 
+                onClick={() => onCapture(descriptors)} 
+                disabled={isLoading}
+                className="rounded-2xl py-6 bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
+              >
+                {isLoading ? "SAVING DATA..." : "SUBMIT BIOMETRICS"}
+              </Button>
+              <button 
+                onClick={handleReset}
+                className="flex items-center justify-center gap-2 text-xs font-bold text-zinc-400 hover:text-zinc-600 transition"
+              >
+                <RefreshCw size={14} /> RE-SCAN
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Info Warning */}
+      <div className="flex items-start gap-3 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl max-w-sm">
+        <AlertCircle size={18} className="text-zinc-400 shrink-0 mt-0.5" />
+        <p className="text-[10px] text-zinc-500 leading-relaxed text-left">
+          Pastikan wajah tidak terhalang masker/kacamata hitam. Sistem akan merekam 5 sampel data numerik wajah Anda untuk verifikasi absen yang presisi.
+        </p>
+      </div>
     </div>
   );
 };

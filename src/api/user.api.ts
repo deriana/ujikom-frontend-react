@@ -1,4 +1,4 @@
-import { PasswordUpdateInput, User, UserInput } from "@/types/user.types";
+import { BiometricDataInput, PasswordUpdateInput, User, UserInput } from "@/types/user.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
 import { EmployeeLite, Manager } from "@/types/employee.types";
@@ -126,5 +126,10 @@ export const getProfile = async () => {
 export const updatePassword = async (payload: PasswordUpdateInput) => {
   const res = await api.put<ApiResponse<User>>("/users/change-password", payload);
   localStorage.removeItem("token");
+  return res.data.data;
+}
+
+export const updateBiometricData = async (payload: BiometricDataInput) => {
+  const res = await api.put<ApiResponse<User>>(`/users/update-biometric`,  payload);
   return res.data.data;
 }

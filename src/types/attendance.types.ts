@@ -44,7 +44,18 @@ export interface BulkAttendanceInput {
   longitude: number;
 }
 
-// Tambahkan ini di types/attendance.types.ts
+export interface SingleAttendanceInput {
+  descriptor: number[] | string;
+  photo: Blob | File;
+  latitude: number;
+  longitude: number;
+}
+
+export interface SingleAttendanceResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface BulkAttendanceResponse {
   success_count: number;
   failed_count: number;

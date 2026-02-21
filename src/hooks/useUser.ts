@@ -16,8 +16,9 @@ import {
   getEmployeeForInput,
   getProfile,
   updatePassword,
+  updateBiometricData,
 } from "@/api/user.api";
-import { PasswordUpdateInput, UserInput } from "@/types/user.types";
+import { BiometricDataInput, PasswordUpdateInput, UserInput } from "@/types/user.types";
 
 /** ===== Queries ===== */
 export const useUsers = (trashed = false) => {
@@ -230,3 +231,13 @@ export const useUpdatePassword = () => {
     mutationFn: (payload: PasswordUpdateInput) => updatePassword(payload),
   });
 };
+
+export const useUpdateBiometricData = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: BiometricDataInput) => updateBiometricData(payload),
+    onSettled: () =>
+      qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+  });
+}
