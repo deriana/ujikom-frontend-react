@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/types";
+import { ApiResponse, UserFinalizeActivation } from "@/types";
 import api from "./axios";
 import { User } from "@/types/auth.types";
 
@@ -32,3 +32,12 @@ export const getMe = async () => {
   return res.data.data;
 };
 
+export const finalizeActivation = async (payload: UserFinalizeActivation) => {
+  const res = await api.post<ApiResponse<User>>(`/auth/finalize-activation`, payload);
+  return res.data.data;
+}
+
+export const resendActivation = async (email: string) => {
+  const res = await api.post<ApiResponse<User>>(`/auth/resend-verification`, { email });
+  return res.data.data;
+}

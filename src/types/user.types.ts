@@ -61,3 +61,9 @@ export interface PasswordUpdateInput {
 export interface BiometricDataInput {
   descriptors: number[][];
 }
+
+export interface UserFinalizeActivation {
+  token?: any;
+  password?: string;
+  password_confirmation?: string;
+}

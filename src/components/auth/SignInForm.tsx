@@ -7,9 +7,10 @@ import Button from "../ui/button/Button";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
+import ActivationModal from "./ActivationModal";
 
 export default function SignInForm() {
-  const { login } = useAuth();
+  const { login, resendActivation } = useAuth();
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +18,10 @@ export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Di dalam komponen Login kamu
+  const [showActivationModal, setShowActivationModal] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +37,31 @@ export default function SignInForm() {
       toast.success("Login successful");
       navigate("/");
     } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Login failed. Check credentials."
-      );
+      const errorData = err?.response?.data;
+
+      if (err?.response?.status === 403 && errorData?.needs_activation) {
+        setPendingEmail(errorData.email);
+        setShowActivationModal(true);
+        toast.error("Account needs activation.");
+      } else {
+        toast.error(
+          errorData?.message || "Login failed. Check credentials."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fungsi untuk dipanggil di dalam Modal
+  const handleResendActivation = async () => {
+    try {
+      setLoading(true);
+      await resendActivation(pendingEmail);
+      toast.success("New activation link sent to your email!");
+      setShowActivationModal(false);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to resend link.");
     } finally {
       setLoading(false);
     }
@@ -107,6 +134,14 @@ export default function SignInForm() {
           </div>
         </form>
       </div>
+
+      <ActivationModal
+        isOpen={showActivationModal}
+        onClose={() => setShowActivationModal(false)}
+        email={pendingEmail}
+        onResend={handleResendActivation}
+        isLoading={loading}
+      />
     </div>
   );
 }

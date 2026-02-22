@@ -61,6 +61,7 @@ import { LandingPage } from "./pages/Landing/Index";
 import EmployeeDashboard from "./pages/Dashboard/EmployeeDashboard";
 import Profile from "./pages/Employee/Profile";
 import SingleAttendance from "./pages/Attendance/SingleFaceRecognition";
+import FinalizeActivationPage from "./pages/AuthPages/FinalizeActivation";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -340,6 +341,7 @@ export default function App() {
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />
+          <Route path="/set-password" element={<FinalizeActivationPage />} />
           <Route path="/" element={<LandingPage />} />
           <Route path="/403" element={<Forbidden />} />
           <Route path="/404" element={<NotFound />} />

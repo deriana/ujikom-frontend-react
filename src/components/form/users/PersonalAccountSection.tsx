@@ -115,7 +115,7 @@ export default function PersonalAccountSection({
             onChange={(e) => onChange({ ...value, email: e.target.value })}
           />
         </div>
-        <div className="space-y-1.5">
+        {/* <div className="space-y-1.5">
           <label className="text-xs uppercase tracking-wider text-gray-500 font-bold">
             Password
           </label>
@@ -140,7 +140,7 @@ export default function PersonalAccountSection({
               onChange({ ...value, password_confirmation: e.target.value })
             }
           />
-        </div>
+        </div> */}
         <div className="space-y-1.5 lg:col-span-3">
           <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
             <MapPin size={12} /> Full Address
