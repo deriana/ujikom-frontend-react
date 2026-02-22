@@ -52,12 +52,12 @@ export const getTrashedUser = async () => {
 /** Terminate Employment */
 export const terminateEmployment = async (
   uuid: string,
-  state: "resigned" | "terminated",
+  type: "resigned" | "terminated",
   date?: string,
 ) => {
   const res = await api.put<ApiResponse<User>>(
     `/users/terminate-employment/${uuid}`,
-    { state, date },
+    { type, date },
   );
   return res.data.data;
 };
@@ -130,6 +130,14 @@ export const updatePassword = async (payload: PasswordUpdateInput) => {
 }
 
 export const updateBiometricData = async (payload: BiometricDataInput) => {
-  const res = await api.put<ApiResponse<User>>(`/users/update-biometric`,  payload);
+  const res = await api.put<ApiResponse<User>>(`/users/update-biometric`, payload);
   return res.data.data;
 }
+
+export const adminChangePassword = async (uuid: string, newPassword: string) => {
+  const res = await api.put<ApiResponse<void>>(
+    `/users/change-password/${uuid}`,
+    { new_password: newPassword }
+  );
+  return res.data;
+};

@@ -50,6 +50,8 @@ export interface UserInput {
 
 export interface UserCan {
   update: boolean;
+  terminate: boolean;
+  change_passsword: boolean;
 }
 
 export interface PasswordUpdateInput {

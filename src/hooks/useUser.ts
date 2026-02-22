@@ -17,6 +17,7 @@ import {
   getProfile,
   updatePassword,
   updateBiometricData,
+  adminChangePassword,
 } from "@/api/user.api";
 import { BiometricDataInput, PasswordUpdateInput, UserInput } from "@/types/user.types";
 
@@ -163,21 +164,24 @@ export const useForceDeleteUser = () => {
 /** ===== New mutations ===== */
 
 /** Terminate Employment */
+// hooks/useUserActions.ts
 export const useTerminateEmployment = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      uuid,
-      state,
-      date,
-    }: {
-      uuid: string;
-      state: "resigned" | "terminated";
-      date?: string;
-    }) => terminateEmployment(uuid, state, date),
-    onSettled: () =>
-      qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+    mutationFn: ({ uuid, type, date }: { uuid: string; type: "resigned" | "terminated"; date?: string }) =>
+      terminateEmployment(uuid, type, date),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["users"] }),
+  });
+};
+
+export const useAdminChangePassword = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ uuid, newPassword }: { uuid: string; newPassword: string }) =>
+      adminChangePassword(uuid, newPassword),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["users"] }),
   });
 };
 
