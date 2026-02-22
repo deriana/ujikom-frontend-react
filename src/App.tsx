@@ -57,11 +57,13 @@ import OvertimeApproval from "./pages/Approval/OvertimeApproval";
 import Payroll from "./pages/Payroll/Index";
 import Notification from "./pages/Notification/Notification";
 import AdminDashboard from "./pages/Dashboard/AdminDashboard";
-import { LandingPage } from "./pages/Landing/Index";
 import EmployeeDashboard from "./pages/Dashboard/EmployeeDashboard";
 import Profile from "./pages/Employee/Profile";
 import SingleAttendance from "./pages/Attendance/SingleFaceRecognition";
 import FinalizeActivationPage from "./pages/AuthPages/FinalizeActivation";
+import { LandingPageWrapper } from "./pages/Landing/Index";
+import CareerPage from "./pages/Careers/CareerPage";
+import JobListPage from "./components/landing/JobListPage";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -342,7 +344,9 @@ export default function App() {
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />
           <Route path="/set-password" element={<FinalizeActivationPage />} />
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<LandingPageWrapper />} />
+          <Route path="/careers" element={<JobListPage />} />
+          <Route path="/careers/:jobId" element={<CareerPage />} />
           <Route path="/403" element={<Forbidden />} />
           <Route path="/404" element={<NotFound />} />
           <Route path="/500" element={<ServerError />} />
