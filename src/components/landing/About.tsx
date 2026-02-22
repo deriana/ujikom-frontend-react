@@ -1,6 +1,6 @@
 import { ShieldCheck, Target, Heart } from "lucide-react";
 
-export default function About() {
+export default function About({sitename}: {sitename: string}) {
     const values = [
         {
             title: "Our Vision",
@@ -48,7 +48,7 @@ export default function About() {
                             <span className="text-indigo-600">Workforce Management</span>
                         </h3>
                         <p className="text-lg text-gray-500 dark:text-gray-400 mb-10 leading-relaxed">
-                            At HideriHR, we believe that the heart of every successful organization is its people. Founded by technology experts and HR professionals, we've built an ecosystem that bridges the gap between complex data and human connection.
+                            At {sitename}, we believe that the heart of every successful organization is its people. Founded by technology experts and HR professionals, we've built an ecosystem that bridges the gap between complex data and human connection.
                         </p>
 
                         <div className="space-y-8">

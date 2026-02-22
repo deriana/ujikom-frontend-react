@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Briefcase, MapPin, Clock, CheckCircle2, Inbox, ChevronRight, Award, Zap } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -12,15 +12,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { jobConfig } from "@/config/jobConfig";
 
 export default function CareerPage() {
-    const { jobId } = useParams(); // Ambil ID dari URL (misal: /career/software-engineer)
+    const { jobId } = useParams();
     const navigate = useNavigate();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // LOGIKA PENTING: Cari job berdasarkan ID
     const job = jobConfig.find((j) => j.id === jobId);
 
-    // Jika data tidak ditemukan, tampilkan pesan error
     if (!job) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -33,7 +31,9 @@ export default function CareerPage() {
         );
     }
 
-    // --- Sisanya gunakan variabel 'job' (bukan jobConfig) ---
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [jobId]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -101,11 +101,11 @@ export default function CareerPage() {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* Tombol Apply dengan Smooth Scroll */}
                             {job.isOpen && (
                                 <div className="shrink-0 pb-2">
-                                    <button 
+                                    <button
                                         onClick={() => document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth' })}
                                         className="h-16 px-10 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-lg font-black shadow-2xl shadow-indigo-500/40 transition-all active:scale-95"
                                     >

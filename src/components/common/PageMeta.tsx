@@ -12,14 +12,12 @@ export const AppWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function PageMeta({ title, description }: PageMetaProps) {
-  const { general, isLoading } = useSettingsContext();
+  const { general } = useSettingsContext();
 
   const faviconUrl = general?.favicon || "/placeholder_img.jpg";
 
-  if (isLoading) return null;
-
   return (
-    <Helmet prioritizeSeoTags>
+    <Helmet prioritizeSeoTags defer={false}>
       <title>{`${title} | ${
         general?.site_name || "HRIS Management"
       }`}</title>

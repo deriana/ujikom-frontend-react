@@ -1,11 +1,9 @@
-// contexts/SettingsContext.tsx
 import { createContext, useContext, ReactNode, useMemo } from "react";
-import { useSettings } from "@/hooks/useSetting";
-import { SettingsData } from "@/types";
+import { useGeneral } from "@/hooks/useSetting";
+import { GeneralValues } from "@/types";
 
 interface SettingsContextValue {
-  settings?: SettingsData;
-  general?: SettingsData["general"]["values"];
+  general?: GeneralValues;
   isLoading: boolean;
   isError: boolean;
 }
@@ -13,11 +11,10 @@ interface SettingsContextValue {
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
-  const { data, isLoading, isError } = useSettings();
+  const { data, isLoading, isError } = useGeneral(); 
 
   const value = useMemo(() => ({
-    settings: data,
-    general: data?.general?.values,
+    general: data, 
     isLoading,
     isError,
   }), [data, isLoading, isError]);
@@ -28,7 +25,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     </SettingsContext.Provider>
   );
 };
-
 export const useSettingsContext = () => {
   const ctx = useContext(SettingsContext);
   if (!ctx) throw new Error("useSettingsContext must be used inside SettingsProvider");

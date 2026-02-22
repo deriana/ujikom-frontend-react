@@ -1,7 +1,7 @@
 import { Mail, Phone, MapPin, Send, Github, Twitter, Instagram, Facebook } from "lucide-react";
 import Button from "../ui/button/Button";
 
-export default function Contact() {
+export default function Contact({sitename}: {sitename:string}) {
     return (
         <section id="contact" className="py-24 bg-white dark:bg-gray-900 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,7 +13,7 @@ export default function Contact() {
                         We're Here to Help
                     </h3>
                     <p className="max-w-2xl mx-auto text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
-                        Have questions about HideriHR? Reach out to our team of experts and discover how we can transform your HR operations.
+                        Have questions about {sitename}? Reach out to our team of experts and discover how we can transform your HR operations.
                     </p>
                 </div>
 
