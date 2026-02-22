@@ -11,6 +11,9 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
   finalizeActivation: (payload: UserFinalizeActivation) => Promise<void>;
   resendActivation: (email: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  checkResetToken: (token: string) => Promise<any>;
+  resetPassword: (payload: any) => Promise<void>;
   permissions?: string[];
 }
 
@@ -60,6 +63,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await authApi.resendActivation(email);
   }
 
+  const forgotPassword = async (email: string) => {
+    await authApi.forgotPassword(email);
+  };
+
+  const checkResetToken = async (token: string) => {
+    return await authApi.checkResetToken(token);
+  };
+
+  const resetPassword = async (payload: any) => {
+    await authApi.resetPassword(payload);
+  };
+
   const logout = async () => {
     await authApi.logout();
     setUser(null);
@@ -72,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, permissions, login, logout, refreshUser, finalizeActivation, resendActivation  }}
+      value={{ user, loading, permissions, login, logout, refreshUser, finalizeActivation, resendActivation, forgotPassword, checkResetToken, resetPassword }}
     >
       {children}
     </AuthContext.Provider>

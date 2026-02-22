@@ -64,6 +64,8 @@ import FinalizeActivationPage from "./pages/AuthPages/FinalizeActivation";
 import { LandingPageWrapper } from "./pages/Landing/Index";
 import CareerPage from "./pages/Careers/CareerPage";
 import JobListPage from "./components/landing/JobListPage";
+import ResetPasswordPage from "./pages/AuthPages/ResetPassword";
+import ForgotPasswordPage from "./pages/AuthPages/ForgotPassword";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -343,7 +345,9 @@ export default function App() {
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />
-          <Route path="/set-password" element={<FinalizeActivationPage />} />
+          <Route path="/set-password" element={<FinalizeActivationPage />} /> 
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/" element={<LandingPageWrapper />} />
           <Route path="/careers" element={<JobListPage />} />
           <Route path="/careers/:jobId" element={<CareerPage />} />

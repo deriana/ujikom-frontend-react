@@ -9,10 +9,10 @@ export default function Footer() {
                     <div className="lg:col-span-1">
                         <div className="flex items-center gap-2 mb-6">
                             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold italic">
-                                N
+                                H
                             </div>
                             <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                Neuro<span className="text-indigo-600">HR</span>
+                                Hideri<span className="text-indigo-600">HR</span>
                             </span>
                         </div>
                         <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8">
