@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+import { EyeClosedIcon, EyeIcon } from "lucide-react";
+import ActivationModal from "./ActivationModal";
 
 export default function SignInForm() {
-  const { login } = useAuth();
+  const { login, resendActivation } = useAuth();
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +18,10 @@ export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Di dalam komponen Login kamu
+  const [showActivationModal, setShowActivationModal] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +37,31 @@ export default function SignInForm() {
       toast.success("Login successful");
       navigate("/");
     } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Login failed. Check credentials."
-      );
+      const errorData = err?.response?.data;
+
+      if (err?.response?.status === 403 && errorData?.needs_activation) {
+        setPendingEmail(errorData.email);
+        setShowActivationModal(true);
+        toast.error("Account needs activation.");
+      } else {
+        toast.error(
+          errorData?.message || "Login failed. Check credentials."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fungsi untuk dipanggil di dalam Modal
+  const handleResendActivation = async () => {
+    try {
+      setLoading(true);
+      await resendActivation(pendingEmail);
+      toast.success("New activation link sent to your email!");
+      setShowActivationModal(false);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to resend link.");
     } finally {
       setLoading(false);
     }
@@ -42,15 +69,6 @@ export default function SignInForm() {
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="w-full max-w-md pt-10 mx-auto">
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-        >
-          <ChevronLeftIcon className="size-5" />
-          Back to dashboard
-        </Link>
-      </div>
 
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
@@ -87,9 +105,9 @@ export default function SignInForm() {
                   className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2"
                 >
                   {showPassword ? (
-                    <EyeIcon className="size-5" />
+                    <EyeIcon className="size-5 dark:text-white/90" />
                   ) : (
-                    <EyeCloseIcon className="size-5" />
+                    <EyeClosedIcon className="size-5 dark:text-white/90" />
                   )}
                 </span>
               </div>
@@ -103,7 +121,7 @@ export default function SignInForm() {
                 </span>
               </div>
               <Link
-                to="/reset-password"
+                to="/forgot-password"
                 className="text-sm text-brand-500 hover:text-brand-600"
               >
                 Forgot password?
@@ -115,14 +133,15 @@ export default function SignInForm() {
             </Button>
           </div>
         </form>
-
-        <p className="mt-5 text-sm text-center text-gray-700 dark:text-gray-400 sm:text-start">
-          Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-brand-500 hover:text-brand-600">
-            Sign Up
-          </Link>
-        </p>
       </div>
+
+      <ActivationModal
+        isOpen={showActivationModal}
+        onClose={() => setShowActivationModal(false)}
+        email={pendingEmail}
+        onResend={handleResendActivation}
+        isLoading={loading}
+      />
     </div>
   );
 }

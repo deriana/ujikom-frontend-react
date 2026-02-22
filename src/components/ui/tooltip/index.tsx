@@ -21,30 +21,45 @@ const Tooltip: React.FC<TooltipProps> = ({
   const updatePosition = () => {
     if (triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
-      const scrollY = window.scrollY;
-      const scrollX = window.scrollX;
-
-      // Logika hitung posisi koordinat agar menempel di tombol
+      
+      // Gunakan getBoundingClientRect() langsung untuk fixed position
+      // Tidak perlu ditambah window.scrollY/X
       let top = 0;
       let left = 0;
 
       switch (position) {
         case "top":
-          top = rect.top + scrollY - 10;
-          left = rect.left + scrollX + rect.width / 2;
+          top = rect.top - 8; // Beri sedikit jarak (gap)
+          left = rect.left + rect.width / 2;
           break;
         case "bottom":
-          top = rect.bottom + scrollY + 10;
-          left = rect.left + scrollX + rect.width / 2;
+          top = rect.bottom + 8;
+          left = rect.left + rect.width / 2;
+          break;
+        case "left":
+          top = rect.top + rect.height / 2;
+          left = rect.left - 8;
+          break;
+        case "right":
+          top = rect.top + rect.height / 2;
+          left = rect.right + 8;
           break;
       }
       setCoords({ top, left });
     }
   };
 
+  // Tambahkan event listener scroll agar tooltip ikut bergerak saat di-scroll
+  // atau tutup saja tooltip saat scroll untuk performa lebih baik
   const handleMouseEnter = () => {
     updatePosition();
     setVisible(true);
+    window.addEventListener("scroll", updatePosition, true);
+  };
+
+  const handleMouseLeave = () => {
+    setVisible(false);
+    window.removeEventListener("scroll", updatePosition, true);
   };
 
   return (
@@ -52,14 +67,17 @@ const Tooltip: React.FC<TooltipProps> = ({
       ref={triggerRef}
       className="inline-block"
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => setVisible(false)}
+      onMouseLeave={handleMouseLeave}
     >
       {children}
       {visible &&
         createPortal(
           <div
-            className={`tooltip fixed z-9999999 px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-xl pointer-events-none whitespace-nowrap transition-opacity duration-200 ${className} ${
-                position === 'top' ? '-translate-x-1/2 -translate-y-full' : '-translate-x-1/2'
+            className={`tooltip fixed z-[9999] px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-xl pointer-events-none whitespace-nowrap transition-opacity duration-200 ${className} ${
+                position === 'top' ? '-translate-x-1/2 -translate-y-full' : 
+                position === 'bottom' ? '-translate-x-1/2' :
+                position === 'left' ? '-translate-x-full -translate-y-1/2' : 
+                '-translate-y-1/2'
             }`}
             style={{
               top: coords.top,
@@ -67,15 +85,17 @@ const Tooltip: React.FC<TooltipProps> = ({
             }}
           >
             {content}
-            {/* Arrow */}
+            {/* Arrow logic */}
             <div className={`absolute w-2 h-2 bg-gray-900 transform rotate-45 ${
-                position === 'top' ? '-bottom-1 left-1/2 -translate-x-1/2' : '-top-1 left-1/2 -translate-x-1/2'
+                position === 'top' ? '-bottom-1 left-1/2 -translate-x-1/2' : 
+                position === 'bottom' ? '-top-1 left-1/2 -translate-x-1/2' :
+                position === 'left' ? '-right-1 top-1/2 -translate-y-1/2' :
+                '-left-1 top-1/2 -translate-y-1/2'
             }`} />
           </div>,
-          document.body // INI KUNCINYA: Dirender di body, bukan di dalam tabel
+          document.body
         )}
     </div>
   );
 };
-
 export default Tooltip;

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SettingsData } from "@/types";
-import { getSettings, updateSetting } from "@/api/setting.api";
+import { getGeneral, getSettings, updateSetting } from "@/api/setting.api";
 
 export const useSettings = () => {
   return useQuery({
@@ -8,6 +8,22 @@ export const useSettings = () => {
     queryFn: getSettings,
     staleTime: 1000 * 60 * 10,
     enabled: !!localStorage.getItem("token"),
+  });
+};
+
+export const useGeneral = () => {
+  return useQuery({
+    queryKey: ["settings", "general"],
+    queryFn: async () => {
+      const data = await getGeneral();
+      localStorage.setItem("site_settings", JSON.stringify(data));
+      return data;
+    },
+    initialData: () => {
+      const saved = localStorage.getItem("site_settings");
+      return saved ? JSON.parse(saved) : undefined;
+    },
+    staleTime: 1000 * 60 * 5,
   });
 };
 

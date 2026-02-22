@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import UserProfile from "../UserProfile";
+import { useQueryClient } from "@tanstack/react-query";
 // import placeholderImg from "";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
 
@@ -19,6 +21,7 @@ export default function UserDropdown() {
     try {
       await logout();
       toast.success("Logged out successfully.");
+      queryClient.clear();
       navigate("login");
     } catch (err) {
       toast.error("Logout failed. Please try again.");
@@ -129,7 +132,7 @@ export default function UserDropdown() {
               Account settings
             </DropdownItem>
           </li>
-          <li>
+          {/* <li>
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
@@ -153,7 +156,7 @@ export default function UserDropdown() {
               </svg>
               Support
             </DropdownItem>
-          </li>
+          </li> */}
         </ul>
         <button
           onClick={handleLogout}

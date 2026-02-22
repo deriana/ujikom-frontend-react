@@ -24,7 +24,7 @@ export const getAttendanceRequestByUuid = async (uuid: string) => {
 export const createAttendanceRequest = async (
   payload: AttendanceRequestInput,
 ) => {
-  console.log(payload);
+  // console.log(payload);
   const res = await api.post<ApiResponse<AttendanceRequest[]>>(
     "/attendance_request",
     payload,

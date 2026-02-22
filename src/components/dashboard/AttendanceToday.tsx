@@ -1,9 +1,11 @@
-export default function AttendanceTodayCard() {
+import { AttendanceToday } from "@/types";
+
+export default function AttendanceTodayCard({attendanceData} : {attendanceData?: AttendanceToday}) {
   const data = {
-    hadir: 102,
-    telat: 8,
-    izin: 6,
-    alpha: 4,
+    hadir: attendanceData?.hadir ?? 0,
+    telat: attendanceData?.terlambat ?? 0,
+    izin: attendanceData?.cuti ?? 0,
+    alpha: attendanceData?.tanpa_keterangan ?? 0,
   };
 
   const total = data.hadir + data.telat + data.izin + data.alpha;

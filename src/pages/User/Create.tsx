@@ -53,9 +53,9 @@ export default function UsersCreate() {
       validate: (form) => {
         if (!form.name.trim()) return "Name is required";
         if (!form.email.trim()) return "Email is required";
-        if (!form.password) return "Password is required";
-        if (form.password !== form.password_confirmation)
-          return "Passwords do not match";
+        // if (!form.password) return "Password is required";
+        // if (form.password !== form.password_confirmation)
+        //   return "Passwords do not match";
         if (form.employee_status == null)
           return "Employee status is required";
         return null;

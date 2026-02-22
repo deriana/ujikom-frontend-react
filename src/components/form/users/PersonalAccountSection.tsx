@@ -3,7 +3,8 @@ import Select from "@/components/form/Select";
 import Checkbox from "@/components/form/input/Checkbox";
 import DatePicker from "@/components/form/date-picker";
 import { UserInput } from "@/types";
-import { User, Phone, Cake, MapPin } from "lucide-react";
+import { User, Phone, Cake, MapPin, KeyRound } from "lucide-react";
+import { useState } from "react";
 
 interface Props {
   value: UserInput;
@@ -16,6 +17,8 @@ export default function PersonalAccountSection({
   onChange,
   disabled = false,
 }: Props) {
+  const [showPasswordFields, setShowPasswordFields] = useState(false);
+
   const genderOptions = [
     { value: "male", label: "Laki-laki" },
     { value: "female", label: "Perempuan" },
@@ -31,12 +34,12 @@ export default function PersonalAccountSection({
           </h3>
         </div>
         <div className="flex gap-5">
-        <Checkbox
-          label="Account Active"
-          checked={!!value.is_active}
-          onChange={() => onChange({ ...value, is_active: !value.is_active })}
-          disabled={disabled}
-        />
+          <Checkbox
+            label="Account Active"
+            checked={!!value.is_active}
+            onChange={() => onChange({ ...value, is_active: !value.is_active })}
+            disabled={disabled}
+          />
           <Checkbox
             label="Resigned"
             checked={!!value.isResigned}
@@ -115,32 +118,57 @@ export default function PersonalAccountSection({
             onChange={(e) => onChange({ ...value, email: e.target.value })}
           />
         </div>
-        <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-gray-500 font-bold">
-            Password
-          </label>
-          <Input
-            type="password"
-            value={value.password || ""}
-            disabled={disabled}
-            placeholder="••••••••"
-            onChange={(e) => onChange({ ...value, password: e.target.value })}
-          />
+        <div className="lg:col-span-3 pt-2">
+          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
+            <Checkbox
+              id="change_password_trigger"
+              label="Change Account Password?"
+              checked={showPasswordFields}
+              onChange={(checked) => {
+                setShowPasswordFields(checked);
+                // Reset password jika checkbox dimatikan
+                if (!checked) {
+                  onChange({ ...value, password: "", password_confirmation: "" });
+                }
+              }}
+              disabled={disabled}
+            />
+            <span className="text-[10px] text-gray-400 italic">
+              *Leave unchecked if you don't want to change the password
+            </span>
+          </div>
         </div>
-        <div className="space-y-1.5">
-          <label className="text-xs uppercase tracking-wider text-gray-500 font-bold">
-            Confirm Password
-          </label>
-          <Input
-            type="password"
-            value={value.password_confirmation || ""}
-            disabled={disabled}
-            placeholder="••••••••"
-            onChange={(e) =>
-              onChange({ ...value, password_confirmation: e.target.value })
-            }
-          />
-        </div>
+
+        {showPasswordFields && (
+          <>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                <KeyRound size={12} /> New Password
+              </label>
+              <Input
+                type="password"
+                value={value.password || ""}
+                disabled={disabled}
+                placeholder="••••••••"
+                onChange={(e) => onChange({ ...value, password: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                Confirm New Password
+              </label>
+              <Input
+                type="password"
+                value={value.password_confirmation || ""}
+                disabled={disabled}
+                placeholder="••••••••"
+                onChange={(e) =>
+                  onChange({ ...value, password_confirmation: e.target.value })
+                }
+              />
+            </div>
+          </>
+        )}
         <div className="space-y-1.5 lg:col-span-3">
           <label className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
             <MapPin size={12} /> Full Address

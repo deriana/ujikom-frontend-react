@@ -6,22 +6,10 @@ import {
 } from "react-router-dom";
 import SignIn from "./pages/AuthPages/SignIn";
 import NotFound from "./pages/Error/NotFound";
-import UserProfiles from "./pages/UserProfiles";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
 import Calendar from "./pages/Calendar";
-import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
 import { useState, useEffect } from "react";
 import Spinner from "./components/ui/loading/Spinner";
 import { Toaster } from "react-hot-toast";
@@ -67,6 +55,17 @@ import AttendanceRequestApproval from "./pages/Approval/AttendanceRequestApprova
 import Overtime from "./pages/Overtime/Index";
 import OvertimeApproval from "./pages/Approval/OvertimeApproval";
 import Payroll from "./pages/Payroll/Index";
+import Notification from "./pages/Notification/Notification";
+import AdminDashboard from "./pages/Dashboard/AdminDashboard";
+import EmployeeDashboard from "./pages/Dashboard/EmployeeDashboard";
+import Profile from "./pages/Employee/Profile";
+import SingleAttendance from "./pages/Attendance/SingleFaceRecognition";
+import FinalizeActivationPage from "./pages/AuthPages/FinalizeActivation";
+import { LandingPageWrapper } from "./pages/Landing/Index";
+import CareerPage from "./pages/Careers/CareerPage";
+import JobListPage from "./components/landing/JobListPage";
+import ResetPasswordPage from "./pages/AuthPages/ResetPassword";
+import ForgotPasswordPage from "./pages/AuthPages/ForgotPassword";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -80,13 +79,25 @@ export default function App() {
   }, []);
 
   const publicRoutes = [
-    { path: "/", element: <Home /> },
-    { path: "/profile", element: <UserProfiles /> },
     { path: "/calendar", element: <Calendar /> },
     { path: "/blank", element: <Blank /> },
+    { path: "/profile", element: <Profile /> },
+    { path: "/attendance/single", element: <SingleAttendance /> },
   ];
 
   const protectedRoutes = [
+    {
+      path: "/dashboard/admin",
+      element: <AdminDashboard />,
+      resource: RESOURCES.DASHBOARD,
+      permission: PERMISSIONS.DASHBOARD.admin,
+    },
+    {
+      path: "/dashboard/employee",
+      element: <EmployeeDashboard />,
+      resource: RESOURCES.DASHBOARD,
+      permission: PERMISSIONS.DASHBOARD.employee,
+    },
     {
       path: "/attendances/report",
       element: <AttendancesReport />,
@@ -226,6 +237,11 @@ export default function App() {
       permission: PERMISSIONS.BASE.INDEX,
     },
 
+    {
+      path: "/notifications",
+      element: <Notification />,
+    },
+
     /** Approval Route */
     {
       path: "/approval/leave",
@@ -322,17 +338,6 @@ export default function App() {
                   <Route key={path} path={path} element={element} />
                 ),
               )}
-
-              <Route path="/form-elements" element={<FormElements />} />
-              <Route path="/basic-tables" element={<BasicTables />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              <Route path="/buttons" element={<Buttons />} />
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
-              <Route path="/line-chart" element={<LineChart />} />
-              <Route path="/bar-chart" element={<BarChart />} />
             </Route>
           </Route>
 
@@ -340,12 +345,16 @@ export default function App() {
 
           {/* 🔓 Public Routes */}
           <Route path="/login" element={<SignIn />} />
-
+          <Route path="/set-password" element={<FinalizeActivationPage />} /> 
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/" element={<LandingPageWrapper />} />
+          <Route path="/careers" element={<JobListPage />} />
+          <Route path="/careers/:jobId" element={<CareerPage />} />
           <Route path="/403" element={<Forbidden />} />
           <Route path="/404" element={<NotFound />} />
           <Route path="/500" element={<ServerError />} />
           <Route path="/503" element={<Maintenance />} />
-
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
       </Router>

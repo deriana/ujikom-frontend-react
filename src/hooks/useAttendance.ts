@@ -4,8 +4,10 @@ import {
   getAttendance,
   getDetailAttendance,
   exportAttendances,
+  sendSingleAttendance,
+  attendanceStatusToday,
 } from "@/api/attendance.api";
-import { BulkAttendanceInput } from "@/types";
+import { BulkAttendanceInput, SingleAttendanceInput } from "@/types";
 
 export const useSendBulkAttendance = () => {
   return useMutation({
@@ -18,6 +20,27 @@ export const useSendBulkAttendance = () => {
     },
   });
 };
+
+export const useSendSingleAttendance = () => {
+  return useMutation({
+    mutationFn: (data: SingleAttendanceInput) => sendSingleAttendance(data),
+    onSuccess: (data) => {
+      console.log("Absen berhasil diproses", data);
+    },
+    onError: (error) => {
+      console.error("Gagal memproses single attendance", error);
+    },
+  });
+};
+
+export const useAttendanceStatusToday = () => {
+  return useQuery({
+    queryKey: ["attendanceStatusToday"],
+    queryFn: () => attendanceStatusToday(),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+}
 
 export const useAttendances = (params?: {
   start_date?: string;

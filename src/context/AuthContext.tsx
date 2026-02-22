@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import * as authApi from "@/api/auth.api";
 import { User } from "@/types/auth.types";
+import { UserFinalizeActivation } from "@/types";
 
 interface AuthContextType {
   user: User | null;
@@ -8,6 +9,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  finalizeActivation: (payload: UserFinalizeActivation) => Promise<void>;
+  resendActivation: (email: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  checkResetToken: (token: string) => Promise<any>;
+  resetPassword: (payload: any) => Promise<void>;
   permissions?: string[];
 }
 
@@ -49,6 +55,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await refreshUser();
   };
 
+  const finalizeActivation = async (payload: UserFinalizeActivation) => {
+    await authApi.finalizeActivation(payload);
+  }
+
+  const resendActivation = async (email: string) => {
+    await authApi.resendActivation(email);
+  }
+
+  const forgotPassword = async (email: string) => {
+    await authApi.forgotPassword(email);
+  };
+
+  const checkResetToken = async (token: string) => {
+    return await authApi.checkResetToken(token);
+  };
+
+  const resetPassword = async (payload: any) => {
+    await authApi.resetPassword(payload);
+  };
+
   const logout = async () => {
     await authApi.logout();
     setUser(null);
@@ -61,7 +87,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, permissions, login, logout, refreshUser }}
+      value={{ user, loading, permissions, login, logout, refreshUser, finalizeActivation, resendActivation, forgotPassword, checkResetToken, resetPassword }}
     >
       {children}
     </AuthContext.Provider>

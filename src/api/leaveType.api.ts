@@ -14,7 +14,7 @@ export const createLeaveType = async (payload: LeaveTypeInput) => {
 
 export const updateLeaveType = async (uuid: string, payload: LeaveTypeInput) => {
   const res = await api.put<ApiResponse<LeaveType[]>>(`/leave_types/${uuid}`,payload);
-  console.log(payload)
+  // console.log(payload)
   return res.data.data;
 };
 

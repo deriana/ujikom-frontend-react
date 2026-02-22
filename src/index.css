@@ -296,6 +296,29 @@ layer(base);
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-reveal {
+  opacity: 0;
+}
+
+.animate-reveal.active {
+  animation: reveal 0.8s ease-out forwards;
+}
+
 .tableCheckbox:checked ~ span span {
   @apply opacity-100;
 }

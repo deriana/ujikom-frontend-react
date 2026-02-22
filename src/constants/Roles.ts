@@ -3,4 +3,7 @@ export const ROLES = {
     HR: "hr",
     MANAGER: "manager",
     EMPLOYEE: "employee",
+    OWNER: "owner",
+    DIRECTUR: "director",
+    FINANCE: "finance",
 }

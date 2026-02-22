@@ -1,11 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import Webcam from "react-webcam";
 import * as faceapi from "@vladmandic/face-api";
 import { useSendBulkAttendance } from "@/hooks/useAttendance";
 import { IndividualDetection } from "@/types/attendance.types";
 
 const FaceAttendance: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
   const [isModelsLoaded, setIsModelsLoaded] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null,
@@ -26,7 +28,17 @@ const FaceAttendance: React.FC = () => {
       await loadModels();
     };
     init();
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      // cleanup stream when component unmounts
+      const video = webcamRef.current?.video;
+      if (video && video.srcObject) {
+        (video.srcObject as MediaStream)
+          .getTracks()
+          .forEach((t) => t.stop());
+      }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    };
   }, []);
 
   const loadModels = async () => {
@@ -38,19 +50,9 @@ const FaceAttendance: React.FC = () => {
         faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
       ]);
       setIsModelsLoaded(true);
-      startVideo();
     } catch (err) {
       console.error("Gagal load model:", err);
     }
-  };
-
-  const startVideo = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: { width: 1280, height: 720 } })
-      .then((stream) => {
-        if (videoRef.current) videoRef.current.srcObject = stream;
-      })
-      .catch(console.error);
   };
 
   const getFaceBlob = (
@@ -73,11 +75,11 @@ const FaceAttendance: React.FC = () => {
     });
   };
 
-  const handleVideoPlay = () => {
-    if (!videoRef.current || !canvasRef.current || !isModelsLoaded) return;
-
-    const video = videoRef.current;
+  const detectionLoop = useCallback(async () => {
+    const video = webcamRef.current?.video;
     const canvas = canvasRef.current;
+    if (!video || !canvas || !isModelsLoaded) return;
+
     const displaySize = {
       width: video.clientWidth,
       height: video.clientHeight,
@@ -86,7 +88,7 @@ const FaceAttendance: React.FC = () => {
 
     const loop = async () => {
       if (video.paused || video.ended) {
-        requestAnimationFrame(loop);
+        animationFrameRef.current = requestAnimationFrame(loop);
         return;
       }
 
@@ -95,7 +97,9 @@ const FaceAttendance: React.FC = () => {
         .withFaceLandmarks()
         .withFaceDescriptors();
 
-      const resizedDetections = faceapi.resizeResults(detections, displaySize);
+      // filter out low-score ghost detections
+      const validDetections = detections.filter((d) => d.detection.score > 0.6);
+      const resizedDetections = faceapi.resizeResults(validDetections, displaySize);
       const context = canvas.getContext("2d");
 
       if (context) {
@@ -118,25 +122,33 @@ const FaceAttendance: React.FC = () => {
 
       const now = Date.now();
       if (
-        resizedDetections.length > 0 &&
+        validDetections.length > 0 &&
         coords &&
         now - lastSentRef.current > 7000 &&
         !isPending
       ) {
         lastSentRef.current = now;
-        sendToBackend(detections);
+        sendToBackend(validDetections);
       }
 
-      requestAnimationFrame(loop);
+      animationFrameRef.current = requestAnimationFrame(loop);
     };
     loop();
-  };
+  }, [coords, isModelsLoaded, isPending]);
+
+  // start detection whenever models are ready and webcam is active
+  useEffect(() => {
+    if (isModelsLoaded && webcamRef.current?.video) {
+      detectionLoop();
+    }
+  }, [isModelsLoaded, detectionLoop]);
 
   const sendToBackend = async (detections: any[]) => {
-    if (!videoRef.current || !coords) return;
+    const videoEl = webcamRef.current?.video;
+    if (!videoEl || !coords) return;
     const attendances: IndividualDetection[] = await Promise.all(
       detections.map(async (det) => {
-        const blob = await getFaceBlob(videoRef.current!, det.detection.box);
+        const blob = await getFaceBlob(videoEl, det.detection.box);
         return {
           descriptor: Array.from(det.descriptor),
           photo: blob,
@@ -173,7 +185,7 @@ const FaceAttendance: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Camera Container */}
+      {/* Main Container */}
       <div className="relative w-[90vw] max-w-7xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800 mx-auto">
         {/* CCTV Overlay: Corners */}
         <div className="absolute inset-0 pointer-events-none z-20">
@@ -224,13 +236,14 @@ const FaceAttendance: React.FC = () => {
           </div>
         </div>
 
-        {/* Video & Canvas */}
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          onPlay={handleVideoPlay}
+        {/* Webcam & Canvas (overlay) */}
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          mirrored={true}
+          onUserMedia={detectionLoop}
           className="w-full h-full object-cover grayscale-20 contrast-125"
+          videoConstraints={{ width: 1280, height: 720 }}
         />
         <canvas
           ref={canvasRef}

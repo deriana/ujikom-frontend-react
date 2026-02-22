@@ -2,7 +2,7 @@ import { Column } from "@/types";
 import { User } from "@/types/user.types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import TableActions from "@/components/tables/BasicTables/TableAction";
-import { useDeleteUser, useUsers } from "@/hooks/useUser";
+import { useAdminChangePassword, useDeleteUser, useTerminateEmployment, useUsers } from "@/hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { RESOURCES } from "@/constants/Resource";
 import { handleMutation } from "@/utils/handleMutation";
@@ -10,10 +10,13 @@ import { useMemo, useState } from "react";
 import FilterDropdown from "@/components/FilterDropdown";
 import UserProfile from "@/components/UserProfile";
 import Badge from "@/components/ui/badge/Badge";
+import { Gavel, UserMinus } from "lucide-react";
 
 export default function UsersTable() {
   const { data: users = [], isLoading, isError, error } = useUsers();
   const { mutateAsync: deleteUser } = useDeleteUser();
+  const { mutateAsync: terminatedUser } = useTerminateEmployment();
+  const { mutateAsync: adminChangePassword } = useAdminChangePassword();
   const [roleFilter, setRoleFilter] = useState("all");
   const [teamFilter, setTeamFilter] = useState("all");
   const [divisionFilter, setDivisionFilter] = useState("all");
@@ -75,6 +78,27 @@ export default function UsersTable() {
       loading: "Deleting user...",
       success: "User deleted successfully",
       error: "Failed to delete user",
+    });
+
+  const handleTerminate = (uuid: string) =>
+    handleMutation(() => terminatedUser({ uuid, type: "terminated" }), {
+      loading: "Terminating user...",
+      success: "User terminated successfully",
+      error: "Failed to terminate user",
+    });
+
+  const handleResign = (uuid: string) =>
+    handleMutation(() => terminatedUser({ uuid, type: "resigned" }), {
+      loading: "Resigning user...",
+      success: "User resigned successfully",
+      error: "Failed to resign user",
+    });
+
+  const handleAdminChangePassword = (uuid: string, newPassword: string) =>
+    handleMutation(() => adminChangePassword({ uuid, newPassword }), {
+      loading: "Changing password...",
+      success: "Password changed successfully",
+      error: "Failed to change password",
     });
 
   const handleCreate = () => {
@@ -161,12 +185,56 @@ export default function UsersTable() {
       ),
     },
     {
+      header: "Is Active",
+      render: (row) => (
+        <Badge size="sm" color={row.is_active ? "success" : "error"}>
+          {row.is_active ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
       header: "System Reserve",
       render: (row) => (
         <Badge size="sm" color={row.system_reserve ? "warning" : "success"}>
           {row.system_reserve ? "System" : "Custom"}
         </Badge>
       ),
+    },
+    {
+      header: "Terminate/Resigned",
+      render: (row) => {
+        return (
+          <TableActions
+            id={row.uuid || ""}
+            dataName={`User - ${row.name}`}
+            baseNamePermission={RESOURCES.USER}
+            actions={
+              row.can?.terminate
+                ? [
+                  {
+                    label: "Terminated",
+                    variant: "danger",
+                    icon: <UserMinus size={16} />,
+                    onClick: (uuid) =>
+                      handleTerminate(
+                        uuid,
+                      ),
+                  },
+                  {
+                    label: "Resigned",
+                    variant: "danger",
+                    icon: <Gavel size={16} />,
+                    onClick: (uuid) =>
+                      handleResign(
+                        uuid,
+                      ),
+                  },
+                ]
+                : []
+            }
+          />
+        );
+      }
     },
     {
       header: "Actions",

@@ -82,7 +82,7 @@ export default function ShiftTemplatesTable() {
     const shiftTemplate = shiftTemplates.find((p) => p.uuid === uuid);
     if (!shiftTemplate) return;
 
-    console.log("Start Time:", shiftTemplate.start_time, "End Time:", shiftTemplate.end_time);
+    // console.log("Start Time:", shiftTemplate.start_time, "End Time:", shiftTemplate.end_time);
     crud.openEdit({
       uuid: shiftTemplate.uuid,
       name: shiftTemplate.name,

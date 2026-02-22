@@ -1,25 +1,26 @@
-import { Clock, UserCog, ChevronRight, CalendarDays } from "lucide-react";
+import { PendingTasks } from "@/types";
+import { Clock, ChevronRight, CalendarDays, Calendar } from "lucide-react";
 
-export default function PendingApprovalCard() {
+export default function PendingApprovalCard({pendingTasks} : {pendingTasks?: PendingTasks}) {
   const approvals = [
     {
       label: "Pengajuan Cuti",
-      count: 5,
+      count: pendingTasks?.cuti ?? 0,
       icon: <CalendarDays className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
       color: "text-amber-600 dark:text-amber-400",
       bg: "bg-amber-50 dark:bg-amber-900/20",
     },
     {
       label: "Lembur (Overtime)",
-      count: 3,
+      count: pendingTasks?.lembur ?? 0,
       icon: <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />,
       color: "text-blue-600 dark:text-blue-400",
       bg: "bg-blue-50 dark:bg-blue-900/20",
     },
     {
-      label: "Data Karyawan",
-      count: 2,
-      icon: <UserCog className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
+      label: "Perubahan Shift/Jadwal Kerja",
+      count: pendingTasks?.attendance_request ?? 0,
+      icon: <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
       color: "text-purple-600 dark:text-purple-400",
       bg: "bg-purple-50 dark:bg-purple-900/20",
     },

@@ -1,4 +1,4 @@
-import { User, UserInput } from "@/types/user.types";
+import { BiometricDataInput, PasswordUpdateInput, User, UserInput } from "@/types/user.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
 import { EmployeeLite, Manager } from "@/types/employee.types";
@@ -52,12 +52,12 @@ export const getTrashedUser = async () => {
 /** Terminate Employment */
 export const terminateEmployment = async (
   uuid: string,
-  state: "resigned" | "terminated",
+  type: "resigned" | "terminated",
   date?: string,
 ) => {
   const res = await api.put<ApiResponse<User>>(
     `/users/terminate-employment/${uuid}`,
-    { state, date },
+    { type, date },
   );
   return res.data.data;
 };
@@ -82,15 +82,15 @@ export const changeUserStatus = async (uuid: string, isActive: boolean) => {
 /** Upload profile photo */
 export const uploadProfilePhoto = async (uuid: string, file: File) => {
   // Cek file dulu
-  console.log("File object:", file);
+  // console.log("File object:", file);
 
   const formData = new FormData();
   formData.append("profile_photo", file);
 
   // Cek FormData content (trik: pakai for...of)
-  for (let pair of formData.entries()) {
-    console.log(pair[0], pair[1]);
-  }
+  // for (let pair of formData.entries()) {
+  //   console.log(pair[0], pair[1]);
+  // }
 
   const res = await api.post<ApiResponse<User>>(
     `/users/upload-profile-photo/${uuid}`,
@@ -115,4 +115,29 @@ export const getManager = async () => {
 export const getEmployeeForInput = async () => {
   const res = await api.get<ApiResponse<EmployeeLite[]>>("/users/employees-lite");
   return res.data.data;
+};
+
+/** Get Profile Users */
+export const getProfile = async () => {
+  const res = await api.get<ApiResponse<User>>("/users/profile");
+  return res.data.data;
+}
+
+export const updatePassword = async (payload: PasswordUpdateInput) => {
+  const res = await api.put<ApiResponse<User>>("/users/change-password", payload);
+  localStorage.removeItem("token");
+  return res.data.data;
+}
+
+export const updateBiometricData = async (payload: BiometricDataInput) => {
+  const res = await api.put<ApiResponse<User>>(`/users/update-biometric`, payload);
+  return res.data.data;
+}
+
+export const adminChangePassword = async (uuid: string, newPassword: string) => {
+  const res = await api.put<ApiResponse<void>>(
+    `/users/change-password/${uuid}`,
+    { new_password: newPassword }
+  );
+  return res.data;
 };

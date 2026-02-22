@@ -1,34 +1,35 @@
+import { LeaveSummary } from "@/types";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
 
-export default function LeaveOverviewCard() {
+export default function LeaveOverviewCard({leaveSummary} : {leaveSummary?: LeaveSummary}) {
   const data = [
     {
       label: "Disetujui",
-      value: "12",
+      value: leaveSummary?.disetujui || 0,
       sub: "Bulan ini",
       icon: <CheckCircle className="size-4 text-emerald-500" />,
       bg: "bg-emerald-50 dark:bg-emerald-500/10",
     },
     {
       label: "Ditolak",
-      value: "2",
+      value: leaveSummary?.ditolak || 0,
       sub: "Bulan ini",
       icon: <XCircle className="size-4 text-rose-500" />,
       bg: "bg-rose-50 dark:bg-rose-500/10",
     },
     {
-      label: "Sisa Cuti",
-      value: "8 Hari",
-      sub: "Rata-rata",
-      icon: <Clock className="size-4 text-blue-500" />,
-      bg: "bg-blue-50 dark:bg-blue-500/10",
-    },
-    {
-      label: "Sisa Lembur",
-      value: "1 Jam",
+      label: "Pending",
+      value: leaveSummary?.pending || 0,
       sub: "Rata-rata",
       icon: <Clock className="size-4 text-amber-500" />,
       bg: "bg-amber-50 dark:bg-amber-500/10",
+    },
+    {
+      label: "Sisa Cuti",
+      value: leaveSummary?.sisa_cuti || 0,
+      sub: "Rata-rata",
+      icon: <Clock className="size-4 text-blue-500" />,
+      bg: "bg-blue-50 dark:bg-blue-500/10",
     },
   ];
 
