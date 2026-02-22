@@ -1,5 +1,6 @@
 import { Mail, Phone, MapPin, Send, Github, Twitter, Instagram, Facebook } from "lucide-react";
 import Button from "../ui/button/Button";
+import SocialIcons from "./SocialIcons";
 
 export default function Contact({sitename}: {sitename:string}) {
     return (
@@ -30,7 +31,7 @@ export default function Contact({sitename}: {sitename:string}) {
                                     </div>
                                     <div>
                                         <div className="text-sm font-bold text-gray-900 dark:text-white">Email Us</div>
-                                        <div className="text-sm text-gray-500 dark:text-gray-400">support@hiderihr.com</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">support@{sitename.toLowerCase()}.com</div>
                                     </div>
                                 </div>
 
@@ -58,23 +59,7 @@ export default function Contact({sitename}: {sitename:string}) {
                             <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700/50">
                                 <h5 className="text-sm font-bold text-gray-900 dark:text-white uppercase mb-4 tracking-wider">Follow Us</h5>
                                 <div className="flex gap-4">
-                                    {[
-                                        { icon: <Github size={20} />, href: "https://github.com/deriana", label: "Github", color: "hover:bg-gray-800 hover:text-white" },
-                                        { icon: <Facebook    size={20} />, href: "https://facebook.com/jerri.maruf", label: "Facebook", color: "hover:bg-blue-600 hover:text-white" },
-                                        { icon: <Instagram   size={20} />, href: "https://instagram.com/hi_deri_", label: "Instagram", color: "hover:bg-pink-600 hover:text-white" },
-                                        { icon: <Twitter size={20} />, href: "https://x.com/Deriana765", label: "X (Twitter)", color: "hover:bg-black hover:text-white" },
-                                    ].map((social, i) => (
-                                        <a
-                                            key={i}
-                                            href={social.href}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            aria-label={social.label}
-                                            className={`w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center transition-all duration-300 ${social.color} hover:-translate-y-1 shadow-sm`}
-                                        >
-                                            {social.icon}
-                                        </a>
-                                    ))}
+                                    <SocialIcons />
                                 </div>
                             </div>
                         </div>

@@ -15,6 +15,7 @@ export default function LandingPage() {
     const { general } = useSettingsContext();
 
     const siteName = general?.site_name || "HRIS Management";
+    const footer = general?.footer || "Copyright 2026 © HideriHR. All rights reserved."
 
     useEffect(() => {
         const observerOptions = {
@@ -74,7 +75,7 @@ export default function LandingPage() {
                     <Contact sitename={siteName} />
                 </section>
             </main>
-            <Footer />
+            <Footer footer={footer}/>
             <ScrollToTop />
         </div>
     );
