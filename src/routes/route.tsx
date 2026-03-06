@@ -24,6 +24,7 @@ import {
   Trash2,
   LayoutDashboard,
 } from "lucide-react";
+
 export type NavSubItem = {
   name: string;
   path: string;
@@ -31,6 +32,7 @@ export type NavSubItem = {
   icon: React.ReactNode;
   pro?: boolean;
   new?: boolean;
+  hideForAdmin?: boolean;
 };
 
 export type NavItem = {
@@ -39,6 +41,7 @@ export type NavItem = {
   path?: string;
   permission?: string;
   subItems?: NavSubItem[];
+  hideForAdmin?: boolean;
 };
 
 export const navItems: NavItem[] = [
@@ -53,7 +56,7 @@ export const navItems: NavItem[] = [
     name: "Employee Dashboard",
     path: "/dashboard/employee",
     permission: buildPermission(RESOURCES.DASHBOARD, PERMISSIONS.DASHBOARD.employee),
-    
+    hideForAdmin: true,
   },
   {
     name: "Attendances Report",
@@ -297,6 +300,7 @@ export const othersItems: NavItem[] = [
     icon: <Clock size={20} />,
     name: "Single Attendance",
     path: "/attendance/single",
+    hideForAdmin: true,
   },
   {
     icon: <Settings size={20} />,

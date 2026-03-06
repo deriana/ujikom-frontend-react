@@ -66,22 +66,22 @@ export default function UsersTable() {
   };
 
   const handleEdit = (id: number) => {
-    toast.success(`User ${id} berhasil diperbarui`);
+    toast.success(`User ${id} updated successfully`);
   };
 
   const handleDelete = async (id: number) => {
     try {
       setUsersData((prev) => prev.filter((user) => user.id !== id));
 
-      toast.success("User berhasil dihapus");
+      toast.success("User deleted successfully");
     } catch (error) {
       console.error(error);
-      toast.error("Gagal menghapus user");
+      toast.error("Failed to delete user");
     }
   };
 
   const handleCreate = () => {
-    toast.success("User berhasil dibuat");
+    toast.success("User created successfully");
   };
 
   const columns: Column<User>[] = [

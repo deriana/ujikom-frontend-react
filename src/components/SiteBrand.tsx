@@ -3,7 +3,7 @@ import { useSettingsContext } from "@/context/SettingsContext";
 interface SiteBrandProps {
   showLogo?: boolean;
   showName?: boolean;
-  isCollapsed?: boolean; // Tambahkan ini
+  isCollapsed?: boolean; 
   className?: string;
   logoClassName?: string;
   nameClassName?: string;

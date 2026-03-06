@@ -23,7 +23,7 @@ interface LeaveModalProps {
   isLoading?: boolean;
   employees?: { nik: string; name: string }[];
   leaveTypes?: { uuid: string; name: string }[];
-  isUserAdminOrHR?: boolean; // Pastikan ini dipassing dari parent
+  isUserAdminOrHR?: boolean;
 }
 
 export default function LeaveModal({

@@ -58,7 +58,7 @@ export default function UsersUpdate() {
     string
   >({
     label: "User",
-    emptyForm: {} as UserInput, // tidak dipakai di edit
+    emptyForm: {} as UserInput, 
     mapToPayload: (f) => f,
     updateFn: (id, payload) => updateUser({ uuid: id, data: payload }),
     createFn: async () => {

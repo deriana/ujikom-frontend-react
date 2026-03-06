@@ -349,7 +349,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/" element={<LandingPageWrapper />} />
-          <Route path="/careers" element={<JobListPage />} />
+          {/* <Route path="/careers" element={<JobListPage />} /> */}
           <Route path="/careers/:jobId" element={<CareerPage />} />
           <Route path="/403" element={<Forbidden />} />
           <Route path="/404" element={<NotFound />} />

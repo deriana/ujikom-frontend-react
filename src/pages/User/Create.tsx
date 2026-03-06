@@ -66,7 +66,6 @@ export default function UsersCreate() {
       redirectPath: "/users",
     });
 
-  // Pastikan form terisi saat pertama kali buka halaman
   useEffect(() => {
     if (!form) initCreate();
   }, [form, initCreate]);

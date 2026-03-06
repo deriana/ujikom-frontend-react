@@ -48,7 +48,7 @@ export default function GeoSetting({ data }: { data: GeoFencingValues }) {
         },
       });
 
-      toast.success("Pengaturan Lokasi berhasil disimpan");
+      toast.success("Location Settings saved successfully");
     } catch (error: any) {
       console.error("Error menyimpan geo fencing:", error);
       toast.error(
@@ -190,7 +190,7 @@ export default function GeoSetting({ data }: { data: GeoFencingValues }) {
               ) : (
                 <Save size={20} />
               )}
-              {isPending ? "Menyimpan..." : "Simpan Pengaturan Lokasi"}
+              {isPending ? "Saving..." : "Save Location Settings"}
             </button>
           </div>
         </div>

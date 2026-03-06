@@ -176,7 +176,7 @@ export const EditProfileModal = ({
             />
             <p className="text-xs text-amber-800 dark:text-amber-400 leading-relaxed font-medium">
               Data pekerjaan hanya dapat diubah oleh divisi HR atau
-              Administrator. Silakan hubungi tim terkait jika terdapat kesalahan
+              Administrator. Please contact the relevant team if there are any errors
               data.
             </p>
           </div>

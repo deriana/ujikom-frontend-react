@@ -1,7 +1,7 @@
 interface FieldSkeleton {
   type?: "input" | "select" | "textarea" | "checkbox" | "date";
-  width?: string; // lebar field
-  rows?: number; // untuk textarea
+  width?: string;
+  rows?: number; 
 }
 
 interface FormSkeletonProps {

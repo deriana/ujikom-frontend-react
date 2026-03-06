@@ -103,7 +103,7 @@ export default function OvertimesTable() {
       header: "Employee",
       render: (row) => (
         <div className="flex items-center gap-3">
-          {/* Avatar Inisial Bulat */}
+          {/* Init Circle Avatar */}
           {/* <div className="shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center border border-blue-200 dark:border-blue-800">
             <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300">
               {row.employee_name}
@@ -128,7 +128,6 @@ export default function OvertimesTable() {
             <Calendar size={14} className="text-gray-400" />
             {formatDateID(row.date)}
           </div>
-          {/* Jika ada data shift/jam di row, bisa ditambahkan di sini */}
         </div>
       ),
     },

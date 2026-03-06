@@ -15,7 +15,7 @@ export default function EmployeeSummaryCards({
 }) {
   const stats = [
     {
-      label: "Total Karyawan",
+      label: "Total Employees",
       value: employeeData?.total ?? 0,
       trend: "+12%",
       isPositive: true,
@@ -24,7 +24,7 @@ export default function EmployeeSummaryCards({
       iconBg: "bg-blue-50 dark:bg-blue-500/10",
     },
     {
-      label: "Karyawan Aktif",
+      label: "Active Employees",
       value: employeeData?.aktif ?? 0,
       trend: "+4",
       isPositive: true,
@@ -33,7 +33,7 @@ export default function EmployeeSummaryCards({
       iconBg: "bg-emerald-50 dark:bg-emerald-500/10",
     },
     {
-      label: "Resign Bulan Ini",
+      label: "Resign This Month",
       value: employeeData?.resign_bulan_ini ?? 0,
       trend: "-2%",
       isPositive: false,
@@ -42,7 +42,7 @@ export default function EmployeeSummaryCards({
       iconBg: "bg-rose-50 dark:bg-rose-500/10",
     },
     {
-      label: "Karyawan Baru",
+      label: "New Employees",
       value: employeeData?.baru_bulan_ini ?? 0,
       trend: "+2",
       isPositive: true,

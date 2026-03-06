@@ -24,7 +24,7 @@ export default function PositionModal({
   isLoading = false,
   allowanceOptions,
 }: PositionModalProps) {
-  // Gunakan UUID untuk mendeteksi mode edit agar judul tidak berganti saat mengetik nama
+  // Use UUID to detect edit mode so the title doesn't change when typing the name
   const isEdit = Boolean(positionData.uuid);
 
   const addAllowance = () => {

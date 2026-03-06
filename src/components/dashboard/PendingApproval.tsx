@@ -4,7 +4,7 @@ import { Clock, ChevronRight, CalendarDays, Calendar } from "lucide-react";
 export default function PendingApprovalCard({pendingTasks} : {pendingTasks?: PendingTasks}) {
   const approvals = [
     {
-      label: "Pengajuan Cuti",
+      label: "Leave Request",
       count: pendingTasks?.cuti ?? 0,
       icon: <CalendarDays className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
       color: "text-amber-600 dark:text-amber-400",
@@ -30,9 +30,9 @@ export default function PendingApprovalCard({pendingTasks} : {pendingTasks?: Pen
     <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-6 bg-amber-500 rounded-full" /> {/* Accent bar */}
+          <div className="w-2 h-6 bg-amber-500 rounded-full" />
           <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg">
-            Butuh Approval
+            Need Approval
           </h3>
         </div>
         <span className="flex h-2 w-2">
@@ -56,7 +56,7 @@ export default function PendingApprovalCard({pendingTasks} : {pendingTasks?: Pen
                   {item.label}
                 </p>
                 <p className="text-xs text-slate-400 dark:text-slate-500">
-                  {item.count} permintaan menunggu
+                  {item.count} pending requests
                 </p>
               </div>
             </div>
@@ -67,7 +67,7 @@ export default function PendingApprovalCard({pendingTasks} : {pendingTasks?: Pen
       </div>
 
       <button className="w-full mt-6 py-2.5 text-sm font-medium text-white bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 rounded-xl transition-colors shadow-sm">
-        Buka Dashboard Approval
+        Open Approval Dashboard
       </button>
     </div>
   );

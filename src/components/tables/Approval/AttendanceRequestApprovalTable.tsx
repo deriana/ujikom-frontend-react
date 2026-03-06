@@ -69,7 +69,7 @@ export default function AttendanceRequestsApprovalTable() {
       render: (row) => (
         <div className="flex flex-col">
           <span className="font-semibold text-gray-900 dark:text-gray-100">
-            {row.employee?.name} {/* Sesuai nested object employee */}
+            {row.employee?.name}
           </span>
           <span className="text-xs text-gray-500">
             NIK: {row.employee?.nik}
@@ -78,7 +78,7 @@ export default function AttendanceRequestsApprovalTable() {
       ),
     },
     {
-      header: "Request Info", // Ubah dari Attendance Request Info
+      header: "Request Info", 
       render: (row) => (
         <div className="text-sm">
           <div className="font-medium text-gray-700 dark:text-gray-200">
@@ -89,7 +89,6 @@ export default function AttendanceRequestsApprovalTable() {
             {formatDateID(row.start_date)}
             {row.end_date && ` - ${formatDateID(row.end_date)}`}
           </div>
-          {/* Menampilkan detail shift atau jadwal jika ada */}
           <div className="text-[10px] text-gray-500 mt-0.5">
             {row.shift_details?.name || row.work_schedule_details?.name}
           </div>

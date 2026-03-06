@@ -35,7 +35,7 @@ export interface AttendanceInput {
 
 export interface IndividualDetection {
   descriptor: number[] | string;
-  photo: Blob | File; // Gunakan Blob jika hasil crop dari canvas
+  photo: Blob | File;
 }
 
 export interface BulkAttendanceInput {

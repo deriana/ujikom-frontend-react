@@ -51,7 +51,7 @@ const FaceAttendance: React.FC = () => {
       ]);
       setIsModelsLoaded(true);
     } catch (err) {
-      console.error("Gagal load model:", err);
+      console.error("Failed to load model:", err);
     }
   };
 
@@ -106,12 +106,10 @@ const FaceAttendance: React.FC = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         resizedDetections.forEach((det) => {
           const box = det.detection.box;
-          // Kotak Deteksi Bergaya Teknis
-          context.strokeStyle = "#10b981"; // Emerald-500
+          context.strokeStyle = "#10b981"; 
           context.lineWidth = 2;
           context.strokeRect(box.x, box.y, box.width, box.height);
 
-          // Label ID/Status mini di atas kotak
           context.fillStyle = "#10b981";
           context.fillRect(box.x, box.y - 20, 70, 20);
           context.fillStyle = "white";

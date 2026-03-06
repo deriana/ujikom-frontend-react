@@ -6,7 +6,6 @@ import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import UserProfile from "../UserProfile";
 import { useQueryClient } from "@tanstack/react-query";
-// import placeholderImg from "";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);

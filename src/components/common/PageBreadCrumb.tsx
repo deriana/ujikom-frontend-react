@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 interface Crumb {
   name: string;
-  href?: string; // Jika href ada, jadikan link
+  href?: string;
 }
 
 interface BreadcrumbProps {
@@ -17,7 +17,7 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, crumbs }) => {
   ];
 
   return (
-    <div className="flex justify-end mb-6">
+    <div className="flex justify-start sm:justify-end mb-6">
       <nav>
         <ol className="flex items-center gap-1.5">
           {items.map((crumb, index) => {

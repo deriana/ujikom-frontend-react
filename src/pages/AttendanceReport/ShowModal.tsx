@@ -19,7 +19,6 @@ export default function AttendanceShowModal({
 
   if (!id) return null;
 
-  // Helper untuk membuka Google Maps
   const openInMaps = (lat: string, lng: string) => {
     window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
   };

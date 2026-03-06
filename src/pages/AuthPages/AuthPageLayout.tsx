@@ -2,6 +2,7 @@ import React from "react";
 import GridShape from "../../components/common/GridShape";
 import { Link } from "react-router-dom";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
+import { SiteBrand } from "@/components/SiteBrand";
 
 export default function AuthLayout({
   children,
@@ -23,14 +24,9 @@ export default function AuthLayout({
             <GridShape />
 
             <div className="flex flex-col items-center max-w-sm px-8">
-              <Link to="/" className="flex items-center gap-3 mb-6 transition-transform hover:scale-105">
-                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-indigo-600 shadow-2xl">
-                  <span className="text-2xl font-black italic">H</span>
-                </div>
-                <span className="text-3xl font-black tracking-tighter text-white uppercase italic">
-                  Hideri<span className="opacity-70">HR</span>
-                </span>
-              </Link>
+              {/* <Link to="/" className="flex items-center gap-3 mb-6 transition-transform hover:scale-105">
+                <SiteBrand logoClassName="rounded-lg" nameClassName="text-indigo-400 dark:text-white italic"/>
+              </Link> */}
 
               <p className="text-center text-indigo-100 dark:text-white/60 text-lg font-medium leading-relaxed">
                 Manage your workforce with intelligence and ease.

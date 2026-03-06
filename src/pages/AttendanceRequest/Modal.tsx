@@ -85,7 +85,7 @@ export default function AttendanceRequestModal({
                     request_type: val as RequestType,
                     shift_template_uuid: undefined,
                     work_schedule_uuid: undefined,
-                    end_date: null // Reset end_date jika pindah ke SHIFT
+                    end_date: null 
                   })}
                 />
               </div>

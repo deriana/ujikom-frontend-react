@@ -103,7 +103,6 @@ export default function WorkScheduleModal({
               </div>
 
               {/* Time Range */}
-              {/* Time Range */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Start Time */}
                 <div className="space-y-2">
@@ -116,7 +115,7 @@ export default function WorkScheduleModal({
                     onChange={(e) =>
                       setData({ ...data, work_start_time: e.target.value })
                     }
-                    onClick={(e) => e.currentTarget.showPicker()} // optional: show time picker on click
+                    onClick={(e) => e.currentTarget.showPicker()}
                     className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 cursor-pointer"
                     trailingIcon={<Clock size={18} />}
                   />
@@ -183,13 +182,12 @@ export default function WorkScheduleModal({
                 <Input
                   type="number"
                   min="0"
-                  // Jika null atau undefined, tampilkan string kosong agar placeholder muncul
                   value={data.late_tolerance_minutes ?? ""}
                   onChange={(e) => {
                     const val = e.target.value;
                     setData({
                       ...data,
-                      // Jika kosong (""), simpan null. Jangan 0.
+                      // If empty (""), save null. Not 0.
                       late_tolerance_minutes: val === "" ? null : Number(val),
                     });
                   }}

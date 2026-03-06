@@ -30,7 +30,6 @@ export default function LeavesApprovalTable() {
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Filter Options untuk Dropdown
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
       new Set(leaves.map((l) => l.employee_name)),

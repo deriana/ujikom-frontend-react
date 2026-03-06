@@ -19,7 +19,6 @@ import toast from "react-hot-toast";
 import { APPROVAL_STATS } from "@/constants/Approval";
 import { formatDateID } from "@/utils/date";
 
-// Helper download spesifik Early Leave
 export const downloadEarlyLeaveAttachment = async (filename: string) => {
   const response = await api.get(`/early_leaves/download-attachment/${filename}`, {
     responseType: "blob",
@@ -81,7 +80,7 @@ export default function EarlyLeaveShowModal({
       await downloadEarlyLeaveAttachment(filename);
     } catch (error) {
       console.error("Download failed", error);
-      toast.error("Gagal mengunduh file.");
+      toast.error("Failed to download file.");
     } finally {
       setIsDownloading(false);
     }

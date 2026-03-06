@@ -10,24 +10,24 @@ export default function AttendanceTodayCard({attendanceData} : {attendanceData?:
 
   const total = data.hadir + data.telat + data.izin + data.alpha;
 
-  // Helper untuk menghitung persentase
+  // Helper to count percentage
   const getWidth = (value : any) => `${(value / total) * 100}%`;
 
   const stats = [
-    { label: "Hadir", value: data.hadir, color: "bg-emerald-500", text: "text-emerald-600" },
-    { label: "Terlambat", value: data.telat, color: "bg-amber-500", text: "text-amber-600" },
-    { label: "Izin/Sakit", value: data.izin, color: "bg-blue-500", text: "text-blue-600" },
-    { label: "Tanpa Keterangan", value: data.alpha, color: "bg-rose-500", text: "text-rose-600" },
+    { label: "Present", value: data.hadir, color: "bg-emerald-500", text: "text-emerald-600" },
+    { label: "Late", value: data.telat, color: "bg-amber-500", text: "text-amber-600" },
+    { label: "Leave/Sick", value: data.izin, color: "bg-blue-500", text: "text-blue-600" },
+    { label: "Absent", value: data.alpha, color: "bg-rose-500", text: "text-rose-600" },
   ];
 
   return (
     <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg tracking-tight">
-          Kehadiran Hari Ini
+          Today's Attendance
         </h3>
         <span className="text-xs font-medium px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full">
-          Total: {total} Karyawan
+          Total: {total} Employees
         </span>
       </div>
 

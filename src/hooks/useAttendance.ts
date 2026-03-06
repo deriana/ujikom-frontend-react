@@ -13,10 +13,10 @@ export const useSendBulkAttendance = () => {
   return useMutation({
     mutationFn: (data: BulkAttendanceInput) => sendBulkAttendance(data),
     onSuccess: (data) => {
-      console.log("Semua absen berhasil diproses", data);
+      console.log("All attendance processed successfully", data);
     },
     onError: (error) => {
-      console.error("Gagal memproses bulk attendance", error);
+      console.error("Failed to process bulk attendance", error);
     },
   });
 };
@@ -25,10 +25,10 @@ export const useSendSingleAttendance = () => {
   return useMutation({
     mutationFn: (data: SingleAttendanceInput) => sendSingleAttendance(data),
     onSuccess: (data) => {
-      console.log("Absen berhasil diproses", data);
+      console.log("Attendance processed successfully", data);
     },
     onError: (error) => {
-      console.error("Gagal memproses single attendance", error);
+      console.error("Failed to process single attendance", error);
     },
   });
 };
@@ -50,9 +50,9 @@ export const useAttendances = (params?: {
     queryKey: ["attendances", params?.start_date, params?.end_date],
     queryFn: () => getAttendance(params),
     enabled: !!params?.start_date && !!params?.end_date,
-    staleTime: 1000 * 60 * 5, // 5 menit data dianggap fresh
+    staleTime: 1000 * 60 * 5, 
     refetchOnWindowFocus: false,
-    refetchOnMount: false, // prevent fetch ulang saat mount
+    refetchOnMount: false,
   });
 };
 

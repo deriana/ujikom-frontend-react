@@ -132,8 +132,8 @@ export default function HolidayModal({
           <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30">
             <Info size={18} className="text-blue-500 mt-0.5 shrink-0" />
             <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-              You can select a single day or a range. If only one date is
-              selected, it will be treated as a one-day holiday.
+              You can select a single day or a range. To select a single day,
+              please <strong>click the same date twice</strong>.
             </p>
           </div>
 
