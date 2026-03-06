@@ -1,6 +1,6 @@
 # HRIS Frontend
 
-![banner](./banner.png)
+![banner](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbTFobHdmdDVoaHYzano3NjhjdXpzczd6Z2t5eDNvMXFmOGF0NWIyZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/El8u7R2MAgm5CCOzOD/giphy.gif)
 
 ## Overview
 
