@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { EarlyLeaveInput, EarlyLeaveAttachment } from "@/types"; // Pastikan path type benar
+import { EarlyLeaveInput, EarlyLeaveAttachment } from "@/types"; 
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import { useDropzone } from "react-dropzone";

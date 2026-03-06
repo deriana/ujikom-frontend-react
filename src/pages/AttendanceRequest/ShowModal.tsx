@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { APPROVAL_STATS } from "@/constants/Approval";
 import { formatDateID } from "@/utils/date";
-import { useAttendanceRequestByUuid } from "@/hooks/useAttendanceRequest"; // Pastikan hook ini tersedia
+import { useAttendanceRequestByUuid } from "@/hooks/useAttendanceRequest"; 
 
 interface AttendanceRequestShowModalProps {
   uuid: string | null;
@@ -57,7 +57,6 @@ export default function AttendanceRequestShowModal({
   isOpen,
   onClose,
 }: AttendanceRequestShowModalProps) {
-  // Ganti dengan hook fetching data Anda
   const { data: detail, isLoading, isError, error } = useAttendanceRequestByUuid(uuid || "");
 
   if (!uuid) return null;

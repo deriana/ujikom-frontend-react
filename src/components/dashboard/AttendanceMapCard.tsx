@@ -2,9 +2,8 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { MapPin, Clock, User } from "lucide-react";
-import { MapLocation } from "@/types"; // Import type yang kita buat tadi
+import { MapLocation } from "@/types"; 
 
-// Perbaikan icon default Leaflet yang sering hilang di React
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png",
@@ -18,7 +17,6 @@ interface AttendanceMapProps {
 }
 
 export default function AttendanceMapCard({ locations = [] }: AttendanceMapProps) {
-  // Koordinat default (Jakarta) jika tidak ada data
   const defaultPosition: [number, number] = [-6.200000, 106.816666];
 
   return (
@@ -27,12 +25,12 @@ export default function AttendanceMapCard({ locations = [] }: AttendanceMapProps
         <div>
           <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg flex items-center gap-2">
             <MapPin className="w-5 h-5 text-rose-500" />
-            Lokasi Kehadiran Hari Ini
+            Today's Attendance Locations
           </h3>
-          <p className="text-xs text-slate-500 mt-1">Titik koordinat check-in karyawan</p>
+          <p className="text-xs text-slate-500 mt-1">Employee check-in coordinate points</p>
         </div>
         <div className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-600 dark:text-slate-400">
-          {locations.length} Karyawan
+          {locations.length} Employees
         </div>
       </div>
 
@@ -49,7 +47,7 @@ export default function AttendanceMapCard({ locations = [] }: AttendanceMapProps
           />
 
           {locations.map((loc, i) => {
-             // Pastikan lat & lng adalah angka
+             // Ensure lat & lng are numbers
              const lat = typeof loc.lat === 'string' ? parseFloat(loc.lat) : loc.lat;
              const lng = typeof loc.lng === 'string' ? parseFloat(loc.lng) : loc.lng;
 

@@ -4,30 +4,30 @@ import { CheckCircle, XCircle, Clock } from "lucide-react";
 export default function LeaveOverviewCard({leaveSummary} : {leaveSummary?: LeaveSummary}) {
   const data = [
     {
-      label: "Disetujui",
+      label: "Approved",
       value: leaveSummary?.disetujui || 0,
-      sub: "Bulan ini",
+      sub: "This month",
       icon: <CheckCircle className="size-4 text-emerald-500" />,
       bg: "bg-emerald-50 dark:bg-emerald-500/10",
     },
     {
-      label: "Ditolak",
+      label: "Rejected",
       value: leaveSummary?.ditolak || 0,
-      sub: "Bulan ini",
+      sub: "This month",
       icon: <XCircle className="size-4 text-rose-500" />,
       bg: "bg-rose-50 dark:bg-rose-500/10",
     },
     {
       label: "Pending",
       value: leaveSummary?.pending || 0,
-      sub: "Rata-rata",
+      sub: "Average",
       icon: <Clock className="size-4 text-amber-500" />,
       bg: "bg-amber-50 dark:bg-amber-500/10",
     },
     {
-      label: "Sisa Cuti",
+      label: "Leave Balance",
       value: leaveSummary?.sisa_cuti || 0,
-      sub: "Rata-rata",
+      sub: "Average",
       icon: <Clock className="size-4 text-blue-500" />,
       bg: "bg-blue-50 dark:bg-blue-500/10",
     },
@@ -37,10 +37,10 @@ export default function LeaveOverviewCard({leaveSummary} : {leaveSummary?: Leave
     <div className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg tracking-tight">
-          Ringkasan Cuti
+          Leave Summary
         </h3>
         <button className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:opacity-80">
-          Selengkapnya
+          See More
         </button>
       </div>
 

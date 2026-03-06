@@ -11,10 +11,10 @@ export const WorkHourTarget = ({
 
   return (
     <div className="rounded-2xl bg-linear-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-lg shadow-blue-500/20">
-      <h4 className="font-bold text-lg">Target Jam Kerja</h4>
+      <h4 className="font-bold text-lg">Working Hours Target</h4>
       
       <p className="mt-1 text-sm text-blue-100/80">
-        Kamu sudah memenuhi <span className="font-semibold text-white">{percentage}%</span> target bulan ini.
+        You have met <span className="font-semibold text-white">{percentage}%</span> of this month's target.
       </p>
 
       {/* Progress Bar */}
@@ -27,7 +27,7 @@ export const WorkHourTarget = ({
 
       {/* Stats Footer */}
       <div className="mt-4 flex items-center justify-between text-xs font-medium">
-        <span>{totalKerja.toLocaleString()} Menit</span>
+        <span>{totalKerja.toLocaleString()} Minutes</span>
         <span className="text-blue-200">Target: {targetMenit.toLocaleString()}</span>
       </div>
     </div>

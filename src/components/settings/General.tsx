@@ -36,7 +36,7 @@ export default function GeneralSetting({ data }: { data: GeneralValues }) {
 
     try {
       await updateSetting({ type: "general", data: formData });
-      toast.success("Pengaturan General berhasil disimpan");
+      toast.success("General Settings saved successfully");
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Terjadi kesalahan");
     }

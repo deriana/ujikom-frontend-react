@@ -9,16 +9,16 @@ import {
 } from "@/api/notification.api";
 import { LaravelNotification } from "@/types/notification.types";
 
-// 1. Ambil Semua Notifikasi
+// 1. Fetch All Notifications
 export const useNotifications = () => {
   return useQuery({
     queryKey: ["notifications"],
     queryFn: getNotifications,
-    staleTime: 1000 * 60, // 1 menit (sesuaikan kebutuhan)
+    staleTime: 1000 * 60, // 1 minute (adjust as needed)
   });
 };
 
-// 2. Ambil Notifikasi Belum Dibaca
+// 2. Fetch Unread Notifications
 export const useUnreadNotifications = () => {
   return useQuery({
     queryKey: ["notifications", "unread"],

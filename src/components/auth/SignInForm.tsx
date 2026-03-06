@@ -19,7 +19,6 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Di dalam komponen Login kamu
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
 
@@ -53,7 +52,6 @@ export default function SignInForm() {
     }
   };
 
-  // Fungsi untuk dipanggil di dalam Modal
   const handleResendActivation = async () => {
     try {
       setLoading(true);

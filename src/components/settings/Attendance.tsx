@@ -25,11 +25,11 @@ export default function AttendanceSetting({ data }: { data: AttendanceValues }) 
           late_tolerance_minutes: attendance.late,
         },
       });
-      toast.success("Attendance berhasil diperbarui");
+      toast.success("Attendance updated successfully");
     } catch (err: any) {
       console.error(err);
       toast.error(
-        err?.response?.data?.message || "Gagal memperbarui attendance"
+        err?.response?.data?.message || "Failed to update attendance"
       );
     }
   };

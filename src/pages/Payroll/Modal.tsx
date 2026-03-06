@@ -7,7 +7,7 @@ import { CurrencyInput } from "@/components/form/form-elements/CurrencyInput";
 interface PayrollUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  payrollData: PayrollUpdateInput & { employee_name?: string }; // Menambahkan employee_name untuk display
+  payrollData: PayrollUpdateInput & { employee_name?: string };
   setPayrollData: (data: PayrollUpdateInput) => void;
   onSubmit: () => void;
   isLoading?: boolean;

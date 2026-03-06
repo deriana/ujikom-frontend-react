@@ -19,5 +19,8 @@ export default defineConfig({
     alias: {
       "@": "/src",
     },
+  },
+  server: {
+    allowedHosts: [".ngrok-free.app"]
   }
 });

@@ -152,7 +152,7 @@ export default function BasicTableOne() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Yakin mau hapus data ini?")) {
+    if (confirm("Are you sure you want to delete this data?")) {
       console.log("Delete:", id);
     }
   };

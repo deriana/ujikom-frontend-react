@@ -5,8 +5,6 @@ export default function ScrollToTop() {
     const [isVisible, setIsVisible] = useState(false);
 
     const toggleVisibility = () => {
-        // window.pageYOffset sudah deprecated di browser modern, 
-        // disarankan pakai window.scrollY
         if (window.scrollY > 300) {
             setIsVisible(true);
         } else {
@@ -27,7 +25,6 @@ export default function ScrollToTop() {
     }, []);
 
     return (
-        /* Diubah dari left-8 ke right-8 */
         <div className="fixed bottom-8 right-8 z-50">
             <button
                 type="button"

@@ -96,4 +96,5 @@ export interface Employee {
   employment_state: EmploymentStateEnum;
   termination_date?: string | null;
   termination_reason?: string | null;
+  has_face_descriptor?: boolean;
 }

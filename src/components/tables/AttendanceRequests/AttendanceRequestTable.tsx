@@ -162,7 +162,7 @@ export default function AttendanceRequestsTable() {
       ),
     },
     {
-      header: "Request Info", // Ubah dari Attendance Request Info
+      header: "Request Info",
       render: (row) => (
         <div className="text-sm">
           <div className="font-medium text-gray-700 dark:text-gray-200">
@@ -173,7 +173,6 @@ export default function AttendanceRequestsTable() {
             {formatDateID(row.start_date)}
             {row.end_date && ` - ${formatDateID(row.end_date)}`}
           </div>
-          {/* Menampilkan detail shift atau jadwal jika ada */}
           <div className="text-[10px] text-gray-500 mt-0.5">
             {row.shift_details?.name || row.work_schedule_details?.name}
           </div>

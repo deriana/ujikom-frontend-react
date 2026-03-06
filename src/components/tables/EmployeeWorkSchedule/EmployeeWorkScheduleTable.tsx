@@ -127,7 +127,6 @@ export default function EmployeeWorkScheduleTable() {
     });
 
   const handleEdit = (uuid: string) => {
-    // console.log("Editing UUID:", uuid); // <-- ini log UUID
     const ws = employeeWorkSchedules.find((w) => w.uuid === uuid);
     if (!ws) return;
     crud.openEdit({
@@ -145,9 +144,9 @@ export default function EmployeeWorkScheduleTable() {
       render: (row) => (
         <div className="flex items-center gap-3">
           <UserProfile
-            src={row.employee?.profile_photo} // ganti ini sesuai field foto employee
+            src={row.employee?.profile_photo}
             alt={row.employee?.name || "N/A"}
-            size={36} // bisa disesuaikan
+            size={36} 
             className="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
           />
           <div className="flex flex-col">
@@ -164,7 +163,6 @@ export default function EmployeeWorkScheduleTable() {
     {
       header: "Schedule & Mode",
       render: (row) => {
-        // Menangani perbedaan format JSON (string vs object)
         const workMode =
           typeof row.work_schedule?.work_mode === "object"
             ? row.work_schedule?.work_mode?.name

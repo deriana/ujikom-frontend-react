@@ -31,16 +31,14 @@ export default function LeaveTypeModal({
     { label: "Female Only", value: "female" },
   ];
 
-  // Helper untuk handle input angka agar bisa dikosongkan tanpa jadi 0
   const handleQuotaChange = (val: string) => {
     if (val === "") {
-      setData({ ...data, default_days: "" as any }); // Izinkan kosong sementara di UI
+      setData({ ...data, default_days: "" as any }); 
     } else {
       setData({ ...data, default_days: Number(val) });
     }
   };
 
-  // Handle toggle infinite
   const toggleInfinite = (isInfinite: boolean) => {
     setData({ ...data, default_days: isInfinite ? (null as any) : 12 });
   };

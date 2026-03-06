@@ -19,7 +19,7 @@ export default function FinalizeActivationForm() {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Proteksi Route: Jika token tidak ada di URL
+  // Route Protection: If token is not in URL
   useEffect(() => {
     if (!token) {
       toast.error("Invalid or missing activation token.");

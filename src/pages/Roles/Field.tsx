@@ -39,12 +39,12 @@ export default function RoleField({
       {/* Header Section: Role Name */}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm transition-all">
         <label className="block text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
-          Informasi Role
+          Role Information
         </label>
         <Input
           value={value.name}
           disabled={disabled}
-          placeholder="Contoh: Admin Gudang, Manager Marketing..."
+          placeholder="Example: Warehouse Admin, Marketing Manager..."
           className="text-lg font-medium"
           onChange={(e) => onChange({ ...value, name: e.target.value })}
         />
@@ -53,7 +53,7 @@ export default function RoleField({
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
           <span className="h-6 w-1.5 bg-blue-600 rounded-full"></span>
-          Pengaturan Izin Modul
+          Module Permission Settings
         </h2>
 
         {/* Permissions Grid */}
@@ -75,7 +75,7 @@ export default function RoleField({
                 <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${allChecked ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'}`}>
-                      {/* Simbol folder/modul sederhana */}
+                      {/* Simple folder/module symbol */}
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>
@@ -85,7 +85,7 @@ export default function RoleField({
                         {module.name}
                       </h3>
                       <p className="text-xs text-gray-500">
-                        {ids.filter(id => value.permissions.includes(id)).length} dari {ids.length} akses aktif
+                        {ids.filter(id => value.permissions.includes(id)).length} of {ids.length} access points active
                       </p>
                     </div>
                   </div>
@@ -94,7 +94,7 @@ export default function RoleField({
                     <Checkbox
                       checked={allChecked}
                       onChange={() => toggleModule(module)}
-                      label={<span className="text-xs font-bold uppercase tracking-tight">Pilih Semua</span>}
+                      label={<span className="text-xs font-bold uppercase tracking-tight">Select All</span>}
                       disabled={disabled}
                     />
                   </div>

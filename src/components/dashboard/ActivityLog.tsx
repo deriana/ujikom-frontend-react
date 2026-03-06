@@ -3,7 +3,6 @@ import { LeaveLog as ILeaveLog} from "@/types";
 import { Coffee, XCircle, Clock, AlertCircle, HelpCircle } from "lucide-react";
 
 export const ActivityLog = ({ leaveLogs }: { leaveLogs: ILeaveLog[] }) => {
-  // Helper untuk menentukan visual berdasarkan status (integer)
   const getStatusConfig = (status: number | string) => {
     const s = Number(status);
     switch (s) {
@@ -35,10 +34,10 @@ export const ActivityLog = ({ leaveLogs }: { leaveLogs: ILeaveLog[] }) => {
     <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Riwayat Cuti</h3>
-          <p className="text-sm text-slate-500">Log pengajuan cuti terbaru Anda</p>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Leave History</h3>
+          <p className="text-sm text-slate-500">Log of your latest leave applications</p>
         </div>
-        <button className="text-sm font-medium text-blue-600 hover:underline">Lihat Semua</button>
+        <button className="text-sm font-medium text-blue-600 hover:underline">View All</button>
       </div>
 
       <div className="space-y-6">
@@ -79,7 +78,7 @@ export const ActivityLog = ({ leaveLogs }: { leaveLogs: ILeaveLog[] }) => {
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center text-slate-400">
             <AlertCircle size={32} className="mb-2 opacity-20" />
-            <p className="text-sm italic">Belum ada riwayat cuti</p>
+            <p className="text-sm italic">No leave history yet</p>
           </div>
         )}
       </div>

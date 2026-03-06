@@ -11,19 +11,19 @@ export const jobConfig = [
         salaryRange: "Rp 8.000.000 - Rp 12.000.000",
         postedAt: "2026-02-20",
         deadline: "2026-03-30",
-        description: "Kami mencari Full Stack Developer yang bersemangat untuk membangun masa depan teknologi HR. Anda akan bertanggung jawab atas pengembangan fitur baru pada platform HideriHR menggunakan teknologi modern (Laravel & React).",
+        description: "We are looking for a passionate Full Stack Developer to build the future of HR technology. You will be responsible for developing new features on the HideriHR platform using modern technology (Laravel & React).",
         requirements: [
-            "Minimal lulusan SMK (RPL) atau S1 Teknik Informatika.",
-            "Menguasai PHP (Laravel) dan JavaScript (React/Vite).",
-            "Memahami konsep REST API dan Database Relasional.",
-            "Mampu bekerja secara mandiri maupun dalam tim.",
-            "Memiliki portofolio project yang bisa didemonstrasikan."
+            "Minimum Vocational School (RPL) or Bachelor's degree in Informatics Engineering.",
+            "Proficient in PHP (Laravel) and JavaScript (React/Vite).",
+            "Understand REST API concepts and Relational Databases.",
+            "Able to work independently and in a team.",
+            "Have a project portfolio that can be demonstrated."
         ],
         benefits: [
-            "Gaji kompetitif & Bonus performa.",
-            "Fleksibilitas kerja (Remote friendly).",
-            "Tunjangan kesehatan & BPJS.",
-            "Lingkungan kerja yang suportif dan modern."
+            "Competitive salary & Performance bonus.",
+            "Flexible working (Remote friendly).",
+            "Health allowance & BPJS.",
+            "Supportive and modern work environment."
         ]
     },
     {
@@ -38,24 +38,24 @@ export const jobConfig = [
         salaryRange: "Competitive",
         postedAt: "2026-02-18",
         deadline: "2026-03-25",
-        description: "Bergabunglah dengan tim desain kami untuk menciptakan antarmuka yang intuitif dan pengalaman pengguna yang luar biasa bagi ribuan karyawan pengguna HideriHR.",
+        description: "Join our design team to create intuitive interfaces and exceptional user experiences for thousands of HideriHR users.",
         requirements: [
-            "Pengalaman minimal 2 tahun di bidang UI/UX Design.",
-            "Mahir menggunakan Figma dan tools prototyping lainnya.",
-            "Memahami prinsip Design System dan Atomic Design.",
-            "Mampu menerjemahkan kebutuhan bisnis menjadi visual yang fungsional.",
-            "Portofolio Dribbble/Behance yang kuat."
+            "Minimum 2 years of experience in UI/UX Design.",
+            "Proficient in Figma and other prototyping tools.",
+            "Understand Design System and Atomic Design principles.",
+            "Able to translate business needs into functional visuals.",
+            "Strong Dribbble/Behance portfolio."
         ],
         benefits: [
-            "MacBook untuk bekerja.",
-            "Budget kursus/sertifikasi desain.",
+            "MacBook for work.",
+            "Design course/certification budget.",
             "Gym Membership.",
-            "Asuransi kesehatan swasta."
+            "Private health insurance."
         ]
     },
     {
         id: "hr-specialist",
-        isOpen: false, // Contoh lowongan yang sudah tutup
+        isOpen: false,
         companyName: "HideriHR Systems",
         title: "Human Resources Specialist",
         department: "Human Resources",
@@ -65,17 +65,17 @@ export const jobConfig = [
         salaryRange: "Rp 15.000.000 - Rp 20.000.000",
         postedAt: "2026-01-10",
         deadline: "2026-02-10",
-        description: "Sebagai perusahaan HR Tech, kami membutuhkan pakar HR yang memahami regulasi ketenagakerjaan di Indonesia untuk membantu validasi fitur kepatuhan (compliance) pada produk kami.",
+        description: "As an HR Tech company, we need an HR expert who understands employment regulations in Indonesia to help validate compliance features in our products.",
         requirements: [
-            "Lulusan S1 Psikologi atau Hukum.",
-            "Paham mendalam mengenai UU Cipta Kerja dan regulasi PPh 21.",
-            "Pengalaman mengelola lebih dari 200 karyawan.",
-            "Kemampuan komunikasi dan negosiasi yang sangat baik."
+            "Bachelor's degree in Psychology or Law.",
+            "In-depth understanding of the Job Creation Law and PPh 21 regulations.",
+            "Experience managing more than 200 employees.",
+            "Excellent communication and negotiation skills."
         ],
         benefits: [
-            "Tunjangan transportasi dan makan.",
-            "Bonus tahunan.",
-            "Program pensiun (DPLK)."
+            "Transport and meal allowance.",
+            "Annual bonus.",
+            "Pension program (DPLK)."
         ]
     }
 ];

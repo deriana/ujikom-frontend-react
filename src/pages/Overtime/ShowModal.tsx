@@ -56,7 +56,6 @@ export default function OvertimeShowModal({
 
   if (!uuid) return null;
 
-  // Helper untuk konversi menit ke Jam & Menit
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;

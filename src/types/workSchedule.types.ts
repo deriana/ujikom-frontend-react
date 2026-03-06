@@ -11,7 +11,7 @@ export interface WorkSchedule {
   break_end_time?: string; // format "HH:mm"
   late_tolerance_minutes: number | null;
   requires_office_location?: boolean;
-  creator?: UserLite | null; // user yang membuat schedule
+  creator?: UserLite | null;
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;

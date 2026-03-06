@@ -81,13 +81,11 @@ export const changeUserStatus = async (uuid: string, isActive: boolean) => {
 
 /** Upload profile photo */
 export const uploadProfilePhoto = async (uuid: string, file: File) => {
-  // Cek file dulu
   // console.log("File object:", file);
 
   const formData = new FormData();
   formData.append("profile_photo", file);
 
-  // Cek FormData content (trik: pakai for...of)
   // for (let pair of formData.entries()) {
   //   console.log(pair[0], pair[1]);
   // }

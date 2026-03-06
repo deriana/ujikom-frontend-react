@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import { MonthlyChart } from "@/types";
@@ -6,32 +5,14 @@ import { MonthlyChart } from "@/types";
 
 interface StatisticsChartProps {
   chartData?: MonthlyChart;
-  // Tambahkan prop ini untuk komunikasi ke Parent
+  // Add this prop for communication to Parent
   onDateChange?: (date: string) => void;
 }
 
 export default function StatisticsChart({
   chartData,
-  onDateChange,
 }: StatisticsChartProps) {
-  const defaultRange = useMemo(() => {
-    const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    const formatDate = (date: Date) => date.toISOString().split("T")[0];
-    return `${formatDate(firstDay)} to ${formatDate(now)}`;
-  }, []);
-
-  const [dateRange, setDateRange] = useState<string>(defaultRange);
-
-  const handleDateChange = (selectedDates: Date[], dateStr: string) => {
-    setDateRange(dateStr);
-
-    // Pemicu fetch ulang: Kirim tanggal pertama dari range ke backend
-    if (selectedDates.length > 0 && onDateChange) {
-      const formattedDate = selectedDates[0].toISOString().split("T")[0];
-      onDateChange(formattedDate);
-    }
-  };
+  // No state needed for now
 
   // ... (options dan series tetap sama seperti kode kamu)
   const options: ApexOptions = {
@@ -86,8 +67,8 @@ export default function StatisticsChart({
   };
 
   const series = [
-    { name: "Hadir", data: chartData?.hadir || Array(12).fill(0) },
-    { name: "Tidak Hadir", data: chartData?.absent || Array(12).fill(0) },
+    { name: "Present", data: chartData?.hadir || Array(12).fill(0) },
+    { name: "Absent", data: chartData?.absent || Array(12).fill(0) },
   ];
 
   return (
@@ -95,10 +76,10 @@ export default function StatisticsChart({
       <div className="flex flex-col gap-5 mb-8 sm:flex-row sm:justify-between sm:items-center">
         <div>
           <h3 className="text-xl font-bold text-slate-800 dark:text-white">
-            Statistik Kehadiran
+            Attendance Statistics
           </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Visualisasi tren kehadiran karyawan tahun ini
+            Visualization of employee attendance trends this year
           </p>
         </div>
 

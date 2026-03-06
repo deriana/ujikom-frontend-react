@@ -54,18 +54,18 @@ export default function AttendanceYearlyChart({ data }: { data?: YearlyAttendanc
     fill: { opacity: 1 },
     tooltip: {
       y: {
-        formatter: (val: number) => `${val} Hari`,
+        formatter: (val: number) => `${val} Days`,
       },
     },
   };
 
   const series = [
     {
-      name: "Kehadiran",
+      name: "Attendance",
       data: data?.presence ?? [20, 22, 19, 21, 20, 22, 18, 20, 22, 21, 20, 15],
     },
     {
-      name: "Terlambat",
+      name: "Late",
       data: data?.late ?? [2, 1, 3, 0, 1, 2, 4, 1, 0, 1, 2, 1],
     },
   ];
@@ -74,7 +74,7 @@ export default function AttendanceYearlyChart({ data }: { data?: YearlyAttendanc
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/3 sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Rekap Kehadiran Tahunan
+          Annual Attendance Summary
         </h3>
         <div className="relative inline-block">
           <button className="dropdown-toggle" onClick={toggleDropdown}>

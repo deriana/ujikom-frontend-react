@@ -27,7 +27,6 @@ export default function OvertimeModal({
 }: OvertimeModalProps) {
   const isEdit = !!overtimeData.uuid;
 
-  // Helper untuk update state
   const updateData = (payload: Partial<OvertimeInput>) => {
     setOvertimeData({ ...overtimeData, ...payload });
   };
@@ -76,9 +75,7 @@ export default function OvertimeModal({
                     label: `${emp.nik} - ${emp.name}`,
                   }))}
                   placeholder="Choose an employee..."
-                  // PERBAIKAN: Gunakan overtimeData bukan overtime
                   value={overtimeData.employee_nik || ""} 
-                  // PERBAIKAN: Gunakan updateData agar konsisten
                   onChange={(val) => updateData({ employee_nik: val })}
                   disabled={isEdit}
                 />

@@ -16,69 +16,65 @@ import {
 import { LaravelNotification } from "@/types/notification.types";
 
 export default function Notification() {
-  // 1. Ambil data asli dari backend
   const { data: notifications = [], isLoading } = useNotifications();
   
-  // 2. Setup Mutations
   const markReadMutation = useMarkAsRead();
   const markAllReadMutation = useMarkAllAsRead();
   const deleteMutation = useDeleteNotification();
   const deleteAllMutation = useDeleteAllNotifications();
 
-  // --- Handlers dengan handleMutation (Toast & Loading) ---
   const handleMarkAsRead = (id: string) => {
     handleMutation(() => markReadMutation.mutateAsync(id), {
-      loading: "Menandai...",
-      success: "Pesan dibaca",
-      error: "Gagal memperbarui",
+      loading: "Marking...",
+      success: "Message read",
+      error: "Failed to update",
     });
   };
 
   const handleDelete = (id: string) => {
     handleMutation(() => deleteMutation.mutateAsync(id), {
-      loading: "Menghapus...",
-      success: "Notifikasi dihapus",
-      error: "Gagal menghapus",
+      loading: "Deleting...",
+      success: "Notification deleted",
+      error: "Failed to delete",
     });
   };
 
   const handleMarkAllRead = () => {
     handleMutation(() => markAllReadMutation.mutateAsync(), {
-      loading: "Memproses semua...",
-      success: "Semua pesan telah dibaca",
-      error: "Gagal memperbarui",
+      loading: "Processing all...",
+      success: "All messages have been read",
+      error: "Failed to update",
     });
   };
 
   const handleDeleteAll = () => {
-     if (confirm("Hapus semua notifikasi?")) {
+     if (confirm("Delete all notifications?")) {
         handleMutation(() => deleteAllMutation.mutateAsync(), {
-            loading: "Membersihkan...",
-            success: "Kotak masuk dibersihkan",
-            error: "Gagal menghapus",
+            loading: "Clearing...",
+            success: "Inbox cleared",
+            error: "Failed to delete",
         });
      }
   };
 
-  // --- Helpers ---
   const getIcon = (title: string) => {
     const t = title.toLowerCase();
-    if (t.includes("berhasil") || t.includes("disetujui") || t.includes("success")) 
+    if (t.includes("success") || t.includes("approved") || t.includes("berhasil") || t.includes("disetujui")) 
         return <CheckCircle2 className="text-emerald-500" size={18} />;
-    if (t.includes("peringatan") || t.includes("warning") || t.includes("ditolak")) 
+    if (t.includes("warning") || t.includes("rejected") || t.includes("peringatan") || t.includes("ditolak")) 
         return <AlertCircle className="text-amber-500" size={18} />;
-    if (t.includes("info") || t.includes("baru")) 
+    if (t.includes("info") || t.includes("new") || t.includes("baru")) 
         return <Info className="text-blue-500" size={18} />;
     return <Bell className="text-gray-400" size={18} />;
   };
 
   const timeAgo = (date: string) => {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    if (seconds < 60) return "Baru saja";
+    if (seconds < 60) return "Just now";
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m lalu`;
+    if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}j lalu`;
+    if (hours < 24) return `${hours}h ago`;
     return new Date(date).toLocaleDateString();
   };
 
@@ -86,8 +82,8 @@ export default function Notification() {
 
   return (
     <>
-      <PageMeta title="Pusat Notifikasi" />
-      <PageBreadcrumb pageTitle="Notifikasi" />
+      <PageMeta title="Notification Center" />
+      <PageBreadcrumb pageTitle="Notifications" />
 
       <div className="max-w-4xl mx-auto space-y-6">
         <ComponentCard className="overflow-hidden border-none shadow-sm dark:bg-gray-900/50 dark:border dark:border-white/5">
@@ -95,9 +91,9 @@ export default function Notification() {
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100 dark:border-gray-800">
             <div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Pusat Notifikasi</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Notification Center</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Kamu punya <span className="font-semibold text-blue-600 dark:text-blue-400">{unreadCount}</span> pesan belum dibaca
+                You have <span className="font-semibold text-blue-600 dark:text-blue-400">{unreadCount}</span> unread messages
               </p>
             </div>
             
@@ -108,13 +104,13 @@ export default function Notification() {
                         onClick={handleMarkAllRead}
                         className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700 transition-all shadow-sm"
                     >
-                        <MailOpen size={14} /> Baca Semua
+                        <MailOpen size={14} /> Read All
                     </button>
                     <button
                         onClick={handleDeleteAll}
                         className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold text-red-600 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30 transition-all shadow-sm"
                     >
-                        <Trash2 size={14} /> Bersihkan
+                        <Trash2 size={14} /> Clear
                     </button>
                 </>
                 )}
@@ -126,7 +122,7 @@ export default function Notification() {
             {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-20">
                     <Loader2 className="animate-spin text-blue-500 mb-2" size={32} />
-                    <p className="text-sm text-gray-500">Memuat kabar terbaru...</p>
+                    <p className="text-sm text-gray-500">Loading latest updates...</p>
                 </div>
             ) : notifications.length > 0 ? (
               <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
@@ -165,14 +161,14 @@ export default function Notification() {
                             onClick={() => handleMarkAsRead(notif.id)}
                             className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                           >
-                            <Check size={14} strokeWidth={3} /> Tandai Terbaca
+                            <Check size={14} strokeWidth={3} /> Mark as Read
                           </button>
                         )}
                         <button
                           onClick={() => handleDelete(notif.id)}
                           className="inline-flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 dark:text-red-400/80 dark:hover:text-red-400"
                         >
-                          <Trash2 size={14} strokeWidth={2} /> Hapus
+                          <Trash2 size={14} strokeWidth={2} /> Delete
                         </button>
                       </div>
                     </div>
@@ -194,9 +190,9 @@ export default function Notification() {
                 <div className="relative mb-4">
                   <BellRing className="text-gray-200 dark:text-gray-800" size={80} />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Kotak Masuk Kosong</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Inbox Empty</h3>
                 <p className="text-gray-500 dark:text-gray-400 max-w-xs text-center mt-1">
-                  Semua notifikasi telah dibersihkan. Kami akan memberitahumu jika ada kabar baru!
+                  All notifications have been cleared. We'll let you know when there's something new!
                 </p>
               </div>
             )}

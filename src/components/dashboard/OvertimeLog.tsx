@@ -4,7 +4,7 @@ import { Timer, Clock, AlertCircle } from "lucide-react";
 
 export const OvertimeLog = ({ overtimeLogs }: { overtimeLogs: IOvertimeLog[] }) => {
   
-  // Fungsi helper untuk menentukan warna status berdasarkan integer value
+  // Helper function to determine status color based on integer value
   const getStatusColor = (status: number | string) => {
     const statusInt = Number(status);
     switch (statusInt) {
@@ -24,7 +24,7 @@ export const OvertimeLog = ({ overtimeLogs }: { overtimeLogs: IOvertimeLog[] }) 
           <div className="bg-indigo-100 p-1.5 rounded-lg dark:bg-indigo-900/30">
             <Timer size={18} className="text-indigo-600 dark:text-indigo-400" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Log Lembur</h3>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Overtime Log</h3>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ export const OvertimeLog = ({ overtimeLogs }: { overtimeLogs: IOvertimeLog[] }) 
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl">
             <AlertCircle className="text-slate-300 mb-2" size={24} />
-            <p className="text-xs text-slate-400 italic">Belum ada aktivitas lembur tercatat.</p>
+            <p className="text-xs text-slate-400 italic">No overtime activity recorded yet.</p>
           </div>
         )}
       </div>

@@ -135,14 +135,14 @@ export default function AllowanceTable() {
     <>
       <DataTable
         tableTitle="Allowance Table"
-        data={allowances} // semua data mentah
+        data={allowances} 
         columns={columns}
         searchableKeys={["name"]}
         loading={isLoading}
         handleCreate={handleCreate}
         label="Allowances"
         baseNamePermission={RESOURCES.ALLOWANCE}
-        extraFilters={{ type: typeFilter }} // ini yang bikin filter diterapkan langsung
+        extraFilters={{ type: typeFilter }}
         newFilterComponent={
           <FilterDropdown
             value={typeFilter}

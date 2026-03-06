@@ -3,7 +3,7 @@ import { Modal } from "@/components/ui/modal";
 import Badge from "@/components/ui/badge/Badge";
 import Currency from "@/components/ui/currency/Currency";
 import { allowanceTypeMap } from "@/constants/Allowance";
-import { Calendar, User, Briefcase, Info, Clock } from "lucide-react"; // Gunakan icon (opsional)
+import { Calendar, User, Briefcase, Info, Clock } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 
 interface AllowanceShowModalProps {

@@ -22,7 +22,7 @@ export default function AllowanceModal({
   onSubmit,
   isLoading = false,
 }: AllowanceModalProps) {
-  // Identifikasi mode edit berdasarkan keberadaan uuid agar judul tidak berubah saat mengetik nama
+  // Identify edit mode based on the presence of uuid so the title doesn't change when typing the name
   const isEdit = Boolean(allowanceData.uuid);
 
   return (

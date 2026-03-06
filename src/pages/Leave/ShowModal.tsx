@@ -1,4 +1,4 @@
-import { useLeaveByUuid } from "@/hooks/useLeave"; // Pastikan hook ini mengembalikan tipe LeaveDetail
+import { useLeaveByUuid } from "@/hooks/useLeave";
 import { Modal } from "@/components/ui/modal";
 import {
   Calendar,
@@ -68,7 +68,7 @@ export default function LeaveShowModal({
       await downloadAttachment(filename);
     } catch (error) {
       console.error("Download failed", error);
-      toast.error("Gagal mengunduh file.");
+      toast.error("Failed to download file.");
     } finally {
       setIsDownloading(false);
     }

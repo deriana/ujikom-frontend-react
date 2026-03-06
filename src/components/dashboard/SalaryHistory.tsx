@@ -1,6 +1,6 @@
 import { SalaryLog } from "@/types";
 import { Wallet, Download, CheckCircle2 } from "lucide-react";
-import { useDownloadPayroll } from "@/hooks/usePayroll"; // Sesuaikan path hook kamu
+import { useDownloadPayroll } from "@/hooks/usePayroll"; 
 import { handleMutation } from "@/utils/handleMutation";
 
 export const SalaryHistory = ({ salaryLogs }: { salaryLogs: SalaryLog[] }) => {
@@ -18,7 +18,7 @@ export const SalaryHistory = ({ salaryLogs }: { salaryLogs: SalaryLog[] }) => {
     <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-          Riwayat Gaji
+          Salary History
         </h3>
         <Wallet size={20} className="text-slate-400" />
       </div>
@@ -27,9 +27,9 @@ export const SalaryHistory = ({ salaryLogs }: { salaryLogs: SalaryLog[] }) => {
         <table className="w-full text-left">
           <thead>
             <tr className="text-xs uppercase tracking-wider text-slate-400">
-              <th className="pb-4 font-medium">Periode</th>
+              <th className="pb-4 font-medium">Period</th>
               <th className="pb-4 font-medium text-right">Total</th>
-              <th className="pb-4 font-medium text-right">Aksi</th>
+              <th className="pb-4 font-medium text-right">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -57,7 +57,7 @@ export const SalaryHistory = ({ salaryLogs }: { salaryLogs: SalaryLog[] }) => {
                     <button
                       onClick={() => handleDownload(item.uuid)}
                       className="rounded-lg p-2 text-slate-400 transition-all hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 active:scale-95"
-                      title="Download Slip Gaji"
+                      title="Download Salary Slip"
                     >
                       <Download size={18} />
                     </button>
@@ -67,7 +67,7 @@ export const SalaryHistory = ({ salaryLogs }: { salaryLogs: SalaryLog[] }) => {
             ) : (
               <tr>
                 <td colSpan={3} className="py-8 text-center text-xs text-slate-400 italic">
-                  Belum ada riwayat gaji yang tersedia.
+                  No salary history available.
                 </td>
               </tr>
             )}

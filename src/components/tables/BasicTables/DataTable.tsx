@@ -162,11 +162,11 @@ export function DataTable<T extends object>({
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5">
       {/* FILTER BAR */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
+      <div className="flex flex-col gap-4 px-5 py-4 border-b border-gray-100 dark:border-white/5 lg:flex-row lg:items-center lg:justify-between">
         <h3 className="text-sm font-semibold text-gray-800 dark:text-white/90">
           {tableTitle}
         </h3>
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {searchableKeys.length > 0 && (
             <input
               placeholder="Search..."

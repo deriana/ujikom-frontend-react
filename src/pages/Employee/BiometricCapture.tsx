@@ -24,7 +24,6 @@ export const BiometricCapture = ({ onCapture, isLoading }: BiometricCaptureProps
 
   const totalRequired = 5;
 
-  // 1. Load Models
   useEffect(() => {
     const loadModels = async () => {
       try {
@@ -37,14 +36,13 @@ export const BiometricCapture = ({ onCapture, isLoading }: BiometricCaptureProps
         setIsModelsLoaded(true);
         setStatusMsg("AI Ready. Position your face.");
       } catch (err) {
-        console.error("Gagal memuat model:", err);
+        console.error("Failed to load model:", err);
         setStatusMsg("Failed to load AI models.");
       }
     };
     loadModels();
   }, []);
 
-  // 2. Auto Scan Logic
   const startAutoScan = useCallback(async () => {
     if (!webcamRef.current || !isModelsLoaded) return;
     
@@ -72,15 +70,12 @@ export const BiometricCapture = ({ onCapture, isLoading }: BiometricCaptureProps
         if (detection) {
           const currentDescriptor = Array.from(detection.descriptor);
           
-          // Validasi sederhana: Jangan ambil descriptor yang identik 100% 
-          // agar data lebih variatif (misal user harus gerak dikit)
           collected.push(currentDescriptor);
           setDescriptors([...collected]);
           setStatusMsg(`Captured ${collected.length}/${totalRequired}`);
         }
       }
 
-      // Beri sedikit jeda antar scan agar tidak terlalu cepat/identik
       if (collected.length < totalRequired) {
         setTimeout(scanFrame, 600); 
       }

@@ -11,7 +11,7 @@ import { useEmployeeDashboard } from "@/hooks/useDashboard";
 import { Calendar, Clock, Coffee, Timer, LayoutDashboard } from "lucide-react";
 
 export default function EmployeeDashboard() {
-  const currentMonth = new Intl.DateTimeFormat("id-ID", {
+  const currentMonth = new Intl.DateTimeFormat("en-US", {
     month: "long",
     year: "numeric",
   }).format(new Date());
@@ -19,7 +19,7 @@ export default function EmployeeDashboard() {
   const formatMinutes = (totalMinutes: number) => {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
-    return hours > 0 ? `${hours}j ${minutes}m` : `${minutes}m`;
+    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
   };
 
   const { data, isLoading, error } = useEmployeeDashboard();
@@ -51,11 +51,11 @@ export default function EmployeeDashboard() {
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Dashboard Karyawan
+            Employee Dashboard
           </h1>
           <p className="text-sm text-slate-500">
-            Selamat datang kembali, {data?.profile?.name ?? "Karyawan"}. Cek
-            ringkasan kehadiranmu hari ini.
+            Welcome back, {data?.profile?.name ?? "Employee"}. Check
+            your attendance summary for today.
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-lg bg-white p-1.5 shadow-sm dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
@@ -74,36 +74,36 @@ export default function EmployeeDashboard() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
             <StatCard
-              title="Sisa Cuti"
-              value={`${stats?.sisa_cuti ?? 0} Hari`}
-              subtitle={`Berakhir 31 Des ${new Date().getFullYear()}`}
+              title="Leave Balance"
+              value={`${stats?.sisa_cuti ?? 0} Days`}
+              subtitle={`Ends 31 Dec ${new Date().getFullYear()}`}
               icon={Coffee}
               color="bg-emerald-500"
             />
 
-            {/* 2. Kehadiran */}
+            {/* 2. Attendance */}
             <StatCard
-              title="Kehadiran"
-              value={`${stats?.kehadiran_bulan_ini ?? 0} Hari`}
-              subtitle={`Total hadir di ${currentMonth}`}
+              title="Attendance"
+              value={`${stats?.kehadiran_bulan_ini ?? 0} Days`}
+              subtitle={`Total present in ${currentMonth}`}
               icon={Calendar}
               color="bg-blue-500"
             />
 
             {/* 3. Total Terlambat */}
             <StatCard
-              title="Total Terlambat"
+              title="Total Late"
               value={`${stats?.total_terlambat ?? 0}x`}
-              subtitle="Frekuensi terlambat bulan ini"
+              subtitle="Late frequency this month"
               icon={Clock}
               color="bg-rose-500"
             />
 
             {/* 4. Total Lembur */}
             <StatCard
-              title="Total Lembur"
+              title="Total Overtime"
               value={formatMinutes(stats?.total_menit_lembur ?? 0)}
-              subtitle="Total durasi telah disetujui"
+              subtitle="Total duration approved"
               icon={Timer}
               color="bg-indigo-500"
             />

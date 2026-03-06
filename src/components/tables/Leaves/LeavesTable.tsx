@@ -33,7 +33,6 @@ export default function LeavesTable() {
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
   const { mutateAsync: deleteLeave } = useDeleteLeave();
-  // const { mutateAsync: approveLeave } = useLeaveApprovals();
   const { data: employee = [] } = useGetEmployeeForInput();
   const { data: leaveTypes = [] } = useLeaveTypes();
   const { isRole } = useRoleName();
@@ -41,7 +40,6 @@ export default function LeavesTable() {
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Filter Options untuk Dropdown
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
       new Set(leaves.map((l) => l.employee_name)),

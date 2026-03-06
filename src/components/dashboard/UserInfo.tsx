@@ -1,7 +1,6 @@
 import { EmployeeProfile, PendingRequest } from "@/types";
 import { Briefcase, CreditCard, Clock, CheckCircle2, FileEdit } from "lucide-react";
 
-// Perhatikan: pendingCounts menerima satu objek PendingRequest, bukan Array
 export const UserInfo = ({ 
   profileData, 
   pendingData
@@ -16,19 +15,19 @@ export const UserInfo = ({
 
   const statsRows = [
     {
-      label: "Pengajuan Cuti",
+      label: "Leave Request",
       count: pendingData?.leave ?? 0,
       icon: <Clock size={16} className="text-amber-500" />,
       color: "text-amber-600 bg-amber-50 dark:bg-amber-900/20"
     },
     {
-      label: "Pengajuan Lembur",
+      label: "Overtime Request",
       count: pendingData?.overtime ?? 0,
       icon: <CheckCircle2 size={16} className="text-blue-500" />,
       color: "text-blue-600 bg-blue-50 dark:bg-blue-900/20"
     },
     {
-      label: "Pengajuan Ganti Shitf / Jadwal",
+      label: "Shift / Schedule Request",
       count: pendingData?.attendance_request ?? 0,
       icon: <FileEdit size={16} className="text-purple-500" />,
       color: "text-purple-600 bg-purple-50 dark:bg-purple-900/20"
@@ -43,7 +42,7 @@ export const UserInfo = ({
         </div>
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            {profileData?.name ?? "Karyawan"}
+            {profileData?.name ?? "Employee"}
           </h2>
           <p className="text-sm text-slate-500 font-medium">
             {profileData?.position ?? "Position Not Set"}
@@ -65,7 +64,7 @@ export const UserInfo = ({
       <hr className="my-6 border-slate-100 dark:border-slate-800" />
 
       <h4 className="mb-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
-        Menunggu Persetujuan
+        Waiting for Approval
       </h4>
 
       <div className="space-y-2">

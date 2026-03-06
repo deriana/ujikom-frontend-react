@@ -3,12 +3,11 @@ import { Clock } from "lucide-react";
 
 interface CustomTimePickerProps {
   label: string;
-  value: string; // Format "HH:mm"
+  value: string;
   onChange: (newValue: string) => void;
 }
 
 export const CustomTimePicker = ({ label, value, onChange }: CustomTimePickerProps) => {
-  // Pisahkan "09:00" menjadi hour: "09" dan minute: "00"
   const [hour, setHour] = useState(value.split(":")[0] || "09");
   const [minute, setMinute] = useState(value.split(":")[1] || "00");
 
@@ -16,7 +15,6 @@ export const CustomTimePicker = ({ label, value, onChange }: CustomTimePickerPro
     onChange(`${hour}:${minute}`);
   }, [hour, minute]);
 
-  // Generate array angka 00 - 23 dan 00 - 59
   const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
   const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, "0"));
 

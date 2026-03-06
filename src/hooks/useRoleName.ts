@@ -9,10 +9,11 @@ export const useRoleName = () => {
 
   const isRole = (roleName: string) => role === roleName;
   
-  // Helper tambahan
   const isAdminOrHR = useMemo(() => 
     [ROLES.ADMIN, ROLES.HR].includes(role as UserRoleType), 
   [role]);
 
-  return { role, isRole, isAdminOrHR };
+  const isAdmin = useMemo(() => role === ROLES.ADMIN, [role]);
+
+  return { role, isRole, isAdminOrHR, isAdmin };
 };

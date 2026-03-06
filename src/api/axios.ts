@@ -10,6 +10,8 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  config.headers['ngrok-skip-browser-warning'] = '69420';
 
   return config;
 });
@@ -24,17 +26,17 @@ api.interceptors.response.use(
       localStorage.removeItem("token");
     }
 
-    if (status === 403) {
-      window.location.href = "/403";
-    }
+    // if (status === 403) {
+    //   window.location.href = "/403";
+    // }
 
-    if (status === 500) {
-      window.location.href = "/500";
-    }
+    // if (status === 500) {
+    //   window.location.href = "/500";
+    // }
 
-    if (status === 503) {
-      window.location.href = "/503";
-    }
+    // if (status === 503) {
+    //   window.location.href = "/503";
+    // }
 
     return Promise.reject(error);
   }
