@@ -3,6 +3,7 @@ import GridShape from "../../components/common/GridShape";
 import { Link } from "react-router-dom";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
 import { SiteBrand } from "@/components/SiteBrand";
+import Quote from "@/components/common/Quote";
 
 export default function AuthLayout({
   children,
@@ -23,15 +24,23 @@ export default function AuthLayout({
           <div className="relative flex items-center justify-center z-1">
             <GridShape />
 
-            <div className="flex flex-col items-center max-w-sm px-8">
-              {/* <Link to="/" className="flex items-center gap-3 mb-6 transition-transform hover:scale-105">
-                <SiteBrand logoClassName="rounded-lg" nameClassName="text-indigo-400 dark:text-white italic"/>
-              </Link> */}
+            <div className="flex flex-col items-center max-w-md px-8 text-center">
+              <Link to="/" className="flex items-center gap-3 mb-8 transition-all duration-300 hover:scale-105 group">
+                <div className="p-2 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl group-hover:border-white/40">
+                  <SiteBrand logoClassName="rounded-xl shadow-inner" nameClassName="text-2xl font-bold tracking-tight text-white drop-shadow-md"/>
+                </div>
+              </Link>
 
-              <p className="text-center text-indigo-100 dark:text-white/60 text-lg font-medium leading-relaxed">
-                Manage your workforce with intelligence and ease.
-                Empowering modern teams for a better workplace.
-              </p>
+              <div className="space-y-4">
+                <p className="text-indigo-100 dark:text-white/80 text-xl font-semibold leading-relaxed">
+                  Manage your workforce with intelligence and ease.
+                </p>
+                <div className="pt-6 border-t border-white/10">
+                  <p className="text-indigo-200/70 dark:text-white/40 text-sm font-light italic">
+                    <Quote />
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
