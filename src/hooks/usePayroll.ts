@@ -5,7 +5,8 @@ import {
   updatePayroll,
   finalizePayroll,
   voidPayroll,
-  downloadPayroll
+  downloadPayroll,
+  bulkFinalizePayroll,
 } from "@/api/payroll.api";
 import { PayrollUpdateInput } from "@/types/payroll.types";
 
@@ -28,17 +29,29 @@ export const useFinalizePayroll = () => {
   });
 };
 
+export const useBulkFinalizePayroll = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: { payroll_uuids: string[] }) => bulkFinalizePayroll(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["payrolls"] });
+    },
+  });
+};
+
 export const useDownloadPayroll = () => {
   return useMutation({
     mutationFn: (uuid: string) => downloadPayroll(uuid),
   });
-}
+};
 
 export const useVoidPayroll = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uuid, note }: { uuid: string; note: string }) => voidPayroll(uuid, note),
+    mutationFn: ({ uuid, note }: { uuid: string; note: string }) =>
+      voidPayroll(uuid, note),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["payrolls"] });
     },
@@ -58,12 +71,13 @@ export const useUpdatePayroll = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uuid, data }: { uuid: string; data: PayrollUpdateInput }) => updatePayroll(uuid, data),
+    mutationFn: ({ uuid, data }: { uuid: string; data: PayrollUpdateInput }) =>
+      updatePayroll(uuid, data),
     onMutate: async ({ uuid, data }) => {
       await qc.cancelQueries({ queryKey: ["payrolls"] });
       const previous = qc.getQueryData(["payrolls"]);
       qc.setQueryData(["payrolls"], (old: any[] = []) =>
-        old.map((d) => (d.uuid === uuid ? { ...d, ...data } : d))
+        old.map((d) => (d.uuid === uuid ? { ...d, ...data } : d)),
       );
       return { previous };
     },

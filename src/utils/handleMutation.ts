@@ -4,18 +4,20 @@ type Messages = {
   loading?: string;
   success?: string;
   error?: string;
+  onSuccess?: (data?: any) => void;
 };
 
 export async function handleMutation<T>(
   action: () => Promise<T>,
-  messages: Messages
+  config: Messages
 ): Promise<T | undefined> {
-  const id = messages.loading ? toast.loading(messages.loading) : undefined;
+  const id = config.loading ? toast.loading(config.loading) : undefined;
 
   try {
     const result = await action();
     if (id) toast.dismiss(id);
-    if (messages.success) toast.success(messages.success);
+    if (config.success) toast.success(config.success);
+    if (config.onSuccess) config.onSuccess(result);
     return result;
   } catch (err: any) {
     if (id) toast.dismiss(id);
@@ -23,7 +25,7 @@ export async function handleMutation<T>(
     const errorMessage = 
       err?.response?.data?.message || 
       err?.message || 
-      messages.error || 
+      config.error || 
       "Something went wrong";
 
     toast.error(errorMessage);

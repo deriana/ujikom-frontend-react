@@ -3,6 +3,7 @@ import { Column, PayrollUpdateInput } from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import {
+  useBulkFinalizePayroll,
   useFinalizePayroll,
   usePayrolls,
   useUpdatePayroll,
@@ -19,6 +20,8 @@ import PayrollModal from "@/pages/Payroll/Modal";
 import PayrollShowModal from "@/pages/Payroll/ShowModal";
 import { handleMutation } from "@/utils/handleMutation";
 import { CheckCircle, X } from "lucide-react";
+import Button from "@/components/ui/button/Button";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
@@ -31,6 +34,11 @@ const STATUS_LABELS: Record<number, string> = {
 export default function PayrollTable() {
   const [statusFilter, setStatusFilter] = useState<number | "all">("all");
   const [employeeFilter, setEmployeeFilter] = useState<string>("all");
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [confirmBulk, setConfirmBulk] = useState<{
+    isOpen: boolean;
+    ids: (string | number)[];
+  }>({ isOpen: false, ids: [] });
 
   const {
     data: payrolls = [],
@@ -43,6 +51,7 @@ export default function PayrollTable() {
   const { mutateAsync: updatePayroll } = useUpdatePayroll();
   const { mutateAsync: finalizePayroll } = useFinalizePayroll();
   const { mutateAsync: voidPayroll } = useVoidPayroll();
+  const { mutateAsync: bulkFinalizePayroll } = useBulkFinalizePayroll();
 
   // Employee options
   const employeeOptions = useMemo(() => {
@@ -118,7 +127,19 @@ export default function PayrollTable() {
       success: "Payroll voided successfully",
       error: "Failed to void payroll",
     });
-  }
+  };
+
+  const handleBulkFinalize = (ids: (string | number)[]) => {
+    handleMutation(() => bulkFinalizePayroll({ payroll_uuids: ids as string[] }), {
+      loading: "Finalizing payrolls...",
+      success: "Payrolls finalized successfully",
+      error: "Failed to finalize payrolls",
+      onSuccess: () => {
+        setSelectedIds([]);
+        setConfirmBulk({ isOpen: false, ids: [] });
+      },
+    });
+  };
 
   // Columns
   const columns: Column<any>[] = [
@@ -159,13 +180,12 @@ export default function PayrollTable() {
             </span>
             <Currency
               value={row.manual_adjustment ?? 0}
-              className={`text-sm font-medium ${
-                row.manual_adjustment < 0
+              className={`text-sm font-medium ${row.manual_adjustment < 0
                   ? "text-red-500"
                   : row.manual_adjustment > 0
                     ? "text-emerald-500"
                     : "text-gray-400"
-              }`}
+                }`}
             />
           </div>
           {row.adjustment_note && (
@@ -236,32 +256,29 @@ export default function PayrollTable() {
             actions={
               row.can?.pay
                 ? [
-                    {
-                      label: "Finalize",
-                      variant: "success",
-                      icon: <CheckCircle size={16} />,
-                      onClick: (uuid) =>
-                        handleFinalizeAction(
-                          uuid,
-                        ),
-                    },
-                    // {
-                    //   label: "Void",
-                    //   variant: "danger",
-                    //   icon: <X size={16} />,
-                    //   showNote: true,
-                    //   onClick: (uuid, note) =>
-                    //     handleVoidAction(
-                    //       uuid,
-                    //       note || "",
-                    //     ),
-                    // }
-                  ]
+                  {
+                    label: "Finalize",
+                    variant: "success",
+                    icon: <CheckCircle size={16} />,
+                    onClick: (uuid) => handleFinalizeAction(uuid),
+                  },
+                  // {
+                  //   label: "Void",
+                  //   variant: "danger",
+                  //   icon: <X size={16} />,
+                  //   showNote: true,
+                  //   onClick: (uuid, note) =>
+                  //     handleVoidAction(
+                  //       uuid,
+                  //       note || "",
+                  //     ),
+                  // }
+                ]
                 : []
             }
           />
-        )
-      }
+        );
+      },
     },
     {
       header: "Action",
@@ -339,6 +356,21 @@ export default function PayrollTable() {
           employee_name: employeeFilter,
           status: statusFilter.toString(),
         }}
+        enableSelection
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        selectionActions={(selectedIds) =>
+          selectedIds.length > 0 && (
+            <Button
+              onClick={() => setConfirmBulk({ isOpen: true, ids: selectedIds })}
+              variant="primary"
+              size="sm"
+            >
+              <CheckCircle size={14} />
+              Finalize
+            </Button>
+          )
+        }
       />
 
       <PayrollModal
@@ -354,6 +386,16 @@ export default function PayrollTable() {
         uuid={show.showId}
         isOpen={show.isOpen}
         onClose={show.close}
+      />
+
+      <ConfirmModal
+        isOpen={confirmBulk.isOpen}
+        onClose={() => setConfirmBulk({ isOpen: false, ids: [] })}
+        onConfirm={() => handleBulkFinalize(confirmBulk.ids)}
+        title="Finalize Selected Payrolls"
+        message={`Are you sure you want to finalize ${confirmBulk.ids.length} payroll(s)? This action cannot be undone.`}
+        confirmLabel="Yes, Finalize"
+        variant="success"
       />
     </>
   );

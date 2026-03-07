@@ -1,5 +1,6 @@
 import { Can } from "@/components/auth/Can";
 import FilterDropdown from "@/components/FilterDropdown";
+import Checkbox from "@/components/form/input/Checkbox";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
 import {
   Table,
@@ -37,6 +38,10 @@ interface DataTableProps<T> {
   label?: string;
   baseNamePermission?: string;
   extraFilters?: Record<string, string>;
+  enableSelection?: boolean;
+  selectedIds?: (string | number)[]; 
+  onSelectionChange?: (selectedIds: (string | number)[]) => void;
+  selectionActions?: (selectedIds: (string | number)[]) => React.ReactNode;
 }
 
 export function DataTable<T extends object>({
@@ -53,6 +58,10 @@ export function DataTable<T extends object>({
   label = "Data",
   baseNamePermission,
   extraFilters,
+  enableSelection = false,
+  onSelectionChange,
+  selectionActions,
+  selectedIds: controlledSelectedIds, 
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -62,8 +71,16 @@ export function DataTable<T extends object>({
     key: keyof T | "index";
     direction: "asc" | "desc";
   }>({ key: "index", direction: "asc" });
+  const [internalSelectedIds, setInternalSelectedIds] = useState<(string | number)[]>([]);
+  const isControlled = controlledSelectedIds !== undefined;
+  const currentSelectedIds = isControlled ? controlledSelectedIds : internalSelectedIds;
+  const handleSetSelectedIds = (newSelected: (string | number)[]) => {
+    if (!isControlled) {
+      setInternalSelectedIds(newSelected);
+    }
+    onSelectionChange?.(newSelected);
+  };
 
-  // ambil value dari nested key, misal "employee.nik"
   const getNestedValue = (obj: any, path: string) => {
     return path.split(".").reduce((acc, key) => acc?.[key], obj);
   };
@@ -154,6 +171,40 @@ export function DataTable<T extends object>({
     if (page > totalPages) setPage(1);
   }, [page, totalPages]);
 
+  // SELECTION
+  const getRowId = (row: any, index: number) => {
+    return "id" in row ? row.id : "uuid" in row ? row.uuid : index;
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    const currentIds = paginatedData.map((row, index) =>
+      getRowId(row, (page - 1) * limit + index),
+    );
+
+    let newSelected: (string | number)[];
+    if (checked) {
+      newSelected = Array.from(new Set([...currentSelectedIds, ...currentIds]));
+    } else {
+      newSelected = currentSelectedIds.filter((id) => !currentIds.includes(id));
+    }
+
+    handleSetSelectedIds(newSelected);
+  };
+
+  const handleSelectRow = (id: string | number) => {
+    const newSelected = currentSelectedIds.includes(id)
+      ? currentSelectedIds.filter((item) => item !== id)
+      : [...currentSelectedIds, id];
+
+    handleSetSelectedIds(newSelected);
+  };
+
+  const isAllSelected =
+    paginatedData.length > 0 &&
+    paginatedData.every((row, index) =>
+      currentSelectedIds.includes(getRowId(row, (page - 1) * limit + index)),
+    );
+
   // EMPTY STATES
   const isEmpty = !loading && data.length === 0;
   const isFilteredEmpty =
@@ -163,10 +214,23 @@ export function DataTable<T extends object>({
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5">
       {/* FILTER BAR */}
       <div className="flex flex-col gap-4 px-5 py-4 border-b border-gray-100 dark:border-white/5 lg:flex-row lg:items-center lg:justify-between">
-        <h3 className="text-sm font-semibold text-gray-800 dark:text-white/90">
-          {tableTitle}
-        </h3>
+        <div className="flex items-center gap-3">
+          <h3 className="text-sm font-semibold text-gray-800 dark:text-white/90">
+            {tableTitle}
+          </h3>
+          {enableSelection && currentSelectedIds.length > 0 && (
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded-full">
+              {currentSelectedIds.length} Selected
+            </span>
+          )}
+        </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          {enableSelection && currentSelectedIds.length > 0 && selectionActions && (
+            <div className="flex items-center gap-2 mr-2 border-r pr-2 border-gray-200 dark:border-gray-700">
+              {selectionActions(currentSelectedIds)}
+            </div>
+          )}
+
           {searchableKeys.length > 0 && (
             <input
               placeholder="Search..."
@@ -251,6 +315,15 @@ export function DataTable<T extends object>({
         <Table className="w-full text-sm text-left">
           <TableHeader className="sticky top-0 bg-white dark:bg-white/5 z-10 border-b dark:border-white/10">
             <TableRow>
+              {enableSelection && (
+                <TableCell isHeader className="px-5 py-3 w-10">
+                  <Checkbox
+                    checked={isAllSelected}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
+                  />
+                </TableCell>
+              )}
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 w-16 cursor-pointer"
@@ -279,12 +352,15 @@ export function DataTable<T extends object>({
           </TableHeader>
 
           {loading ? (
-            <TableSkeleton cols={columns.length} rows={5} />
+            <TableSkeleton
+              cols={columns.length + (enableSelection ? 2 : 1)}
+              rows={5}
+            />
           ) : isEmpty ? (
             <TableBody>
               <TableRow>
                 <td
-                  colSpan={columns.length}
+                  colSpan={columns.length + (enableSelection ? 2 : 1)}
                   className="px-5 py-10 text-center text-gray-500"
                 >
                   No {label.toLowerCase()} available.
@@ -295,7 +371,7 @@ export function DataTable<T extends object>({
             <TableBody>
               <TableRow>
                 <td
-                  colSpan={columns.length}
+                  colSpan={columns.length + (enableSelection ? 2 : 1)}
                   className="px-5 py-10 text-center text-gray-500"
                 >
                   No matching {label.toLowerCase()} found.
@@ -304,32 +380,43 @@ export function DataTable<T extends object>({
             </TableBody>
           ) : (
             <TableBody>
-              {paginatedData.map((row, index) => (
-                <TableRow
-                  key={
-                    "id" in row
-                      ? (row as any).id
-                      : "uuid" in row
-                        ? (row as any).uuid
-                        : index
-                  }
-                  className="border-b dark:border-white/10"
-                >
-                  <td className="px-5 py-3 text-gray-500">
-                    {(page - 1) * limit + index + 1}
-                  </td>
-
-                  {columns.map((col, i) => (
-                    <td key={i} className={`px-5 py-3 ${col.className || ""}`}>
-                      {col.render
-                        ? col.render(row)
-                        : col.accessor
-                          ? String(row[col.accessor] ?? "-")
-                          : "-"}
+              {paginatedData.map((row, index) => {
+                const globalIndex = (page - 1) * limit + index;
+                const rowId = getRowId(row, globalIndex);
+                const isSelected = currentSelectedIds.includes(rowId);
+                return (
+                  <TableRow
+                    key={rowId}
+                    className={`border-b dark:border-white/10 ${isSelected ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
+                  >
+                    {enableSelection && (
+                      <TableCell className="px-5 py-3">
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() => handleSelectRow(rowId)}
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
+                        />
+                      </TableCell>
+                    )}
+                    <td className="px-5 py-3 text-gray-500">
+                      {(page - 1) * limit + index + 1}
                     </td>
-                  ))}
-                </TableRow>
-              ))}
+
+                    {columns.map((col, i) => (
+                      <td
+                        key={i}
+                        className={`px-5 py-3 ${col.className || ""}`}
+                      >
+                        {col.render
+                          ? col.render(row)
+                          : col.accessor
+                            ? String(row[col.accessor] ?? "-")
+                            : "-"}
+                      </td>
+                    ))}
+                  </TableRow>
+                );
+              })}
             </TableBody>
           )}
         </Table>

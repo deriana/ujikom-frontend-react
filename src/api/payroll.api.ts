@@ -34,6 +34,15 @@ export const finalizePayroll = async (uuid: string) => {
   return res.data.data;
 };
 
+export const bulkFinalizePayroll = async (payload: { payroll_uuids: string[] }) => {
+  const res = await api.post<ApiResponse<Payroll[]>>(
+    "/payrolls/bulk-finalize",
+    payload,
+  );
+  return res.data.data;
+};
+
+
 export const downloadPayroll = async (uuid: string) => {
   const response = await api.get(`/payrolls/${uuid}/download`, {
     responseType: "blob",
