@@ -1,21 +1,18 @@
 import { getQuote } from "@/api/quote.api";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Quote() {
-  const [quote, setQuote] = useState<string>("");
+  const { data: quote } = useQuery({
+    queryKey: ["random-quote"],
+    queryFn: async () => {
+      const data = await getQuote();
+      return data.quote || data;
+    },
+    refetchInterval: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 60,
+    initialData: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+    retry: false,
+  });
 
-  useEffect(() => {
-    const fetchQuote = async () => {
-      try {
-        const data = await getQuote();
-        console.log(data);
-        setQuote(data.quote || data);
-      } catch (error) {
-        setQuote("Success is not final, failure is not fatal: it is the courage to continue that counts.");
-      }
-    };
-    fetchQuote();
-  }, []);
-
-  return <>{quote}</>;
+  return <>{quote || "Success is not final, failure is not fatal: it is the courage to continue that counts."}</>;
 }

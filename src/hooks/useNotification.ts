@@ -23,6 +23,7 @@ export const useUnreadNotifications = () => {
   return useQuery({
     queryKey: ["notifications", "unread"],
     queryFn: getUnreadNotifications,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
