@@ -19,6 +19,7 @@ import { BiometricCard } from "./BiometricCard";
 import { formatDateID } from "@/utils/date";
 import { useState } from "react";
 import { EditProfileModal } from "@/pages/Employee/EditProfileModal";
+import { LeaveBalanceCard } from "./LeaveBalanceCard";
 
 export default function ProfileContent({
   user,
@@ -128,8 +129,8 @@ export default function ProfileContent({
             hasDescriptor={employee?.has_face_descriptor}
             onAction={() => setActiveModal("biometric")}
           />
-
           <CompensationCard employee={employee} />
+          <LeaveBalanceCard balances={employee?.leave_balances} />
         </div>
 
         <EditProfileModal

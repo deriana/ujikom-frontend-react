@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Column, PayrollUpdateInput } from "@/types";
+import { Column, PayrollCreateInput, PayrollFormState, PayrollUpdateInput } from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import {
   useBulkFinalizePayroll,
+  useCreatePayroll,
   useFinalizePayroll,
   usePayrolls,
   useUpdatePayroll,
@@ -16,13 +17,14 @@ import { RESOURCES } from "@/constants/Resource";
 import { useShowModal } from "@/hooks/useShowModal";
 import { useCrudModalForm } from "@/hooks/useCrudModalForm";
 import Currency from "@/components/ui/currency/Currency";
-import PayrollModal from "@/pages/Payroll/Modal";
 import PayrollShowModal from "@/pages/Payroll/ShowModal";
 import { handleMutation } from "@/utils/handleMutation";
 import { CheckCircle, X } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import MonthPicker from "@/components/form/MonthPicker";
+import PayrollModal from "@/pages/Payroll/Modal";
+import { useGetEmployeeForInput } from "@/hooks/useUser";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
@@ -56,9 +58,12 @@ export default function PayrollTable() {
   } = usePayrolls();
 
   const { mutateAsync: updatePayroll } = useUpdatePayroll();
+  const { mutateAsync: createPayroll } = useCreatePayroll();
   const { mutateAsync: finalizePayroll } = useFinalizePayroll();
   const { mutateAsync: voidPayroll } = useVoidPayroll();
   const { mutateAsync: bulkFinalizePayroll } = useBulkFinalizePayroll();
+  const { data: employee = [] } = useGetEmployeeForInput();
+
 
   // Employee options
   const employeeOptions = useMemo(() => {
@@ -88,18 +93,32 @@ export default function PayrollTable() {
     [],
   );
 
-  const crud = useCrudModalForm<PayrollUpdateInput, PayrollUpdateInput>({
+  const crud = useCrudModalForm<PayrollFormState, any>({
     label: "Payroll",
     emptyForm: {
+      month: "",
+      employee_niks: [],
       manual_adjustment: 0,
       adjustment_note: "",
     },
-    mapToPayload: (form) => ({
-      manual_adjustment: form.manual_adjustment,
-      adjustment_note: form.adjustment_note,
-    }),
+    mapToPayload: (form) => {
+      if (crud.isEdit) {
+        return {
+          manual_adjustment: form.manual_adjustment,
+          adjustment_note: form.adjustment_note,
+        } as PayrollUpdateInput;
+      }
+
+      return {
+        month: form.month,
+        employee_niks: form.employee_niks,
+      } as PayrollCreateInput;
+    },
+    createFn: (payload) => createPayroll(payload),
     updateFn: (uuid, payload) => updatePayroll({ uuid, data: payload }),
   });
+
+  const handleCreate = () => crud.openCreate();
 
   const handleEdit = (uuid: string) => {
     const item = payrolls.find((p) => p.uuid === uuid);
@@ -162,7 +181,7 @@ export default function PayrollTable() {
             {row.employee_name}
           </span>
           <span className="text-[11px] text-gray-500 dark:text-gray-400 font-normal">
-            ID: {row.uuid.substring(0, 8)}...
+            ID: {row.employee_nik.substring(0, 8)}...
           </span>
         </div>
       ),
@@ -335,10 +354,7 @@ export default function PayrollTable() {
       const matchesEmployee =
         employeeFilter === "all" || p.employee_name === employeeFilter;
       const matchesStatus =
-        statusFilter === "all" ||
-        (statusFilter === STATUS_FINALIZED
-          ? p.status === STATUS_FINALIZED
-          : p.status === STATUS_DRAFT);
+        statusFilter === "all" || p.status === statusFilter;
       const matchesPeriod = (() => {
         if (!periodFilter) return true;
         const [y, m] = periodFilter.split("-").map(Number);
@@ -373,6 +389,8 @@ export default function PayrollTable() {
         loading={isLoading}
         searchableKeys={["employee_name", "status"]}
         label="Payroll"
+        baseNamePermission={RESOURCES.PAYROLL}
+        handleCreate={handleCreate}
         newFilterComponent={
           <>
             {StatusFilter}
@@ -414,6 +432,8 @@ export default function PayrollTable() {
         setPayrollData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
+        isEdit={crud.isEdit}
+        employees={employee}
       />
 
       <PayrollShowModal

@@ -7,8 +7,9 @@ import {
   voidPayroll,
   downloadPayroll,
   bulkFinalizePayroll,
+  createPayroll,
 } from "@/api/payroll.api";
-import { PayrollUpdateInput } from "@/types/payroll.types";
+import { PayrollUpdateInput, PayrollCreateInput } from "@/types/payroll.types";
 
 export const usePayrolls = () => {
   return useQuery({
@@ -65,6 +66,37 @@ export const usePayrollByUuid = (uuid: string) => {
     enabled: !!uuid,
   });
 };
+
+// CREATE with optimistic update
+export const useCreatePayroll = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: PayrollCreateInput) => createPayroll(data),
+    onMutate: async (newPayroll) => {
+      await qc.cancelQueries({ queryKey: ["payrolls"] });
+      const previous = qc.getQueryData<any[]>(["payrolls"]);
+      qc.setQueryData(["payrolls"], (old: any[] = []) => [
+        ...old,
+        {
+          ...newPayroll,
+          uuid: `temp-${Date.now()}`,
+          status: 'pending'
+        }
+      ]);
+
+      return { previous };
+    },
+    onError: (_err, _newPayroll, context: any) => {
+      if (context?.previous) {
+        qc.setQueryData(["payrolls"], context.previous);
+      }
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["payrolls"] });
+    },
+  });
+};
+
 
 // UPDATE with optimistic update
 export const useUpdatePayroll = () => {

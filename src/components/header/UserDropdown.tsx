@@ -103,7 +103,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Edit profile
+              Profile
             </DropdownItem>
           </li>
           <li>

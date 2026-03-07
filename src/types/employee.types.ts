@@ -75,6 +75,15 @@ export const employmentStateMap: Record<EmploymentStateEnum, EmploymentStateMeta
   [EmploymentStateEnum.TERMINATED]: { label: "Terminated", color: "error" },
 };
 
+export interface LeaveBalance {
+  leave_type: string;
+  year: number;
+  total_days: number;
+  used_days: number;
+  remaining_days: number;
+  is_unlimited: boolean;
+}
+
 /** ===== Employee ===== */
 export interface Employee {
   nik: string;
@@ -97,4 +106,5 @@ export interface Employee {
   termination_date?: string | null;
   termination_reason?: string | null;
   has_face_descriptor?: boolean;
+  leave_balances?: LeaveBalance[];
 }

@@ -3,6 +3,7 @@ import { UUID } from "./common";
 export interface Payroll {
     uuid: UUID;
     employee_name: string;
+    employe_nik: string;
     period_start: string;
     period_end: string;
     net_salary: number;
@@ -24,6 +25,16 @@ export interface PayrollUpdateInput {
     uuid?: UUID
     manual_adjustment?: number
     adjustment_note?: string
+}
+
+export interface PayrollCreateInput {
+  month: string; // Format: "2024-03"
+  employee_niks: string[]; 
+}
+
+export interface PayrollFormState extends Partial<PayrollCreateInput>, Partial<PayrollUpdateInput> {
+  uuid?: string;
+  employee_name?: string; 
 }
 
 export interface PayrollDetail {

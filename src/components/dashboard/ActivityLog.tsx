@@ -1,6 +1,7 @@
 import { APPROVAL_LABEL, APPROVAL_STATS } from "@/constants/Approval";
 import { LeaveLog as ILeaveLog} from "@/types";
 import { Coffee, XCircle, Clock, AlertCircle, HelpCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const ActivityLog = ({ leaveLogs }: { leaveLogs: ILeaveLog[] }) => {
   const getStatusConfig = (status: number | string) => {
@@ -37,7 +38,9 @@ export const ActivityLog = ({ leaveLogs }: { leaveLogs: ILeaveLog[] }) => {
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Leave History</h3>
           <p className="text-sm text-slate-500">Log of your latest leave applications</p>
         </div>
-        <button className="text-sm font-medium text-blue-600 hover:underline">View All</button>
+        <Link to="/leaves">
+          <button className="text-sm font-medium text-blue-600 hover:underline">View All</button>
+        </Link>
       </div>
 
       <div className="space-y-6">

@@ -1,5 +1,6 @@
 import {
   Payroll,
+  PayrollCreateInput,
   PayrollDetail,
   PayrollUpdateInput,
 } from "@/types/payroll.types";
@@ -13,6 +14,12 @@ export const getPayroll = async () => {
 
 export const getPayrollByUuid = async (uuid: string) => {
   const res = await api.get<ApiResponse<PayrollDetail>>(`/payrolls/${uuid}`);
+  return res.data.data;
+};
+
+export const createPayroll = async (payload: PayrollCreateInput) => {
+  console.log(payload);
+  const res = await api.post<ApiResponse<Payroll[]>>("/payrolls", payload);
   return res.data.data;
 };
 
