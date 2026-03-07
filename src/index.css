@@ -904,4 +904,23 @@ input[type="number"] {
   .flatpickr-calendar {
     z-index: 99999999 !important;
   }
+
+  .dark .flatpickr-monthSelect-month {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  .dark .flatpickr-monthSelect-month:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+  }
+
+  .dark .flatpickr-monthSelect-month.selected {
+    background: #3b82f6 !important; 
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+  }
+
+  .dark .flatpickr-monthSelect-month.today {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+  }
 }

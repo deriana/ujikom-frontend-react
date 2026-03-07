@@ -122,4 +122,5 @@ export interface PayrollFinalSummary {
 export enum PayrollStatusEnum {
   DRAFT = "Draft",
   FINALIZED = "Finalized",
+  VOIDED = "Voided"
 }

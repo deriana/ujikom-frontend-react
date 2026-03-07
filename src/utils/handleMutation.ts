@@ -21,14 +21,18 @@ export async function handleMutation<T>(
     return result;
   } catch (err: any) {
     if (id) toast.dismiss(id);
-    
-    const errorMessage = 
-      err?.response?.data?.message || 
-      err?.message || 
-      config.error || 
-      "Something went wrong";
-
-    toast.error(errorMessage);
+    let errorMessage = err?.response?.data?.message || err?.message || config.error || "Something went wrong"
+    const validationErrors = err?.response?.data?.errors;
+    if (validationErrors) {
+      const detailedMessages = Object.values(validationErrors)
+        .flat() 
+        .join(" ");
+      
+      errorMessage = detailedMessages;
+    }
+    toast.error(errorMessage, {
+      duration: 4000, 
+    });
     console.error(err);
     throw err;
   }

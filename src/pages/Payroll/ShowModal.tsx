@@ -74,6 +74,8 @@ export default function PayrollShowModal({
                     color={
                       payroll.status.label === PayrollStatusEnum.FINALIZED
                         ? "success"
+                        : payroll.status.label === PayrollStatusEnum.VOIDED
+                        ? "error"
                         : "warning"
                     }
                   >
@@ -294,20 +296,24 @@ export default function PayrollShowModal({
         )}
 
         {/* FOOTER ACTIONS */}
-        <div className="mt-10 flex gap-4">
-          <Button
-            onClick={onClose}
-            className="flex-1 py-4 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
-          >
-            Selesai
-          </Button>
-          <Button
-            className="px-8 py-4 rounded-2xl border-2 border-gray-200 dark:border-gray-800 font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
-            onClick={() => handleDownload(uuid)}
-          >
-            Download PDF
-          </Button>
-        </div>
+        {payroll && (
+          <div className="mt-10 flex gap-4">
+            <Button
+              onClick={onClose}
+              className="flex-1 py-4 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
+            >
+              Done
+            </Button>
+            {payroll.status.label === PayrollStatusEnum.FINALIZED && (
+              <Button
+                className="px-8 py-4 rounded-2xl border-2 border-gray-200 dark:border-gray-800 font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+                onClick={() => handleDownload(uuid)}
+              >
+                Download PDF
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </Modal>
   );

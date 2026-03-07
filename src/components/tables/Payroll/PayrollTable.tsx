@@ -22,18 +22,25 @@ import { handleMutation } from "@/utils/handleMutation";
 import { CheckCircle, X } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import MonthPicker from "@/components/form/MonthPicker";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
+const STATUS_VOIDED = 2;
 
 const STATUS_LABELS: Record<number, string> = {
   [STATUS_DRAFT]: "Draft",
   [STATUS_FINALIZED]: "Finalized",
+  [STATUS_VOIDED]: "Voided",
 };
 
 export default function PayrollTable() {
   const [statusFilter, setStatusFilter] = useState<number | "all">("all");
   const [employeeFilter, setEmployeeFilter] = useState<string>("all");
+  const now = new Date();
+  const [periodFilter, setPeriodFilter] = useState<string>(
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`,
+  );
   const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
   const [confirmBulk, setConfirmBulk] = useState<{
     isOpen: boolean;
@@ -73,6 +80,10 @@ export default function PayrollTable() {
         label: STATUS_LABELS[STATUS_FINALIZED],
         value: STATUS_FINALIZED.toString(),
       },
+      {
+        label: STATUS_LABELS[STATUS_VOIDED],
+        value: STATUS_VOIDED.toString(),
+      }
     ],
     [],
   );
@@ -181,10 +192,10 @@ export default function PayrollTable() {
             <Currency
               value={row.manual_adjustment ?? 0}
               className={`text-sm font-medium ${row.manual_adjustment < 0
-                  ? "text-red-500"
-                  : row.manual_adjustment > 0
-                    ? "text-emerald-500"
-                    : "text-gray-400"
+                ? "text-red-500"
+                : row.manual_adjustment > 0
+                  ? "text-emerald-500"
+                  : "text-gray-400"
                 }`}
             />
           </div>
@@ -228,18 +239,25 @@ export default function PayrollTable() {
       header: "Status",
       render: (row) => {
         const isFinalized = row.status === STATUS_FINALIZED;
+        const isVoided = row.status === STATUS_VOIDED;
+
+        const badgeConfig = isVoided
+          ? { color: "error", label: "Voided", dot: "bg-red-500" }
+          : isFinalized
+            ? { color: "success", label: "Finalized", dot: "bg-green-500" }
+            : { color: "warning", label: "Draft", dot: "bg-yellow-500" };
+
         return (
           <Badge
             size="sm"
             variant="light"
-            color={isFinalized ? "success" : "warning"}
+            color={badgeConfig.color as any}
           >
             <div className="flex items-center gap-1.5">
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${isFinalized ? "bg-green-500" : "bg-yellow-500"}`}
-              />
-              {STATUS_LABELS[row.status] ||
-                (isFinalized ? "Finalized" : "Draft")}
+              <span className={`w-1.5 h-1.5 rounded-full ${badgeConfig.dot}`} />
+              <span className="capitalize">
+                {STATUS_LABELS[row.status] || badgeConfig.label}
+              </span>
             </div>
           </Badge>
         );
@@ -262,17 +280,17 @@ export default function PayrollTable() {
                     icon: <CheckCircle size={16} />,
                     onClick: (uuid) => handleFinalizeAction(uuid),
                   },
-                  // {
-                  //   label: "Void",
-                  //   variant: "danger",
-                  //   icon: <X size={16} />,
-                  //   showNote: true,
-                  //   onClick: (uuid, note) =>
-                  //     handleVoidAction(
-                  //       uuid,
-                  //       note || "",
-                  //     ),
-                  // }
+                  {
+                    label: "Void",
+                    variant: "danger",
+                    icon: <X size={16} />,
+                    showNote: true,
+                    onClick: (uuid, note) =>
+                      handleVoidAction(
+                        uuid,
+                        note || "",
+                      ),
+                  }
                 ]
                 : []
             }
@@ -321,9 +339,18 @@ export default function PayrollTable() {
         (statusFilter === STATUS_FINALIZED
           ? p.status === STATUS_FINALIZED
           : p.status === STATUS_DRAFT);
-      return matchesEmployee && matchesStatus;
+      const matchesPeriod = (() => {
+        if (!periodFilter) return true;
+        const [y, m] = periodFilter.split("-").map(Number);
+        const fStart = new Date(y, m - 1, 1);
+        const fEnd = new Date(y, m, 0); // last day of month
+        const rStart = new Date(p.period_start);
+        const rEnd = new Date(p.period_end);
+        return rStart <= fEnd && rEnd >= fStart;
+      })();
+      return matchesEmployee && matchesStatus && matchesPeriod;
     });
-  }, [payrolls, employeeFilter, statusFilter]);
+  }, [payrolls, employeeFilter, statusFilter, periodFilter]);
 
   useEffect(() => {
     refetch();
@@ -350,6 +377,13 @@ export default function PayrollTable() {
           <>
             {StatusFilter}
             {EmployeeFilter}
+            <MonthPicker
+              id="payroll-period-filter"
+              value={periodFilter}
+              onChange={setPeriodFilter}
+              placeholder="Filter by period"
+              className="min-w-[160px]"
+            />
           </>
         }
         extraFilters={{
