@@ -85,16 +85,16 @@ export default function LeavesTable() {
       employee_nik: undefined,
     },
 
-    validate: (form) => {
-      if (!form.leave_type_uuid) return "Leave type is required";
-      if (!form.date_start) return "Start date is required";
-      if (!form.date_end) return "End date is required";
-      if (new Date(form.date_start) > new Date(form.date_end))
-        return "Start date cannot be after end date";
-      if (!form.reason || form.reason.trim().length < 3)
-        return "Reason must be at least 3 characters";
-      return null;
-    },
+    // validate: (form) => {
+    //   if (!form.leave_type_uuid) return "Leave type is required";
+    //   if (!form.date_start) return "Start date is required";
+    //   if (!form.date_end) return "End date is required";
+    //   if (new Date(form.date_start) > new Date(form.date_end))
+    //     return "Start date cannot be after end date";
+    //   if (!form.reason || form.reason.trim().length < 3)
+    //     return "Reason must be at least 3 characters";
+    //   return null;
+    // },
 
     mapToPayload: (form) => {
       const formData = new FormData();

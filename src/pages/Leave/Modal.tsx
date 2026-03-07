@@ -153,10 +153,7 @@ export default function LeaveModal({
                   id="leave-start-date"
                   value={leaveData.date_start}
                   onChange={(_, dateStr) =>
-                    setLeaveData({
-                      ...leaveData,
-                      date_start: dateStr,
-                    })
+                    setLeaveData({ ...leaveData, date_start: dateStr })
                   }
                   placeholder="Select start date"
                 />
@@ -171,10 +168,7 @@ export default function LeaveModal({
                   id="leave-end-date"
                   value={leaveData.date_end}
                   onChange={(_, dateStr) =>
-                    setLeaveData({
-                      ...leaveData,
-                      date_end: dateStr,
-                    })
+                    setLeaveData({ ...leaveData, date_end: dateStr })
                   }
                   placeholder="Select end date"
                 />

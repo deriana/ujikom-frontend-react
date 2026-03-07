@@ -7,7 +7,7 @@ type PropsType = {
   id: string;
   mode?: "single" | "multiple" | "range" | "time";
   onChange?: (selectedDates: Date[], dateStr: string) => void;
-  value?: string;
+  value?: string | null; // Tambahkan dukungan untuk null jika state awal kosong
   label?: string;
   placeholder?: string;
   disabled?: boolean;
@@ -27,33 +27,42 @@ export default function DatePicker({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pickerRef = useRef<flatpickr.Instance | null>(null);
 
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  // Inisialisasi Flatpickr
   useEffect(() => {
     if (!inputRef.current) return;
 
     pickerRef.current = flatpickr(inputRef.current, {
       mode,
       dateFormat: "Y-m-d",
-      defaultDate: value,
+      defaultDate: value || undefined, // Hindari error jika value awalnya null
       disableMobile: true,
       clickOpens: !disabled,
-
+      
       onChange: (selectedDates, dateStr) => {
-        onChange?.(selectedDates, dateStr);
+        onChangeRef.current?.(selectedDates, dateStr);
       },
 
       onReady: (_dates, _str, instance) => {
         const container = instance.calendarContainer;
+        if (!container) return; // Safety check
+
         container.style.zIndex = "999999";
 
         const monthDropdown = container.querySelector(
-          ".flatpickr-monthDropdown-months"
+          ".flatpickr-monthDropdown-months",
         ) as HTMLSelectElement | null;
 
         const yearInput = container.querySelector(
-          ".cur-year"
+          ".cur-year",
         ) as HTMLInputElement | null;
 
-        // ambil style dari calendar container
+        // Ambil style dari calendar container
         const styles = window.getComputedStyle(container);
         const bgColor = styles.backgroundColor;
         const textColor = styles.color;
@@ -66,11 +75,11 @@ export default function DatePicker({
           monthDropdown.style.padding = "2px 18px 2px 4px";
           monthDropdown.style.borderRadius = "6px";
 
-          // mengikuti theme calendar
+          // Mengikuti theme calendar
           monthDropdown.style.backgroundColor = bgColor;
           monthDropdown.style.color = textColor;
 
-          // apply juga ke option dropdown
+          // Apply juga ke option dropdown
           Array.from(monthDropdown.options).forEach((opt) => {
             opt.style.backgroundColor = bgColor;
             opt.style.color = textColor;
@@ -90,18 +99,28 @@ export default function DatePicker({
       pickerRef.current?.destroy();
       pickerRef.current = null;
     };
-  }, []);
+    // Re-run effect ini jika mode atau disabled berubah
+  }, [mode, disabled]);
 
+  // Sinkronisasi value dari luar (parent state)
   useEffect(() => {
-    if (pickerRef.current && value) {
-      pickerRef.current.setDate(value, false);
+    if (pickerRef.current) {
+      const currentValue = inputRef.current?.value;
+      // Hanya setDate jika value dari parent benar-benar berbeda
+      // untuk mencegah infinite loop atau tertimpa null secara paksa
+      if (value !== currentValue) {
+        pickerRef.current.setDate(value || "", false);
+      }
     }
   }, [value]);
 
   return (
     <div className={`flex flex-col gap-1 w-full ${className}`}>
       {label && (
-        <label className="text-xs font-medium text-gray-500 dark:text-gray-400">
+        <label
+          htmlFor={id}
+          className="text-xs font-medium text-gray-500 dark:text-gray-400"
+        >
           {label}
         </label>
       )}
