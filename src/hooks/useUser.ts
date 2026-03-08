@@ -46,11 +46,12 @@ export const useGetManager = () => {
   });
 };
 
-export const useGetEmployeeForInput = () => {
+export const useGetEmployeeForInput = (options = {}) => {
   return useQuery({
     queryKey: ["users", "employee-for-input"],
     queryFn: getEmployeeForInput,
     staleTime: 1000 * 60 * 5,
+    ...options
   });
 };
 

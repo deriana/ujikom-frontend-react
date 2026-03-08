@@ -34,6 +34,7 @@ export default function ProfileContent({
     "personal" | "employment" | "biometric" | "password" | null
   >(null);
 
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
@@ -108,7 +109,13 @@ export default function ProfileContent({
               <InfoItem
                 icon={User}
                 label="Gender"
-                value={employee?.gender === "male" ? "Laki-laki" : "Perempuan"}
+                value={
+                  employee?.gender
+                    ? employee.gender === "male"
+                      ? "Laki-laki"
+                      : "Perempuan"
+                    : "-"
+                }
               />
               <InfoItem
                 icon={Calendar}

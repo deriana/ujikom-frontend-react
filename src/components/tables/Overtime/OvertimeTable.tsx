@@ -19,7 +19,6 @@ import { Calendar, Clock } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 import OvertimeModal from "@/pages/Overtime/Modal";
 import { ROLES } from "@/constants/Roles";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
 import OvertimeShowModal from "@/pages/Overtime/ShowModal";
 
 export default function OvertimesTable() {
@@ -27,7 +26,6 @@ export default function OvertimesTable() {
   const { mutateAsync: createOvertime } = useCreateOvertime();
   const { mutateAsync: updateOvertime } = useUpdateOvertime();
   const { mutateAsync: deleteOvertime } = useDeleteOvertime();
-  const { data: employee = [] } = useGetEmployeeForInput();
 
   const { isRole } = useRoleName();
 
@@ -260,7 +258,6 @@ export default function OvertimesTable() {
         onSubmit={crud.submit}
         isLoading={crud.loading}
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
-        employees={employee}
       />
 
       <OvertimeShowModal uuid={show.showId} isOpen={show.isOpen} onClose={show.close} />

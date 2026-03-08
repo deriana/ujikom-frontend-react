@@ -24,8 +24,6 @@ import FilterDropdown from "@/components/FilterDropdown";
 import { Check, X, Calendar } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 import AttendanceRequestModal from "@/pages/AttendanceRequest/Modal";
-import { useShiftTemplates } from "@/hooks/useShiftTemplate";
-import { useWorkSchedules } from "@/hooks/useWorkSchedules";
 import AttendanceRequestShowModal from "@/pages/AttendanceRequest/ShowModal";
 
 export default function AttendanceRequestsTable() {
@@ -40,8 +38,6 @@ export default function AttendanceRequestsTable() {
   const { mutateAsync: deleteAttendanceRequest } = useDeleteAttendanceRequest();
   const { mutateAsync: approveAttendanceRequest } =
     useAttendanceRequestApprovals();
-  const {data: shiftTemplates = []} = useShiftTemplates();
-  const {data: workSchedules = []} = useWorkSchedules();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -325,8 +321,6 @@ export default function AttendanceRequestsTable() {
         setAttendanceRequestData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        shiftTemplates={shiftTemplates}
-        workSchedules={workSchedules}
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 

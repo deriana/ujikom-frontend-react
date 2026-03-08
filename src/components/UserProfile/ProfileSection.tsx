@@ -3,8 +3,13 @@ import { SectionCard, StatusBadge } from "./ProfileComponent";
 import { Can } from "@/components/auth/Can";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 import { RESOURCES } from "@/constants/Resource";
+import { ROLES } from "@/constants/Roles";
+import { useRoleName } from "@/hooks/useRoleName";
 
-export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
+export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => {
+  const { isRole } = useRoleName();
+  
+  return (
   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/50 dark:bg-white/2 p-6 rounded-3xl border border-gray-100 dark:border-gray-800">
     <div className="flex items-center gap-5">
       <div className="relative">
@@ -21,7 +26,11 @@ export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
         )}
 
         <div className="absolute -bottom-2 -right-2 size-8 rounded-lg bg-white dark:bg-gray-900 border-2 border-gray-50 dark:border-gray-800 flex items-center justify-center text-brand-500">
-          <ShieldCheck size={18} />
+          {isRole(ROLES.ADMIN) ? (
+            <ShieldCheck size={18} className="text-amber-500" />
+          ) : (
+            <ShieldCheck size={18} />
+          )}
         </div>
       </div>
 
@@ -54,8 +63,8 @@ export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
         </button>
       </Can>
 
-      {(user?.can.update ||
-        buildPermission(RESOURCES.USER, PERMISSIONS.BASE.EDIT)) && (
+      {!isRole(ROLES.ADMIN) && 
+        (user?.can.update || buildPermission(RESOURCES.USER, PERMISSIONS.BASE.EDIT)) && (
         <button
           onClick={onChangePhoto}
           className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium group"
@@ -65,7 +74,8 @@ export const ProfileHeader = ({ user, onBack, onChangePhoto }: any) => (
       )}
     </div>
   </div>
-);
+  );
+};
 
 export const CompensationCard = ({ employee }: any) => (
   <SectionCard title="Compensation" icon={DollarSign}>

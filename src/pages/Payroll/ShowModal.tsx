@@ -23,6 +23,40 @@ interface PayrollShowModalProps {
   onClose: () => void;
 }
 
+const PayrollShowSkeleton = () => (
+  <div className="animate-pulse space-y-8">
+    {/* Header Skeleton */}
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-gray-100 dark:border-gray-800 pb-8">
+      <div className="flex items-center gap-5">
+        <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-800" />
+        <div className="space-y-3">
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+          <div className="h-4 w-64 bg-gray-100 dark:bg-gray-800/50 rounded-md" />
+        </div>
+      </div>
+      <div className="h-20 w-50 bg-gray-50 dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800" />
+    </div>
+
+    {/* Content Skeleton */}
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="lg:col-span-7 space-y-6">
+        <div className="h-64 w-full bg-gray-50 dark:bg-gray-800/30 rounded-3xl border border-gray-100 dark:border-gray-800" />
+        <div className="h-24 w-full bg-gray-50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-800" />
+      </div>
+      <div className="lg:col-span-5 space-y-6">
+        <div className="h-48 w-full bg-gray-50 dark:bg-gray-800/30 rounded-3xl border border-gray-100 dark:border-gray-800" />
+        <div className="h-32 w-full bg-gray-50 dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800" />
+      </div>
+    </div>
+
+    {/* Footer Skeleton */}
+    <div className="mt-10 flex gap-4">
+      <div className="h-14 flex-1 bg-gray-200 dark:bg-gray-800 rounded-2xl" />
+      <div className="h-14 w-40 bg-gray-100 dark:bg-gray-800/50 rounded-2xl" />
+    </div>
+  </div>
+);
+
 export default function PayrollShowModal({
   uuid,
   isOpen,
@@ -51,10 +85,19 @@ export default function PayrollShowModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-5xl w-full m-4">
       <div className="relative w-full rounded-3xl bg-white dark:bg-gray-950 p-6 md:p-10 shadow-2xl overflow-y-auto max-h-[95vh]">
-        {/* HEADER SECTION */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 border-b border-gray-100 dark:border-gray-800 pb-8">
+        {isLoading ? (
+          <PayrollShowSkeleton />
+        ) : isError ? (
+          <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-center">
+            {(error as Error)?.message}
+          </div>
+        ) : (
+          payroll && (
+            <>
+              {/* HEADER SECTION */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 border-b border-gray-100 dark:border-gray-800 pb-8">
           <div className="flex items-center gap-5">
-            {!isLoading && payroll && (
+            {payroll && (
               <UserProfile
                 src={payroll.employee.profile_photo ?? undefined}
                 alt={payroll.employee.name}
@@ -65,9 +108,9 @@ export default function PayrollShowModal({
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <h4 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                  {isLoading ? "Loading..." : payroll?.employee.name}
+                  {payroll.employee.name}
                 </h4>
-                {!isLoading && payroll && (
+                {payroll && (
                   <Badge
                     size="md"
                     variant="light"
@@ -85,35 +128,21 @@ export default function PayrollShowModal({
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
                 <Briefcase size={16} />{" "}
-                {payroll?.employee.position.name || "Position N/A"} •
+                {payroll.employee.position.name || "Position N/A"} •
                 <Calendar size={16} className="ml-2" /> Period:{" "}
-                {payroll?.period.start} - {payroll?.period.end}
+                {payroll.period.start} - {payroll.period.end}
               </p>
             </div>
           </div>
-
           <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl border border-gray-100 dark:border-gray-800 text-right min-w-50">
             <p className="text-xs font-bold uppercase text-gray-400 tracking-widest mb-1">
               Take Home Pay
             </p>
             <p className="text-3xl font-black text-indigo-600 dark:text-indigo-400">
-              {isLoading
-                ? "---"
-                : formatRupiah(payroll?.summary.net_salary ?? 0)}
+              {formatRupiah(payroll.summary.net_salary ?? 0)}
             </p>
           </div>
         </div>
-
-        {isLoading ? (
-          <div className="py-20 text-center animate-pulse text-gray-400 font-medium">
-            Calculating payroll breakdown...
-          </div>
-        ) : isError ? (
-          <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-center">
-            {(error as Error)?.message}
-          </div>
-        ) : (
-          payroll && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* LEFT COLUMN: EARNINGS */}
               <div className="lg:col-span-7 space-y-6">
@@ -292,12 +321,9 @@ export default function PayrollShowModal({
                 </div>
               </div>
             </div>
-          )
-        )}
 
-        {/* FOOTER ACTIONS */}
-        {payroll && (
-          <div className="mt-10 flex gap-4">
+            {/* FOOTER ACTIONS */}
+            <div className="mt-10 flex gap-4">
             <Button
               onClick={onClose}
               className="flex-1 py-4 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
@@ -313,6 +339,8 @@ export default function PayrollShowModal({
               </Button>
             )}
           </div>
+            </>
+          )
         )}
       </div>
     </Modal>

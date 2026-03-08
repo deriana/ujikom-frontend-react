@@ -15,14 +15,16 @@ import FilterDropdown from "@/components/FilterDropdown";
 
 export default function ShiftTemplateTableTrash() {
   const {
-    data: shiftTemplates = [],
+    data: shiftTemplatesData,
+    isLoading,
     isError,
     error,
-    isLoading,
-  } = useShiftTemplates(true);
+  } = useShiftTemplates({ trashed: true });
   const { mutateAsync: restoreShiftTemplate } = useRestoreShiftTemplate();
   const { mutateAsync: forceDeleteShiftTemplate } =
     useForceDeleteShiftTemplate();
+
+  const shiftTemplates = (shiftTemplatesData as ShiftTemplate[]) || [];
 
   const { handleRestore, handleForceDelete } = useTrashActions({
     label: "ShiftTemplate",

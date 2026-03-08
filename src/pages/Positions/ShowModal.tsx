@@ -10,6 +10,34 @@ interface PositionShowModalProps {
   onClose: () => void;
 }
 
+const PositionShowSkeleton = () => (
+  <div className="animate-pulse space-y-6">
+    {/* Highlight Card Skeleton */}
+    <div className="h-32 w-full bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+    
+    {/* Info Grid Skeleton */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="h-24 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800" />
+      <div className="h-24 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800" />
+    </div>
+
+    {/* List Section Skeleton */}
+    <div className="space-y-3">
+      <div className="h-4 w-40 bg-gray-100 dark:bg-gray-800 rounded" />
+      <div className="space-y-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-12 w-full bg-gray-50 dark:bg-gray-800/30 rounded-lg" />
+        ))}
+      </div>
+    </div>
+
+    {/* Button Skeleton */}
+    <div className="pt-2">
+      <div className="h-12 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+    </div>
+  </div>
+);
+
 export default function PositionShowModal({
   uuid,
   isOpen,
@@ -40,9 +68,7 @@ export default function PositionShowModal({
         </div>
 
         {isLoading ? (
-          <div className="py-20 text-center animate-pulse text-gray-400">
-            Fetching data...
-          </div>
+          <PositionShowSkeleton />
         ) : isError ? (
           <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-center">
             {(error as Error).message}

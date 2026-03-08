@@ -13,8 +13,6 @@ import Badge from "@/components/ui/badge/Badge";
 import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import LeaveModal from "@/pages/Leave/Modal";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
-import { useLeaveTypes } from "@/hooks/useLeaveType";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
@@ -33,8 +31,6 @@ export default function LeavesTable() {
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
   const { mutateAsync: deleteLeave } = useDeleteLeave();
-  const { data: employee = [] } = useGetEmployeeForInput();
-  const { data: leaveTypes = [] } = useLeaveTypes();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
@@ -385,8 +381,6 @@ export default function LeavesTable() {
         setLeaveData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        employees={employee}
-        leaveTypes={leaveTypes}
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 

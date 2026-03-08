@@ -7,6 +7,8 @@ import Badge from "@/components/ui/badge/Badge";
 import MonthPicker from "@/components/form/MonthPicker";
 import { CalenderIcon } from "@/icons";
 import MultiSelect from "@/components/form/MultiSelect";
+import { useGetEmployeeForInput } from "@/hooks/useUser";
+import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
 
 interface PayrollModalProps {
   isOpen: boolean;
@@ -16,7 +18,6 @@ interface PayrollModalProps {
   setPayrollData: (data: PayrollFormState) => void;
   onSubmit: () => void;
   isLoading?: boolean;
-  employees?: { nik: string; name: string }[];
 }
 
 export default function PayrollModal({
@@ -27,14 +28,19 @@ export default function PayrollModal({
   onSubmit,
   isLoading = false,
   isEdit,
-  employees = []
 }: PayrollModalProps) {
 
   const updateData = (payload: any) => {
     setPayrollData({ ...payrollData, ...payload });
   };
 
-  const employeeOptions = employees?.map((emp) => ({
+      const { data: employees = [], isLoading: loadingEmployees } = (useGetEmployeeForInput as any)({
+        enabled: isOpen,
+      })
+      
+      const isInitialLoading = loadingEmployees;
+
+  const employeeOptions = employees?.map((emp: { nik: string; name: string; }) => ({
     value: emp.nik,
     text: `${emp.name} (${emp.nik})`,
   })) || [];
@@ -42,6 +48,10 @@ export default function PayrollModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-lg m-4">
       <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl transition-colors duration-200">
+        {isInitialLoading ? (
+          <GlobalModalSkeleton />
+        ) : (
+          <>
 
         {/* HEADER SECTION */}
         <div className="mb-8">
@@ -142,12 +152,14 @@ export default function PayrollModal({
             <Button
               type="submit"
               disabled={isLoading}
-              className="px-8 py-2.5 rounded-xl shadow-lg bg-blue-600 text-white min-w-[140px]"
+              className="px-8 py-2.5 rounded-xl shadow-lg bg-blue-600 text-white min-w-35"
             >
               {isLoading ? "Processing..." : isEdit ? "Apply Changes" : "Generate Payroll"}
             </Button>
           </div>
         </form>
+          </>
+        )}
       </div>
     </Modal>
   );

@@ -24,7 +24,6 @@ import Button from "@/components/ui/button/Button";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import MonthPicker from "@/components/form/MonthPicker";
 import PayrollModal from "@/pages/Payroll/Modal";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
@@ -62,7 +61,6 @@ export default function PayrollTable() {
   const { mutateAsync: finalizePayroll } = useFinalizePayroll();
   const { mutateAsync: voidPayroll } = useVoidPayroll();
   const { mutateAsync: bulkFinalizePayroll } = useBulkFinalizePayroll();
-  const { data: employee = [] } = useGetEmployeeForInput();
 
 
   // Employee options
@@ -400,7 +398,7 @@ export default function PayrollTable() {
               value={periodFilter}
               onChange={setPeriodFilter}
               placeholder="Filter by period"
-              className="min-w-[160px]"
+              className="min-w-40"
             />
           </>
         }
@@ -433,7 +431,6 @@ export default function PayrollTable() {
         onSubmit={crud.submit}
         isLoading={crud.loading}
         isEdit={crud.isEdit}
-        employees={employee}
       />
 
       <PayrollShowModal

@@ -7,11 +7,12 @@ import {
 } from "@/api/leaveType.api";
 import { LeaveTypeInput } from "@/types/leaveType.types";
 
-export const useLeaveTypes = () => {
+export const useLeaveTypes = (options = {}) => {
   return useQuery({
     queryKey: ["leaveTypes"],
     queryFn: getLeaveType,
     staleTime: 1000 * 60 * 5,
+    ...options
   });
 };
 // CREATE with optimistic update
