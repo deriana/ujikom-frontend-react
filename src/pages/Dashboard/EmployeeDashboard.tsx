@@ -4,6 +4,7 @@ import AttendanceYearlyChart from "@/components/dashboard/AttendanceChart";
 import { OvertimeLog } from "@/components/dashboard/OvertimeLog";
 import { SalaryHistory } from "@/components/dashboard/SalaryHistory";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { TodayScheduleCard } from "@/components/dashboard/TodaySchedule";
 import { UserInfo } from "@/components/dashboard/UserInfo";
 import { WorkHourTarget } from "@/components/dashboard/WorkHourTarget";
 import EmployeeDashboardSkeleton from "@/components/skeleton/EmployeeDashboardSkeleton";
@@ -123,6 +124,7 @@ export default function EmployeeDashboard() {
             profileData={data?.profile}
             pendingData={data?.pending_requests}
           />
+          <TodayScheduleCard schedule={data?.today_schedule} />
           <SalaryHistory salaryLogs={data?.logs?.salary ?? []} />
 
           {/* Target Jam Kerja Card */}

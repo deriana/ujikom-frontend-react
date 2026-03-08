@@ -122,12 +122,23 @@ export interface SalaryLog {
   status: number;
 }
 
+export interface TodaySchedule {
+  date: string;
+  is_workday: boolean;
+  label: string;
+  work_start: string;
+  work_end: string;
+  tolerance: string;
+  must_at_office: boolean;
+}
+
 export interface EmployeeDashboardData {
   profile: EmployeeProfile;
   personal_stats: PersonalStats;
   recent_attendance: Attendance[];
   pending_requests: PendingRequest;
   yearly_attendance_chart: YearlyAttendanceChart;
+  today_schedule: TodaySchedule;
   logs: {
     overtime: OvertimeLog[];
     leave: LeaveLog[];
