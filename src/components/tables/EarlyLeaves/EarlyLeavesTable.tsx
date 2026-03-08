@@ -12,7 +12,6 @@ import { DataTable } from "../BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import { useContext, useMemo, useState } from "react";
@@ -39,7 +38,6 @@ export default function EarlyLeavesTable() {
   const { mutateAsync: updateEarlyLeave } = useUpdateEarlyLeave();
   const { mutateAsync: deleteEarlyLeave } = useDeleteEarlyLeave();
   const { mutateAsync: approveEarlyLeave } = useEarlyLeaveApprovals();
-  const { data: employee = [] } = useGetEmployeeForInput();
   const { isRole } = useRoleName();
   const { user } = useContext(AuthContext);
 
@@ -315,7 +313,6 @@ export default function EarlyLeavesTable() {
         setEarlyLeaveData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        employees={employee}
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 

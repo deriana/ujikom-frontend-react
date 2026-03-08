@@ -47,6 +47,26 @@ const Calendar: React.FC = () => {
     },
   }));
 
+  /** Generate Payday events for the 26th of every month (±12 months) */
+  const paydayEvents: CalendarEvent[] = (() => {
+    const result: CalendarEvent[] = [];
+    const today = new Date();
+    for (let offset = -12; offset <= 12; offset++) {
+      const d = new Date(today.getFullYear(), today.getMonth() + offset, 26);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-26`;
+      result.push({
+        id: `payday-${dateStr}`,
+        title: "Payday",
+        start: dateStr,
+        allDay: true,
+        extendedProps: { calendar: "Payday" },
+      });
+    }
+    return result;
+  })();
+
+  const allEvents = [...events, ...paydayEvents];
+
   /**
    * Click Event → Open Detail Modal
    */
@@ -82,9 +102,26 @@ const Calendar: React.FC = () => {
               center: "title",
               right: "",
             }}
-            events={events}
+            events={allEvents}
             eventClick={handleEventClick}
             eventContent={renderEventContent}
+            dayCellContent={(args) => {
+              const isPayday = args.date.getDate() === 26;
+              return (
+                <div className="flex justify-center w-full pt-1.5 h-full">
+                  <span
+                    className={`
+                      inline-flex items-center justify-center w-7 h-7 text-xs font-bold transition-all duration-300
+                      ${isPayday 
+                        ? "rounded-full bg-yellow-400 text-yellow-950 shadow-lg shadow-yellow-400/40 ring-4 ring-yellow-200 dark:bg-yellow-500 dark:text-yellow-950 dark:ring-yellow-900/40 scale-110 z-10" 
+                        : "text-gray-700 dark:text-gray-300"}
+                    `}
+                  >
+                    {args.dayNumberText}
+                  </span>
+                </div>
+              );
+            }}
             height="auto"
           />
         </div>
@@ -177,14 +214,28 @@ const Calendar: React.FC = () => {
  * Custom Event UI
  */
 const renderEventContent = (eventInfo: any) => {
-  const colorClass = `fc-bg-${eventInfo.event.extendedProps.calendar.toLowerCase()}`;
+  const calendarType = eventInfo.event.extendedProps.calendar;
+
+  if (calendarType === "Payday") {
+    return (
+      <div className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 dark:from-emerald-600 dark:via-emerald-700 dark:to-teal-700 shadow-sm border border-emerald-400/50 dark:border-emerald-500/30 text-white font-bold text-[10px] ring-1 ring-emerald-400/20 dark:ring-emerald-500/20 animate-in fade-in slide-in-from-top-1 duration-500 hover:scale-[1.02] transition-transform overflow-hidden cursor-pointer">
+        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <span className="shrink-0 text-xs drop-shadow-sm">💰</span>
+        <span className="truncate uppercase tracking-widest drop-shadow-sm font-black">
+          {eventInfo.event.title}
+        </span>
+      </div>
+    );
+  }
+
+  const colorClass = `fc-bg-${calendarType.toLowerCase()}`;
 
   return (
     <div
-      className={`event-fc-color flex fc-event-main ${colorClass} p-1 rounded-sm cursor-pointer`}
+      className={`event-fc-color flex fc-event-main ${colorClass} p-1 rounded-sm cursor-pointer border-none shadow-sm`}
     >
       <div className="fc-daygrid-event-dot"></div>
-      <div className="fc-event-title">{eventInfo.event.title}</div>
+      <div className="fc-event-title font-medium">{eventInfo.event.title}</div>
     </div>
   );
 };

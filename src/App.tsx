@@ -66,6 +66,7 @@ import CareerPage from "./pages/Careers/CareerPage";
 import JobListPage from "./components/landing/JobListPage";
 import ResetPasswordPage from "./pages/AuthPages/ResetPassword";
 import ForgotPasswordPage from "./pages/AuthPages/ForgotPassword";
+import EmployeeLeaveBalances from "./pages/LeaveType/EmployeeLeaveBalance";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -236,7 +237,12 @@ export default function App() {
       resource: RESOURCES.SETTING,
       permission: PERMISSIONS.BASE.INDEX,
     },
-
+    {
+      path: "employee-leave-balances",
+      element: <EmployeeLeaveBalances />,
+      resource: RESOURCES.LEAVE_TYPES,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
     {
       path: "/notifications",
       element: <Notification />,

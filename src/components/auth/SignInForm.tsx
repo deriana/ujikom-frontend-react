@@ -22,6 +22,8 @@ export default function SignInForm() {
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
 
+  // SignInForm.tsx
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -39,13 +41,18 @@ export default function SignInForm() {
       const errorData = err?.response?.data;
 
       if (err?.response?.status === 403 && errorData?.needs_activation) {
-        setPendingEmail(errorData.email);
+        const userEmail = errorData.email || email; 
+        setPendingEmail(userEmail);
         setShowActivationModal(true);
-        toast.error("Account needs activation.");
+
+        try {
+          await resendActivation(userEmail);
+          toast.success("Account needs activation. A new link has been sent!");
+        } catch (resendErr: any) {
+          toast.error("Account not active, and failed to auto-send new link.");
+        }
       } else {
-        toast.error(
-          errorData?.message || "Login failed. Check credentials."
-        );
+        toast.error(errorData?.message || "Login failed. Check credentials.");
       }
     } finally {
       setLoading(false);
@@ -67,7 +74,6 @@ export default function SignInForm() {
 
   return (
     <div className="flex flex-col flex-1">
-
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
           <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
@@ -126,7 +132,12 @@ export default function SignInForm() {
               </Link>
             </div>
 
-            <Button type="submit" className="w-full" size="sm" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              size="sm"
+              disabled={loading}
+            >
               {loading ? "Signing in..." : "Sign in"}
             </Button>
           </div>

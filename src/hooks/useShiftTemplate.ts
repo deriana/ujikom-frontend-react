@@ -11,11 +11,15 @@ import {
 } from "@/api/shiftTemplate.api";
 import { ShiftTemplateInput } from "@/types/shiftTemplate.types";
 
-export const useShiftTemplates = (trashed = false) => {
+// useShiftTemplate.ts
+export const useShiftTemplates = (config: any = {}) => {
+  const { trashed = false, ...options } = config;
+
   return useQuery({
     queryKey: ["shiftTemplates", { trashed }],
-    queryFn: trashed ? getTrashedShiftTemplate : getShiftTemplate,
+    queryFn: () => trashed ? getTrashedShiftTemplate() : getShiftTemplate(),
     staleTime: 1000 * 60 * 5,
+    ...options, 
   });
 };
 

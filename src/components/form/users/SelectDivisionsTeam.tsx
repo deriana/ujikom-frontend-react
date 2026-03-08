@@ -1,4 +1,4 @@
-// File: @/components/form/users/SelectDivisionTeam.tsx
+import Select from "@/components/form/Select";
 import { Division } from "@/types";
 
 interface SelectDivisionTeamProps {
@@ -14,32 +14,23 @@ export default function SelectDivisionTeam({
   onChange,
   disabled = false,
 }: SelectDivisionTeamProps) {
+  // Transform hierarchical data (Divisions -> Teams) into a flat list for the Select component.
+  // We format the label as "Team Name (Division Name)" to keep the context visible since
+  // the custom Select component doesn't support <optgroup> headers natively.
+  const options = divisions.flatMap((division) =>
+    division.teams.map((team) => ({
+      value: team.uuid,
+      label: `${team.name} (${division.name})`,
+    }))
+  );
+
   return (
-    <div className="relative">
-      <select
-        className="h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm shadow-theme-xs transition-all 
-                   focus:border-brand-300 focus:ring-brand-500/20 focus:outline-none
-                   dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-brand-800
-                   disabled:bg-gray-100 disabled:cursor-not-allowed opacity-70"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-      >
-        <option value="" disabled>Select Team</option>
-        {divisions.map((division) => (
-          <optgroup key={division.uuid} label={division.name} className="bg-gray-50 dark:bg-gray-800 font-bold">
-            {division.teams.length > 0 ? (
-              division.teams.map((team) => (
-                <option key={team.uuid} value={team.uuid} className="bg-white dark:bg-gray-900 font-normal">
-                  {team.name}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>No teams available</option>
-            )}
-          </optgroup>
-        ))}
-      </select>
-    </div>
+    <Select
+      options={options}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      placeholder="Select Team"
+    />
   );
 }

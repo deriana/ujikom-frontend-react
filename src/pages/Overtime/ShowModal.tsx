@@ -7,7 +7,6 @@ import {
   XCircle,
   Timer,
   FileText,
-  Loader2,
   UserCheck,
   History,
   Hash,
@@ -47,6 +46,30 @@ const StatusBadge = ({ status, label }: { status: number; label: string }) => {
   );
 };
 
+const OvertimeShowSkeleton = () => (
+  <div className="animate-pulse space-y-8">
+    <div className="flex justify-between items-start border-b border-gray-50 dark:border-gray-800 pb-6">
+      <div className="space-y-3">
+        <div className="h-8 w-48 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+        <div className="h-4 w-64 bg-gray-100 dark:bg-gray-800/50 rounded-md" />
+      </div>
+      <div className="h-6 w-24 bg-gray-200 dark:bg-gray-800 rounded-full" />
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="h-24 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800" />
+      <div className="h-24 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800" />
+    </div>
+    <div className="space-y-3">
+      <div className="h-4 w-32 bg-gray-100 dark:bg-gray-800/50 rounded" />
+      <div className="h-24 bg-gray-50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-800" />
+    </div>
+    <div className="pt-4 border-t border-gray-50 dark:border-gray-800 space-y-4">
+      <div className="h-4 w-32 bg-gray-100 dark:bg-gray-800/50 rounded" />
+      <div className="h-20 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700" />
+    </div>
+  </div>
+);
+
 export default function OvertimeShowModal({
   uuid,
   isOpen,
@@ -83,10 +106,7 @@ export default function OvertimeShowModal({
         </div>
 
         {isLoading ? (
-          <div className="py-20 text-center animate-pulse text-gray-400 flex flex-col items-center gap-3">
-            <Loader2 className="animate-spin text-amber-500" />
-            Fetching overtime details...
-          </div>
+          <OvertimeShowSkeleton />
         ) : isError ? (
           <div className="p-4 bg-red-50 text-red-600 rounded-xl text-center text-sm border border-red-100">
             {(error as Error).message}

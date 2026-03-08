@@ -14,11 +14,13 @@ import { WORK_MODE } from "@/constants/WorkMode";
 
 export default function WorkScheduleTableTrash() {
   const {
-    data: workSchedules = [],
+    data: workSchedulesData,
     isError,
     error,
     isLoading,
-  } = useWorkSchedules(true);
+  } = useWorkSchedules({ trashed: true });
+
+  const workSchedules = (workSchedulesData as WorkSchedule[]) || [];
   const { mutateAsync: restoreWorkSchedule } = useRestoreWorkSchedule();
   const { mutateAsync: forceDeleteWorkSchedule } = useForceDeleteWorkSchedule();
 

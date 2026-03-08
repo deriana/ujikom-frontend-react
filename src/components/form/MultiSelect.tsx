@@ -26,27 +26,36 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   placeholder = "Select options",
 }) => {
   const isControlled = value !== undefined;
-  const [internalSelected, setInternalSelected] =
-    useState<string[]>(defaultSelected);
+  const [internalSelected, setInternalSelected] = useState<string[]>(defaultSelected);
   const selectedOptions = isControlled ? value : internalSelected;
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Filter options based on search query
+  const filteredOptions = options.filter((opt) =>
+    opt.text.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Check if all VISIBLE options are selected
+  const isAllSelected = filteredOptions.length > 0 && 
+    filteredOptions.every(opt => selectedOptions.includes(opt.value));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+      // Focus search input when dropdown opens
+      setTimeout(() => searchInputRef.current?.focus(), 100);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    } else {
+      setSearchQuery(""); // Reset search when closed
     }
   }, [isOpen]);
 
@@ -69,178 +78,193 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
     updateSelection(newSelected);
   };
 
-  const removeOption = (optionValue: string) => {
-    updateSelection(selectedOptions.filter((v) => v !== optionValue));
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      // Unselect only those that are currently visible
+      const visibleValues = filteredOptions.map(opt => opt.value);
+      updateSelection(selectedOptions.filter(val => !visibleValues.includes(val)));
+    } else {
+      // Select all visible + what was already selected
+      const visibleValues = filteredOptions.map(opt => opt.value);
+      const uniqueSelected = Array.from(new Set([...selectedOptions, ...visibleValues]));
+      updateSelection(uniqueSelected);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (disabled) return;
-
-    e.preventDefault();
     switch (e.key) {
       case "Enter":
-        if (!isOpen) {
-          setIsOpen(true);
-        } else if (focusedIndex >= 0) {
-          handleSelect(options[focusedIndex].value);
+        e.preventDefault();
+        if (!isOpen) setIsOpen(true);
+        else if (focusedIndex === -2) handleSelectAll(); // Select All
+        else if (focusedIndex >= 0 && filteredOptions[focusedIndex]) {
+          handleSelect(filteredOptions[focusedIndex].value);
         }
         break;
       case "Escape":
         setIsOpen(false);
         break;
       case "ArrowDown":
-        if (!isOpen) {
-          setIsOpen(true);
-        } else {
-          setFocusedIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
-        }
+        e.preventDefault();
+        if (!isOpen) setIsOpen(true);
+        else setFocusedIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : -2));
         break;
       case "ArrowUp":
-        if (isOpen) {
-          setFocusedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
-        }
+        e.preventDefault();
+        if (isOpen) setFocusedIndex((prev) => (prev > -2 ? prev - 1 : filteredOptions.length - 1));
         break;
     }
   };
 
   return (
     <div className="w-full" ref={dropdownRef}>
-      <label
-        className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
-        id={`${label}-label`}
-      >
+      <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
         {label}
       </label>
 
-      <div className="relative z-20 inline-block w-full">
-        <div className="relative flex flex-col items-center">
-          <div
-            onClick={toggleDropdown}
-            onKeyDown={handleKeyDown}
-            className="w-full"
-            role="combobox"
-            aria-expanded={isOpen}
-            aria-haspopup="listbox"
-            aria-labelledby={`${label}-label`}
-            aria-disabled={disabled}
-            tabIndex={disabled ? -1 : 0}
-          >
-            <div
-              className={`mb-2 flex min-h-11  rounded-lg border border-gray-300 py-1.5 pl-3 pr-3 shadow-theme-xs outline-hidden transition focus:border-brand-300 focus:shadow-focus-ring dark:border-gray-700 dark:bg-gray-900 dark:focus:border-brand-300 ${
-                disabled
-                  ? "opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-800"
-                  : "cursor-pointer"
-              }`}
-            >
-              <div className="flex flex-wrap flex-auto gap-2">
-                {selectedOptions.length > 0 ? (
-                  selectedOptions.map((value) => {
-                    const text =
-                      options.find((opt) => opt.value === value)?.text || value;
-                    return (
-                      <div
-                        key={value}
-                        className="group flex items-center justify-center rounded-full border-[0.7px] border-transparent bg-gray-100 py-1 pl-2.5 pr-2 text-sm text-gray-800 hover:border-gray-200 dark:bg-gray-800 dark:text-white/90 dark:hover:border-gray-800"
-                      >
-                        <span className="flex-initial max-w-full">{text}</span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (!disabled) removeOption(value);
-                          }}
-                          disabled={disabled}
-                          className="pl-2 text-gray-500 cursor-pointer group-hover:text-gray-400 dark:text-gray-400 disabled:cursor-not-allowed"
-                          aria-label={`Remove ${text}`}
-                        >
-                          <svg
-                            className="fill-current"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M3.40717 4.46881C3.11428 4.17591 3.11428 3.70104 3.40717 3.40815C3.70006 3.11525 4.17494 3.11525 4.46783 3.40815L6.99943 5.93975L9.53095 3.40822C9.82385 3.11533 10.2987 3.11533 10.5916 3.40822C10.8845 3.70112 10.8845 4.17599 10.5916 4.46888L8.06009 7.00041L10.5916 9.53193C10.8845 9.82482 10.8845 10.2997 10.5916 10.5926C10.2987 10.8855 9.82385 10.8855 9.53095 10.5926L6.99943 8.06107L4.46783 10.5927C4.17494 10.8856 3.70006 10.8856 3.40717 10.5927C3.11428 10.2998 3.11428 9.8249 3.40717 9.53201L5.93877 7.00041L3.40717 4.46881Z"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="w-full h-full p-1 pr-2 text-sm text-gray-400 dark:text-gray-500 pointer-events-none">
-                    {placeholder}
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center self-start py-1 pl-1 pr-1 w-7">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleDropdown();
-                  }}
-                  disabled={disabled}
-                  className="w-5 h-5 text-gray-700 outline-hidden cursor-pointer focus:outline-hidden dark:text-gray-400 disabled:cursor-not-allowed"
-                >
-                  <svg
-                    className={`stroke-current transition-transform ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+      <div className="relative w-full">
+        <div
+          onClick={toggleDropdown}
+          onKeyDown={handleKeyDown}
+          role="combobox"
+          aria-expanded={isOpen}
+          tabIndex={disabled ? -1 : 0}
+          className={`flex min-h-[44px] w-full rounded-lg border border-gray-300 bg-white transition-all focus-within:border-blue-500 dark:border-gray-700 dark:bg-gray-900 ${
+            disabled ? "opacity-60 cursor-not-allowed bg-gray-50" : "cursor-pointer"
+          }`}
+        >
+          {/* WRAPPER TAGS: Dengan scrollbar internal */}
+          <div className="flex flex-1 flex-wrap gap-1.5 p-2 max-h-32 overflow-y-auto custom-scrollbar">
+            {selectedOptions.length > 0 ? (
+              selectedOptions.map((val) => {
+                const text = options.find((opt) => opt.value === val)?.text || val;
+                return (
+                  <div
+                    key={val}
+                    className="flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 border border-blue-100 dark:border-blue-800"
                   >
-                    <path
-                      d="M4.79175 7.39551L10.0001 12.6038L15.2084 7.39551"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
+                    <span>{text}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!disabled) updateSelection(selectedOptions.filter((v) => v !== val));
+                      }}
+                      className="hover:text-red-500 transition-colors"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M9 3L3 9M3 3l6 6" />
+                      </svg>
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <span className="text-sm text-gray-400 px-1 py-1">{placeholder}</span>
+            )}
           </div>
 
-          {isOpen && (
-            <div
-              className="absolute left-0 z-40 w-full overflow-y-auto bg-white rounded-lg shadow-sm top-full max-h-select dark:bg-gray-900"
-              onClick={(e) => e.stopPropagation()}
-              role="listbox"
-              aria-label={label}
+          <div className="flex items-center pr-3">
+            <svg
+              className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              {options.map((option, index) => {
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+
+        {/* DROPDOWN MENU */}
+        {isOpen && (
+          <div className="absolute left-0 right-0 z-50 mt-1 max-h-80 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900 animate-in fade-in zoom-in duration-150">
+            
+            {/* SEARCH INPUT */}
+            <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 p-2 border-b border-gray-100 dark:border-gray-800">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  className="block w-full pl-9 pr-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 dark:text-white"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setFocusedIndex(-1);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown" || e.key === "Enter") {
+                      // Prevent input behavior and let handleKeyDown handle navigation
+                      if (filteredOptions.length > 0 || e.key === "ArrowDown") return;
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* OPSI: SELECT ALL */}
+            {filteredOptions.length > 0 && (
+              <div
+                onClick={handleSelectAll}
+                className={`flex cursor-pointer items-center justify-between px-4 py-2 text-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-gray-900 z-10 ${
+                  focusedIndex === -2 ? "bg-blue-50 dark:bg-gray-800" : ""
+                }`}
+              >
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  {isAllSelected ? "Deselect All" : "Select All"}
+                </span>
+                <div className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
+                  isAllSelected ? "bg-blue-500 border-blue-500" : "border-gray-300 dark:border-gray-600"
+                }`}>
+                  {isAllSelected && (
+                    <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* OPSI: INDIVIDUAL LIST */}
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option, index) => {
                 const isSelected = selectedOptions.includes(option.value);
                 const isFocused = index === focusedIndex;
-
                 return (
                   <div
                     key={option.value}
-                    className={`hover:bg-primary/5 w-full cursor-pointer rounded-t border-b border-gray-200 dark:border-gray-800 ${
-                      isFocused ? "bg-primary/5" : ""
-                    } ${isSelected ? "bg-primary/10" : ""}`}
                     onClick={() => handleSelect(option.value)}
-                    role="option"
-                    aria-selected={isSelected}
+                    className={`flex cursor-pointer items-center justify-between px-4 py-2.5 text-sm transition-colors ${
+                      isFocused ? "bg-gray-100 dark:bg-gray-800" : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                    } ${isSelected ? "text-blue-600 dark:text-blue-400 font-medium" : "text-gray-700 dark:text-gray-300"}`}
                   >
-                    <div className="relative flex w-full items-center p-2 pl-2">
-                      <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">
-                        {option.text}
-                      </div>
+                    <span>{option.text}</span>
+                    <div className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
+                      isSelected ? "bg-blue-500 border-blue-500" : "border-gray-300 dark:border-gray-600"
+                    }`}>
+                      {isSelected && (
+                        <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
                     </div>
                   </div>
                 );
-              })}
-            </div>
-          )}
-        </div>
+              })
+            ) : (
+              <div className="px-4 py-6 text-center text-sm text-gray-500">
+                No data found.
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

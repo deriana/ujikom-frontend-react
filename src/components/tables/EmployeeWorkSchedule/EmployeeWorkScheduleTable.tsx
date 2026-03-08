@@ -19,8 +19,6 @@ import { handleMutation } from "@/utils/handleMutation";
 import { Calendar, Briefcase } from "lucide-react";
 import UserProfile from "@/components/UserProfile";
 import EmployeeWorkScheduleModal from "@/pages/EmployeeWorkSchedule/Modal";
-import { useWorkSchedules } from "@/hooks/useWorkSchedules";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { formatDateID } from "@/utils/date";
 
 export default function EmployeeWorkScheduleTable() {
@@ -34,9 +32,6 @@ export default function EmployeeWorkScheduleTable() {
   const { mutateAsync: createWS } = useCreateEmployeeWorkSchedule();
   const { mutateAsync: updateWS } = useUpdateEmployeeWorkSchedule();
   const { mutateAsync: deleteWS } = useDeleteEmployeeWorkSchedule();
-
-  const { data: workSchedule = [] } = useWorkSchedules();
-  const { data: employee = [] } = useGetEmployeeForInput();
 
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -306,8 +301,6 @@ export default function EmployeeWorkScheduleTable() {
         setData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        employees={employee}
-        schedules={workSchedule}
       />
     </>
   );

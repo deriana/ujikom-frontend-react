@@ -12,6 +12,34 @@ interface AllowanceShowModalProps {
   onClose: () => void;
 }
 
+const AllowanceShowSkeleton = () => (
+  <div className="animate-pulse space-y-6">
+    {/* Highlight Card Skeleton */}
+    <div className="h-32 w-full bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+    
+    {/* Info Grid Skeleton */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="h-24 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800" />
+      <div className="h-24 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800" />
+    </div>
+
+    {/* List Section Skeleton */}
+    <div className="space-y-3">
+      <div className="h-4 w-40 bg-gray-100 dark:bg-gray-800 rounded" />
+      <div className="space-y-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-12 w-full bg-gray-50 dark:bg-gray-800/30 rounded-lg" />
+        ))}
+      </div>
+    </div>
+
+    {/* Button Skeleton */}
+    <div className="pt-2">
+      <div className="h-12 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+    </div>
+  </div>
+);
+
 export default function AllowanceShowModal({
   uuid,
   isOpen,
@@ -25,12 +53,6 @@ export default function AllowanceShowModal({
   } = useAllowanceByUuid(uuid || "");
 
   if (!uuid) return null;
-
-  const colorVariants = {
-    info: "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/30 text-blue-600 dark:text-blue-400 text-blue-700 dark:text-blue-300",
-    success:
-      "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800/30 text-green-600 dark:text-green-400 text-green-700 dark:text-green-300",
-  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-xl m-4">
@@ -58,9 +80,7 @@ export default function AllowanceShowModal({
         </div>
 
         {isLoading ? (
-          <div className="py-20 text-center animate-pulse text-gray-400">
-            Fetching data...
-          </div>
+          <AllowanceShowSkeleton />
         ) : isError ? (
           <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-center">
             {(error as Error).message}
@@ -156,19 +176,19 @@ export default function AllowanceShowModal({
                   </div>
                 )}
               </div>
+
+              {/* Action Button */}
+              <div className="mt-8">
+                <button
+                  onClick={onClose}
+                  className="w-full py-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:opacity-90 transition shadow-lg"
+                >
+                  Close Details
+                </button>
+              </div>
             </div>
           )
         )}
-
-        {/* Action Button */}
-        <div className="mt-8">
-          <button
-            onClick={onClose}
-            className="w-full py-3 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:opacity-90 transition shadow-lg"
-          >
-            Close Details
-          </button>
-        </div>
       </div>
     </Modal>
   );

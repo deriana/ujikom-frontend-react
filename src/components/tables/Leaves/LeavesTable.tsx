@@ -13,8 +13,6 @@ import Badge from "@/components/ui/badge/Badge";
 import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import LeaveModal from "@/pages/Leave/Modal";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
-import { useLeaveTypes } from "@/hooks/useLeaveType";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
@@ -33,8 +31,6 @@ export default function LeavesTable() {
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
   const { mutateAsync: deleteLeave } = useDeleteLeave();
-  const { data: employee = [] } = useGetEmployeeForInput();
-  const { data: leaveTypes = [] } = useLeaveTypes();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
@@ -85,16 +81,16 @@ export default function LeavesTable() {
       employee_nik: undefined,
     },
 
-    validate: (form) => {
-      if (!form.leave_type_uuid) return "Leave type is required";
-      if (!form.date_start) return "Start date is required";
-      if (!form.date_end) return "End date is required";
-      if (new Date(form.date_start) > new Date(form.date_end))
-        return "Start date cannot be after end date";
-      if (!form.reason || form.reason.trim().length < 3)
-        return "Reason must be at least 3 characters";
-      return null;
-    },
+    // validate: (form) => {
+    //   if (!form.leave_type_uuid) return "Leave type is required";
+    //   if (!form.date_start) return "Start date is required";
+    //   if (!form.date_end) return "End date is required";
+    //   if (new Date(form.date_start) > new Date(form.date_end))
+    //     return "Start date cannot be after end date";
+    //   if (!form.reason || form.reason.trim().length < 3)
+    //     return "Reason must be at least 3 characters";
+    //   return null;
+    // },
 
     mapToPayload: (form) => {
       const formData = new FormData();
@@ -385,8 +381,6 @@ export default function LeavesTable() {
         setLeaveData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        employees={employee}
-        leaveTypes={leaveTypes}
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 

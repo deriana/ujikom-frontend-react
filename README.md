@@ -8,6 +8,22 @@
 
 ---
 
+## 📖 Technical Documentation
+
+We have provided detailed documentation for every aspect of the system. Please click the links below:
+
+| Document | Description |
+| :--- | :--- |
+| 📑 [**Overview**](./docs/frontend/overview.md) | Project vision, main features, and system modules. |
+| 🏗️ [**Architecture**](./docs/frontend/architecture.md) | Design patterns, Service/Repository layers, and data flow. |
+| 📂 [**Folder Structure**](./docs/frontend/folder-structure.md) | Detailed breakdown of the project directory organization. |
+| 🔌 [**API Integration**](./docs/frontend/api-integration.md) | How the frontend communicates with the Laravel REST API. |
+| 🪝 [**Hooks**](./docs/frontend/hooks.md) | Documentation for custom React hooks used in the project. |
+| ⚙️ [**Setup Guide**](./docs/frontend/setup.md) | Environment installation steps and configuration. |
+| 🧠 [**Context**](./docs/frontend/context.md) | Global state management using React Context API. |
+
+---
+
 ## Features
 
 - **Authentication & Account Activation** — Login, logout, forgot password, password reset, and secure account activation via email link

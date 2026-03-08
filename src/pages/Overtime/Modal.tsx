@@ -3,6 +3,8 @@ import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
 import { FileText, ClipboardCheck, UserCircle } from "lucide-react";
 import Select from "@/components/form/Select";
+import { useGetEmployeeForInput } from "@/hooks/useUser";
+import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
 
 interface OvertimeModalProps {
   isOpen: boolean;
@@ -12,7 +14,6 @@ interface OvertimeModalProps {
   onSubmit: () => void;
   isLoading?: boolean;
   isUserAdminOrHR?: boolean;
-  employees?: { nik: string; name: string }[];
 }
 
 export default function OvertimeModal({
@@ -23,7 +24,6 @@ export default function OvertimeModal({
   onSubmit,
   isLoading = false,
   isUserAdminOrHR = false,
-  employees = [],
 }: OvertimeModalProps) {
   const isEdit = !!overtimeData.uuid;
 
@@ -31,9 +31,19 @@ export default function OvertimeModal({
     setOvertimeData({ ...overtimeData, ...payload });
   };
 
+    const { data: employees = [], isLoading: loadingEmployees } = (useGetEmployeeForInput as any)({
+      enabled: isOpen,
+    })
+    
+    const isInitialLoading = loadingEmployees;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl m-4">
       <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl transition-colors duration-200">
+        {isInitialLoading ? (
+          <GlobalModalSkeleton inputsCount={2} />
+        ) : (
+          <>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">
@@ -70,7 +80,7 @@ export default function OvertimeModal({
                   )}
                 </label>
                 <Select
-                  options={employees.map((emp) => ({
+                  options={employees.map((emp: { nik: string; name: string; }) => ({
                     value: emp.nik,
                     label: `${emp.nik} - ${emp.name}`,
                   }))}
@@ -120,6 +130,8 @@ export default function OvertimeModal({
             </Button>
           </div>
         </form>
+          </>
+        )}
       </div>
     </Modal>
   );

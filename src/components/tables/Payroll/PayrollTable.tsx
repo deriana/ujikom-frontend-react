@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Column, PayrollUpdateInput } from "@/types";
+import { Column, PayrollCreateInput, PayrollFormState, PayrollUpdateInput } from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import {
+  useBulkFinalizePayroll,
+  useCreatePayroll,
   useFinalizePayroll,
   usePayrolls,
   useUpdatePayroll,
@@ -15,22 +17,36 @@ import { RESOURCES } from "@/constants/Resource";
 import { useShowModal } from "@/hooks/useShowModal";
 import { useCrudModalForm } from "@/hooks/useCrudModalForm";
 import Currency from "@/components/ui/currency/Currency";
-import PayrollModal from "@/pages/Payroll/Modal";
 import PayrollShowModal from "@/pages/Payroll/ShowModal";
 import { handleMutation } from "@/utils/handleMutation";
 import { CheckCircle, X } from "lucide-react";
+import Button from "@/components/ui/button/Button";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import MonthPicker from "@/components/form/MonthPicker";
+import PayrollModal from "@/pages/Payroll/Modal";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
+const STATUS_VOIDED = 2;
 
 const STATUS_LABELS: Record<number, string> = {
   [STATUS_DRAFT]: "Draft",
   [STATUS_FINALIZED]: "Finalized",
+  [STATUS_VOIDED]: "Voided",
 };
 
 export default function PayrollTable() {
   const [statusFilter, setStatusFilter] = useState<number | "all">("all");
   const [employeeFilter, setEmployeeFilter] = useState<string>("all");
+  const now = new Date();
+  const [periodFilter, setPeriodFilter] = useState<string>(
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`,
+  );
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [confirmBulk, setConfirmBulk] = useState<{
+    isOpen: boolean;
+    ids: (string | number)[];
+  }>({ isOpen: false, ids: [] });
 
   const {
     data: payrolls = [],
@@ -41,8 +57,11 @@ export default function PayrollTable() {
   } = usePayrolls();
 
   const { mutateAsync: updatePayroll } = useUpdatePayroll();
+  const { mutateAsync: createPayroll } = useCreatePayroll();
   const { mutateAsync: finalizePayroll } = useFinalizePayroll();
   const { mutateAsync: voidPayroll } = useVoidPayroll();
+  const { mutateAsync: bulkFinalizePayroll } = useBulkFinalizePayroll();
+
 
   // Employee options
   const employeeOptions = useMemo(() => {
@@ -64,22 +83,40 @@ export default function PayrollTable() {
         label: STATUS_LABELS[STATUS_FINALIZED],
         value: STATUS_FINALIZED.toString(),
       },
+      {
+        label: STATUS_LABELS[STATUS_VOIDED],
+        value: STATUS_VOIDED.toString(),
+      }
     ],
     [],
   );
 
-  const crud = useCrudModalForm<PayrollUpdateInput, PayrollUpdateInput>({
+  const crud = useCrudModalForm<PayrollFormState, any>({
     label: "Payroll",
     emptyForm: {
+      month: "",
+      employee_niks: [],
       manual_adjustment: 0,
       adjustment_note: "",
     },
-    mapToPayload: (form) => ({
-      manual_adjustment: form.manual_adjustment,
-      adjustment_note: form.adjustment_note,
-    }),
+    mapToPayload: (form) => {
+      if (crud.isEdit) {
+        return {
+          manual_adjustment: form.manual_adjustment,
+          adjustment_note: form.adjustment_note,
+        } as PayrollUpdateInput;
+      }
+
+      return {
+        month: form.month,
+        employee_niks: form.employee_niks,
+      } as PayrollCreateInput;
+    },
+    createFn: (payload) => createPayroll(payload),
     updateFn: (uuid, payload) => updatePayroll({ uuid, data: payload }),
   });
+
+  const handleCreate = () => crud.openCreate();
 
   const handleEdit = (uuid: string) => {
     const item = payrolls.find((p) => p.uuid === uuid);
@@ -118,7 +155,19 @@ export default function PayrollTable() {
       success: "Payroll voided successfully",
       error: "Failed to void payroll",
     });
-  }
+  };
+
+  const handleBulkFinalize = (ids: (string | number)[]) => {
+    handleMutation(() => bulkFinalizePayroll({ payroll_uuids: ids as string[] }), {
+      loading: "Finalizing payrolls...",
+      success: "Payrolls finalized successfully",
+      error: "Failed to finalize payrolls",
+      onSuccess: () => {
+        setSelectedIds([]);
+        setConfirmBulk({ isOpen: false, ids: [] });
+      },
+    });
+  };
 
   // Columns
   const columns: Column<any>[] = [
@@ -130,7 +179,7 @@ export default function PayrollTable() {
             {row.employee_name}
           </span>
           <span className="text-[11px] text-gray-500 dark:text-gray-400 font-normal">
-            ID: {row.uuid.substring(0, 8)}...
+            ID: {row.employee_nik.substring(0, 8)}...
           </span>
         </div>
       ),
@@ -159,13 +208,12 @@ export default function PayrollTable() {
             </span>
             <Currency
               value={row.manual_adjustment ?? 0}
-              className={`text-sm font-medium ${
-                row.manual_adjustment < 0
-                  ? "text-red-500"
-                  : row.manual_adjustment > 0
-                    ? "text-emerald-500"
-                    : "text-gray-400"
-              }`}
+              className={`text-sm font-medium ${row.manual_adjustment < 0
+                ? "text-red-500"
+                : row.manual_adjustment > 0
+                  ? "text-emerald-500"
+                  : "text-gray-400"
+                }`}
             />
           </div>
           {row.adjustment_note && (
@@ -208,18 +256,25 @@ export default function PayrollTable() {
       header: "Status",
       render: (row) => {
         const isFinalized = row.status === STATUS_FINALIZED;
+        const isVoided = row.status === STATUS_VOIDED;
+
+        const badgeConfig = isVoided
+          ? { color: "error", label: "Voided", dot: "bg-red-500" }
+          : isFinalized
+            ? { color: "success", label: "Finalized", dot: "bg-green-500" }
+            : { color: "warning", label: "Draft", dot: "bg-yellow-500" };
+
         return (
           <Badge
             size="sm"
             variant="light"
-            color={isFinalized ? "success" : "warning"}
+            color={badgeConfig.color as any}
           >
             <div className="flex items-center gap-1.5">
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${isFinalized ? "bg-green-500" : "bg-yellow-500"}`}
-              />
-              {STATUS_LABELS[row.status] ||
-                (isFinalized ? "Finalized" : "Draft")}
+              <span className={`w-1.5 h-1.5 rounded-full ${badgeConfig.dot}`} />
+              <span className="capitalize">
+                {STATUS_LABELS[row.status] || badgeConfig.label}
+              </span>
             </div>
           </Badge>
         );
@@ -236,32 +291,29 @@ export default function PayrollTable() {
             actions={
               row.can?.pay
                 ? [
-                    {
-                      label: "Finalize",
-                      variant: "success",
-                      icon: <CheckCircle size={16} />,
-                      onClick: (uuid) =>
-                        handleFinalizeAction(
-                          uuid,
-                        ),
-                    },
-                    // {
-                    //   label: "Void",
-                    //   variant: "danger",
-                    //   icon: <X size={16} />,
-                    //   showNote: true,
-                    //   onClick: (uuid, note) =>
-                    //     handleVoidAction(
-                    //       uuid,
-                    //       note || "",
-                    //     ),
-                    // }
-                  ]
+                  {
+                    label: "Finalize",
+                    variant: "success",
+                    icon: <CheckCircle size={16} />,
+                    onClick: (uuid) => handleFinalizeAction(uuid),
+                  },
+                  {
+                    label: "Void",
+                    variant: "danger",
+                    icon: <X size={16} />,
+                    showNote: true,
+                    onClick: (uuid, note) =>
+                      handleVoidAction(
+                        uuid,
+                        note || "",
+                      ),
+                  }
+                ]
                 : []
             }
           />
-        )
-      }
+        );
+      },
     },
     {
       header: "Action",
@@ -300,13 +352,19 @@ export default function PayrollTable() {
       const matchesEmployee =
         employeeFilter === "all" || p.employee_name === employeeFilter;
       const matchesStatus =
-        statusFilter === "all" ||
-        (statusFilter === STATUS_FINALIZED
-          ? p.status === STATUS_FINALIZED
-          : p.status === STATUS_DRAFT);
-      return matchesEmployee && matchesStatus;
+        statusFilter === "all" || p.status === statusFilter;
+      const matchesPeriod = (() => {
+        if (!periodFilter) return true;
+        const [y, m] = periodFilter.split("-").map(Number);
+        const fStart = new Date(y, m - 1, 1);
+        const fEnd = new Date(y, m, 0); // last day of month
+        const rStart = new Date(p.period_start);
+        const rEnd = new Date(p.period_end);
+        return rStart <= fEnd && rEnd >= fStart;
+      })();
+      return matchesEmployee && matchesStatus && matchesPeriod;
     });
-  }, [payrolls, employeeFilter, statusFilter]);
+  }, [payrolls, employeeFilter, statusFilter, periodFilter]);
 
   useEffect(() => {
     refetch();
@@ -329,16 +387,40 @@ export default function PayrollTable() {
         loading={isLoading}
         searchableKeys={["employee_name", "status"]}
         label="Payroll"
+        baseNamePermission={RESOURCES.PAYROLL}
+        handleCreate={handleCreate}
         newFilterComponent={
           <>
             {StatusFilter}
             {EmployeeFilter}
+            <MonthPicker
+              id="payroll-period-filter"
+              value={periodFilter}
+              onChange={setPeriodFilter}
+              placeholder="Filter by period"
+              className="min-w-40"
+            />
           </>
         }
         extraFilters={{
           employee_name: employeeFilter,
           status: statusFilter.toString(),
         }}
+        enableSelection
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        selectionActions={(selectedIds) =>
+          selectedIds.length > 0 && (
+            <Button
+              onClick={() => setConfirmBulk({ isOpen: true, ids: selectedIds })}
+              variant="primary"
+              size="sm"
+            >
+              <CheckCircle size={14} />
+              Finalize
+            </Button>
+          )
+        }
       />
 
       <PayrollModal
@@ -348,12 +430,23 @@ export default function PayrollTable() {
         setPayrollData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
+        isEdit={crud.isEdit}
       />
 
       <PayrollShowModal
         uuid={show.showId}
         isOpen={show.isOpen}
         onClose={show.close}
+      />
+
+      <ConfirmModal
+        isOpen={confirmBulk.isOpen}
+        onClose={() => setConfirmBulk({ isOpen: false, ids: [] })}
+        onConfirm={() => handleBulkFinalize(confirmBulk.ids)}
+        title="Finalize Selected Payrolls"
+        message={`Are you sure you want to finalize ${confirmBulk.ids.length} payroll(s)? This action cannot be undone.`}
+        confirmLabel="Yes, Finalize"
+        variant="success"
       />
     </>
   );

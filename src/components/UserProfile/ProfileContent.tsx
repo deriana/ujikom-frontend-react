@@ -19,6 +19,7 @@ import { BiometricCard } from "./BiometricCard";
 import { formatDateID } from "@/utils/date";
 import { useState } from "react";
 import { EditProfileModal } from "@/pages/Employee/EditProfileModal";
+import { LeaveBalanceCard } from "./LeaveBalanceCard";
 
 export default function ProfileContent({
   user,
@@ -32,6 +33,7 @@ export default function ProfileContent({
   const [activeModal, setActiveModal] = useState<
     "personal" | "employment" | "biometric" | "password" | null
   >(null);
+
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -107,7 +109,13 @@ export default function ProfileContent({
               <InfoItem
                 icon={User}
                 label="Gender"
-                value={employee?.gender === "male" ? "Laki-laki" : "Perempuan"}
+                value={
+                  employee?.gender
+                    ? employee.gender === "male"
+                      ? "Laki-laki"
+                      : "Perempuan"
+                    : "-"
+                }
               />
               <InfoItem
                 icon={Calendar}
@@ -128,8 +136,8 @@ export default function ProfileContent({
             hasDescriptor={employee?.has_face_descriptor}
             onAction={() => setActiveModal("biometric")}
           />
-
           <CompensationCard employee={employee} />
+          <LeaveBalanceCard balances={employee?.leave_balances} />
         </div>
 
         <EditProfileModal

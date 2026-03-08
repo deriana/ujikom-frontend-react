@@ -2,12 +2,13 @@ import Select from "@/components/form/Select";
 import SelectDivisionTeam from "@/components/form/users/SelectDivisionsTeam";
 import DatePicker from "@/components/form/date-picker";
 import { UserInput, Division, Position, Manager } from "@/types";
-import { Briefcase, ShieldCheck, Calendar, Clock } from "lucide-react";
+import { Briefcase, ShieldCheck, Calendar, Clock, Info } from "lucide-react";
+import { useEffect } from "react";
 
 interface Props {
   value: UserInput;
   onChange: (val: UserInput) => void;
-  roles: { id: number; name: string; system_reserve: boolean}[];
+  roles: { id: number; name: string; system_reserve: boolean }[];
   positions: Position[];
   divisions: Division[];
   managers: Manager[];
@@ -23,9 +24,21 @@ export default function EmploymentHierarchySection({
   managers,
   disabled = false,
 }: Props) {
+  // Set default join date to today if empty
+  useEffect(() => {
+    if (!value.join_date) {
+      const today = new Date().toISOString().split("T")[0];
+      onChange({ ...value, join_date: today });
+    }
+  }, []);
+
   // 1. Filter Divisions & Positions yang bukan System Reserve
-  const filteredDivisions = divisions.filter((d) => !!d.system_reserve !== true);
-  const filteredPositions = positions.filter((p) => !!p.system_reserve !== true);
+  const filteredDivisions = divisions.filter(
+    (d) => !!d.system_reserve !== true,
+  );
+  const filteredPositions = positions.filter(
+    (p) => !!p.system_reserve !== true,
+  );
   const filteredRoles = roles.filter((r) => !!r.system_reserve !== true);
 
   // - Kalau role 'manager', atasan cuma boleh 'director'
@@ -92,9 +105,17 @@ export default function EmploymentHierarchySection({
               label: p.name,
             }))}
             value={value.position_uuid || ""}
-            onChange={(val) =>
-              onChange({ ...value, position_uuid: val || undefined })
-            }
+            onChange={(val) => {
+              const selectedPosition = positions.find((p) => p.uuid === val);
+
+              onChange({
+                ...value,
+                position_uuid: val || undefined,
+                base_salary: selectedPosition
+                  ? selectedPosition.base_salary
+                  : value.base_salary,
+              });
+            }}
             disabled={disabled}
           />
         </div>

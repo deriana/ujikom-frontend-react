@@ -1,7 +1,7 @@
 import { BiometricDataInput, PasswordUpdateInput, User, UserInput } from "@/types/user.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
-import { EmployeeLite, Manager } from "@/types/employee.types";
+import { EmployeeLeavaBalances, EmployeeLite, Manager } from "@/types/employee.types";
 
 /** ===== Basic CRUD ===== */
 export const getUser = async () => {
@@ -138,4 +138,9 @@ export const adminChangePassword = async (uuid: string, newPassword: string) => 
     { new_password: newPassword }
   );
   return res.data;
+};
+
+export const getEmployeeLeaveBalances = async () => {
+  const res = await api.get<ApiResponse<EmployeeLeavaBalances>>("/users/employee-leave-balances");
+  return res.data.data;
 };

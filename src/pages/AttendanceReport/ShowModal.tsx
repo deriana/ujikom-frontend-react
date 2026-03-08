@@ -10,6 +10,47 @@ interface AttendanceShowModalProps {
   onClose: () => void;
 }
 
+const AttendanceModalSkeleton = () => (
+  <div className="animate-pulse space-y-8">
+    <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-gray-100 dark:border-gray-800 pb-8">
+      <div className="flex items-center gap-5 w-full md:w-auto">
+        <div className="w-18 h-18 rounded-full bg-gray-200 dark:bg-gray-800" />
+        <div className="space-y-2">
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+          <div className="h-4 w-32 bg-gray-100 dark:bg-gray-800/50 rounded-md" />
+        </div>
+      </div>
+      <div className="hidden md:block space-y-2">
+        <div className="h-3 w-24 bg-gray-100 dark:bg-gray-800/50 rounded ml-auto" />
+        <div className="h-6 w-20 bg-gray-200 dark:bg-gray-800 rounded ml-auto" />
+      </div>
+    </div>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="lg:col-span-7 space-y-6">
+        <div className="h-32 w-full bg-gray-50 dark:bg-gray-800/30 rounded-2xl border border-gray-100 dark:border-gray-800" />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="h-24 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800" />
+          <div className="h-24 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800" />
+        </div>
+        <div className="space-y-3">
+          <div className="h-12 w-full bg-gray-50 dark:bg-gray-800/20 rounded-xl" />
+          <div className="h-12 w-full bg-gray-50 dark:bg-gray-800/20 rounded-xl" />
+        </div>
+      </div>
+      <div className="lg:col-span-5 space-y-6">
+        <div className="h-4 w-32 bg-gray-100 dark:bg-gray-800/50 rounded" />
+        <div className="space-y-4">
+          <div className="aspect-video w-full bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+          <div className="aspect-video w-full bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+        </div>
+      </div>
+    </div>
+    <div className="mt-10">
+      <div className="h-14 w-full bg-gray-900 dark:bg-white/10 rounded-2xl" />
+    </div>
+  </div>
+);
+
 export default function AttendanceShowModal({
   id,
   isOpen,
@@ -27,10 +68,14 @@ export default function AttendanceShowModal({
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-4xl w-full m-4">
       <div className="relative w-full rounded-3xl bg-white p-6 md:p-10 dark:bg-gray-900 shadow-2xl overflow-y-auto max-h-[90vh]">
         
+        {isLoading ? (
+          <AttendanceModalSkeleton />
+        ) : (
+          <>
         {/* Header with Profile Photo */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 border-b border-gray-100 dark:border-gray-800 pb-8">
           <div className="flex items-center gap-5 w-full md:w-auto">
-            {!isLoading && attendance && (
+            {attendance && (
               <UserProfile 
                 src={attendance.employee.profile_photo ?? undefined} 
                 alt={attendance.employee.name ?? "-"} 
@@ -41,9 +86,9 @@ export default function AttendanceShowModal({
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <h4 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
-                  {isLoading ? "Loading..." : attendance?.employee.name || "-"}
+                  {attendance?.employee.name || "-"}
                 </h4>
-                {!isLoading && attendance && (
+                {attendance && (
                   <Badge
                     size="md"
                     variant="light"
@@ -66,11 +111,7 @@ export default function AttendanceShowModal({
         </div>
 
         {/* Content */}
-        {isLoading ? (
-          <div className="py-20 text-center animate-pulse text-gray-400 font-medium">
-            Gathering attendance intelligence...
-          </div>
-        ) : isError ? (
+        {isError ? (
           <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-center">
             {(error as Error)?.message}
           </div>
@@ -206,6 +247,8 @@ export default function AttendanceShowModal({
             Selesai & Tutup
           </button>
         </div>
+          </>
+        )}
       </div>
     </Modal>
   );

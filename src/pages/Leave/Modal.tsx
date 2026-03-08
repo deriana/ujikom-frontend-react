@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import DatePicker from "@/components/form/date-picker";
 import Select from "@/components/form/Select";
+import { useGetEmployeeForInput } from "@/hooks/useUser";
+import { useLeaveTypes } from "@/hooks/useLeaveType";
+import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
 
 interface LeaveModalProps {
   isOpen: boolean;
@@ -21,8 +24,6 @@ interface LeaveModalProps {
   setLeaveData: (data: LeaveInput) => void;
   onSubmit: () => void;
   isLoading?: boolean;
-  employees?: { nik: string; name: string }[];
-  leaveTypes?: { uuid: string; name: string }[];
   isUserAdminOrHR?: boolean;
 }
 
@@ -33,8 +34,6 @@ export default function LeaveModal({
   setLeaveData,
   onSubmit,
   isLoading = false,
-  employees = [],
-  leaveTypes = [],
   isUserAdminOrHR = false,
 }: LeaveModalProps) {
   const isEdit = !!leaveData.uuid;
@@ -58,9 +57,26 @@ export default function LeaveModal({
 
   const removeFile = () => setLeaveData({ ...leaveData, attachment: null });
 
+  const { data: employees = [], isLoading: loadingEmployees } = (
+    useGetEmployeeForInput as any
+  )({
+    enabled: isOpen,
+  });
+  const { data: leaveTypes = [], isLoading: loadingLeaveTypes } = (
+    useLeaveTypes as any
+  )({
+    enabled: isOpen,
+  });
+
+  const isInitialLoading = loadingEmployees || loadingLeaveTypes;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl m-4">
       <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl transition-colors duration-200">
+        {isInitialLoading ? (
+          <GlobalModalSkeleton inputsCount={3} hasDateRange={true} />
+        ) : (
+          <>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">
@@ -98,7 +114,7 @@ export default function LeaveModal({
                   </label>
                   <div className="relative">
                     <Select
-                      options={employees.map((emp) => ({
+                      options={employees.map((emp: { nik: string; name: string }) => ({
                         value: emp.nik,
                         label: `${emp.nik} - ${emp.name}`,
                       }))}
@@ -128,7 +144,7 @@ export default function LeaveModal({
                 </label>
 
                 <Select
-                  options={leaveTypes.map((type) => ({
+                  options={leaveTypes.map((type: { uuid: string; name: string }) => ({
                     value: type.uuid,
                     label: type.name,
                   }))}
@@ -153,10 +169,7 @@ export default function LeaveModal({
                   id="leave-start-date"
                   value={leaveData.date_start}
                   onChange={(_, dateStr) =>
-                    setLeaveData({
-                      ...leaveData,
-                      date_start: dateStr,
-                    })
+                    setLeaveData({ ...leaveData, date_start: dateStr })
                   }
                   placeholder="Select start date"
                 />
@@ -171,10 +184,7 @@ export default function LeaveModal({
                   id="leave-end-date"
                   value={leaveData.date_end}
                   onChange={(_, dateStr) =>
-                    setLeaveData({
-                      ...leaveData,
-                      date_end: dateStr,
-                    })
+                    setLeaveData({ ...leaveData, date_end: dateStr })
                   }
                   placeholder="Select end date"
                 />
@@ -294,6 +304,8 @@ export default function LeaveModal({
             </Button>
           </div>
         </form>
+          </>
+        )}
       </div>
     </Modal>
   );

@@ -4,29 +4,35 @@ type Messages = {
   loading?: string;
   success?: string;
   error?: string;
+  onSuccess?: (data?: any) => void;
 };
 
 export async function handleMutation<T>(
   action: () => Promise<T>,
-  messages: Messages
+  config: Messages
 ): Promise<T | undefined> {
-  const id = messages.loading ? toast.loading(messages.loading) : undefined;
+  const id = config.loading ? toast.loading(config.loading) : undefined;
 
   try {
     const result = await action();
     if (id) toast.dismiss(id);
-    if (messages.success) toast.success(messages.success);
+    if (config.success) toast.success(config.success);
+    if (config.onSuccess) config.onSuccess(result);
     return result;
   } catch (err: any) {
     if (id) toast.dismiss(id);
-    
-    const errorMessage = 
-      err?.response?.data?.message || 
-      err?.message || 
-      messages.error || 
-      "Something went wrong";
-
-    toast.error(errorMessage);
+    let errorMessage = err?.response?.data?.message || err?.message || config.error || "Something went wrong"
+    const validationErrors = err?.response?.data?.errors;
+    if (validationErrors) {
+      const detailedMessages = Object.values(validationErrors)
+        .flat() 
+        .join(" ");
+      
+      errorMessage = detailedMessages;
+    }
+    toast.error(errorMessage, {
+      duration: 4000, 
+    });
     console.error(err);
     throw err;
   }

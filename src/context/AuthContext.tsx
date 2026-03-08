@@ -1,7 +1,8 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useMemo } from "react";
 import * as authApi from "@/api/auth.api";
 import { User } from "@/types/auth.types";
 import { UserFinalizeActivation } from "@/types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AuthContextType {
   user: User | null;
@@ -22,72 +23,74 @@ export const AuthContext = createContext<AuthContextType>(
 );
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [permissions, setPermissions] = useState<string[]>([]);
+  const queryClient = useQueryClient();
 
-  const refreshUser = async () => {
-    const token = localStorage.getItem("token");
+  const {
+    data: user,
+    isLoading: loading,
+    refetch: refreshUser,
+  } = useQuery({
+    queryKey: ["auth-me"],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return null;
+      try {
+        return await authApi.getMe();
+      } catch {
+        localStorage.removeItem("token");
+        return null;
+      }
+    },
+    retry: false,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+  const permissions = useMemo(() => {
+    return user?.roles?.flatMap((role) => role.permissions.map((p) => p.name)) ?? [];
+  }, [user]);
 
-    try {
-      const me = await authApi.getMe();
-      setUser(me);
+  const loginMutation = useMutation({
+    mutationFn: ({ email, password }: any) => authApi.login(email, password),
+    onSuccess: () => refreshUser(),
+  });
 
-      const perms =
-        me.roles?.flatMap((role) => role.permissions.map((p) => p.name)) ?? [];
-
-      setPermissions(perms);
-    } catch {
-      setUser(null);
-      setPermissions([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = async (email: string, password: string) => {
-    await authApi.login(email, password);
-    await refreshUser();
-  };
-
-  const finalizeActivation = async (payload: UserFinalizeActivation) => {
-    await authApi.finalizeActivation(payload);
-  }
-
-  const resendActivation = async (email: string) => {
-    await authApi.resendActivation(email);
-  }
-
-  const forgotPassword = async (email: string) => {
-    await authApi.forgotPassword(email);
-  };
-
-  const checkResetToken = async (token: string) => {
-    return await authApi.checkResetToken(token);
-  };
-
-  const resetPassword = async (payload: any) => {
-    await authApi.resetPassword(payload);
-  };
-
-  const logout = async () => {
-    await authApi.logout();
-    setUser(null);
-    setPermissions([]);
-  };
-
-  useEffect(() => {
-    refreshUser();
-  }, []);
+  const logoutMutation = useMutation({
+    mutationFn: authApi.logout,
+    onSuccess: () => {
+      queryClient.setQueryData(["auth-me"], null);
+      localStorage.removeItem("token");
+    },
+  });
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, permissions, login, logout, refreshUser, finalizeActivation, resendActivation, forgotPassword, checkResetToken, resetPassword }}
+      value={{
+        user: user ?? null,
+        loading,
+        permissions,
+        login: async (email, password) => {
+          await loginMutation.mutateAsync({ email, password });
+        },
+        logout: async () => {
+          await logoutMutation.mutateAsync();
+        },
+        refreshUser: async () => {
+          await refreshUser();
+        },
+        finalizeActivation: async (payload) => {
+          await authApi.finalizeActivation(payload);
+        },
+        resendActivation: async (email) => {
+          await authApi.resendActivation(email);
+        },
+        forgotPassword: async (email) => {
+          await authApi.forgotPassword(email);
+        },
+        checkResetToken: authApi.checkResetToken,
+        resetPassword: async (payload) => {
+          await authApi.resetPassword(payload);
+        },
+      }}
     >
       {children}
     </AuthContext.Provider>

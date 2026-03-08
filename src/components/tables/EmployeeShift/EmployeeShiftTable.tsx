@@ -14,8 +14,6 @@ import { handleMutation } from "@/utils/handleMutation";
 import { formatDateID, isValidDate } from "@/utils/date";
 import { Calendar, Clock } from "lucide-react";
 import UserProfile from "@/components/UserProfile";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
-import { useShiftTemplates } from "@/hooks/useShiftTemplate";
 import EmployeeShiftModal from "@/pages/EmployeeShift/Modal";
 import { useEffect, useMemo, useState } from "react";
 import FilterDropdown from "@/components/FilterDropdown";
@@ -34,8 +32,6 @@ export default function EmployeeShiftsTable() {
   const { mutateAsync: createEmployeeShift } = useCreateEmployeeShift();
   const { mutateAsync: updateEmployeeShift } = useUpdateEmployeeShift();
   const { mutateAsync: deleteEmployeeShift } = useDeleteEmployeeShift();
-  const { data: employee = [] } = useGetEmployeeForInput();
-  const { data: shift = [] } = useShiftTemplates();
 
   const [employeeFilter, setEmployeeFilter] = useState<string>("all");
   const [shiftFilter, setShiftFilter] = useState<string>("all");
@@ -233,13 +229,13 @@ export default function EmployeeShiftsTable() {
               options={shiftOptions}
               onChange={setShiftFilter}
             />
-            {/* {dateFilterComponent} */}
+            {dateFilterComponent}
           </>
         }
         extraFilters={{
           "employee.nik": employeeFilter,
           "shift_template.name": shiftFilter,
-        //   "shift_date": dateFilter
+          "shift_date": dateFilter
         }}
       />
 
@@ -250,8 +246,6 @@ export default function EmployeeShiftsTable() {
         setData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        employees={employee}
-        shifts={shift}
       />
     </>
   );

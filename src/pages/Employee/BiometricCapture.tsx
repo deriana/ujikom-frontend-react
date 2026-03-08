@@ -171,7 +171,7 @@ export const BiometricCapture = ({ onCapture, isLoading }: BiometricCaptureProps
       <div className="flex items-start gap-3 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl max-w-sm">
         <AlertCircle size={18} className="text-zinc-400 shrink-0 mt-0.5" />
         <p className="text-[10px] text-zinc-500 leading-relaxed text-left">
-          Pastikan wajah tidak terhalang masker/kacamata hitam. Sistem akan merekam 5 sampel data numerik wajah Anda untuk verifikasi absen yang presisi.
+          Ensure your face is not obscured by a mask or sunglasses. The system will record 5 numerical samples of your face data for precise attendance verification.
         </p>
       </div>
     </div>

@@ -24,6 +24,7 @@ export const useDivisionByUuid = (uuid: string) => {
     queryKey: ["divisions", uuid],
     queryFn: () => getDivisionByUuid(uuid),
     staleTime: 1000 * 60 * 5,
+    enabled: !!uuid
   });
 }
 

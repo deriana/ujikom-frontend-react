@@ -10,8 +10,11 @@ import {
   Settings,
   ArrowRight,
 } from "lucide-react";
+import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
 import Select from "@/components/form/Select";
 import DatePicker from "@/components/form/date-picker";
+import { useShiftTemplates } from "@/hooks/useShiftTemplate";
+import { useWorkSchedules } from "@/hooks/useWorkSchedules";
 
 interface AttendanceRequestModalProps {
   isOpen: boolean;
@@ -20,8 +23,6 @@ interface AttendanceRequestModalProps {
   setAttendanceRequestData: (data: AttendanceRequestInput) => void;
   onSubmit: () => void;
   isLoading?: boolean;
-  shiftTemplates?: { uuid: string; name: string }[];
-  workSchedules?: { uuid: string; name: string }[];
   isUserAdminOrHR?: boolean;
 }
 
@@ -32,8 +33,6 @@ export default function AttendanceRequestModal({
   setAttendanceRequestData,
   onSubmit,
   isLoading = false,
-  shiftTemplates = [],
-  workSchedules = [],
   isUserAdminOrHR = false,
 }: AttendanceRequestModalProps) {
   const isEdit = !!attendanceRequestData.uuid;
@@ -43,9 +42,23 @@ export default function AttendanceRequestModal({
     setAttendanceRequestData({ ...attendanceRequestData, ...fields });
   };
 
+    const { data: shiftTemplates = [], isLoading: loadingShifts } = useShiftTemplates({
+      enabled: isOpen,
+    }) as { data: { name: string; uuid: string }[]; isLoading: boolean };
+
+    const { data: workSchedules = [], isLoading: loadingWorkSchedules } = (useWorkSchedules as any)({
+      enabled: isOpen,
+    }) as { data: { name: string; uuid: string }[]; isLoading: boolean };
+
+    const isInitialLoading = loadingShifts || loadingWorkSchedules;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-2xl m-4">
       <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl transition-colors duration-200">
+        {isInitialLoading ? (
+          <GlobalModalSkeleton inputsCount={4} />
+        ) : (
+          <>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">
@@ -175,6 +188,8 @@ export default function AttendanceRequestModal({
             </Button>
           </div>
         </form>
+          </>
+        )}
       </div>
     </Modal>
   );
