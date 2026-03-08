@@ -81,7 +81,7 @@ export interface LeaveBalance {
   total_days: number;
   used_days: number;
   remaining_days: number;
-  is_unlimited: boolean;
+  is_unlimited?: boolean;
 }
 
 /** ===== Employee ===== */
@@ -107,4 +107,14 @@ export interface Employee {
   termination_reason?: string | null;
   has_face_descriptor?: boolean;
   leave_balances?: LeaveBalance[];
+}
+
+export interface EmployeeLeavaBalances {
+  uuid: UUID;
+  profile_photo?: string;
+  nik: string;
+  name: string;
+  email: string;
+  position: string;
+  leave_balances: LeaveBalance[];
 }

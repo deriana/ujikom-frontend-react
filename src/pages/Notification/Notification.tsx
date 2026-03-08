@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
@@ -14,9 +15,11 @@ import {
   useDeleteAllNotifications
 } from "@/hooks/useNotification";
 import { LaravelNotification } from "@/types/notification.types";
+import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 
 export default function Notification() {
   const { data: notifications = [], isLoading } = useNotifications();
+  const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
   
   const markReadMutation = useMarkAsRead();
   const markAllReadMutation = useMarkAllAsRead();
@@ -48,13 +51,16 @@ export default function Notification() {
   };
 
   const handleDeleteAll = () => {
-     if (confirm("Delete all notifications?")) {
-        handleMutation(() => deleteAllMutation.mutateAsync(), {
-            loading: "Clearing...",
-            success: "Inbox cleared",
-            error: "Failed to delete",
-        });
-     }
+    setIsDeleteAllModalOpen(true);
+  };
+
+  const confirmDeleteAll = () => {
+    handleMutation(() => deleteAllMutation.mutateAsync(), {
+      loading: "Clearing...",
+      success: "Inbox cleared",
+      error: "Failed to delete",
+      onSuccess: () => setIsDeleteAllModalOpen(false),
+    });
   };
 
   const getIcon = (title: string) => {
@@ -199,6 +205,16 @@ export default function Notification() {
           </div>
         </ComponentCard>
       </div>
+
+      <ConfirmModal
+        isOpen={isDeleteAllModalOpen}
+        onClose={() => setIsDeleteAllModalOpen(false)}
+        onConfirm={confirmDeleteAll}
+        title="Clear All Notifications"
+        message="Are you sure you want to delete all notifications? This action cannot be undone."
+        confirmLabel="Yes, Clear All"
+        variant="danger"
+      />
     </>
   );
 }

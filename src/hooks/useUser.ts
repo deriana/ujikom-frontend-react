@@ -18,6 +18,7 @@ import {
   updatePassword,
   updateBiometricData,
   adminChangePassword,
+  getEmployeeLeaveBalances,
 } from "@/api/user.api";
 import { BiometricDataInput, PasswordUpdateInput, UserInput } from "@/types/user.types";
 
@@ -244,5 +245,13 @@ export const useUpdateBiometricData = () => {
     mutationFn: (payload: BiometricDataInput) => updateBiometricData(payload),
     onSettled: () =>
       qc.invalidateQueries({ queryKey: ["users"], exact: false }),
+  });
+}
+
+export const useGetEmployeeLeaveBalances = () => {
+  return useQuery({
+    queryKey: ["users", "employee-leave-balances"],
+    queryFn: getEmployeeLeaveBalances,
+    staleTime: 1000 * 60 * 5,
   });
 }

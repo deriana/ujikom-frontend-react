@@ -20,7 +20,6 @@ export default function ActivationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-lg m-4">
       <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl">
-        
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">
@@ -47,7 +46,9 @@ export default function ActivationModal({
             </h5>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
               We've sent an activation link to <br />
-              <strong className="text-gray-900 dark:text-white font-semibold">{email}</strong>
+              <strong className="text-gray-900 dark:text-white font-semibold">
+                {email}
+              </strong>
             </p>
           </div>
 
@@ -55,8 +56,9 @@ export default function ActivationModal({
           <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30">
             <Info size={18} className="text-blue-500 mt-0.5 shrink-0" />
             <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-              Didn't receive the email? Please check your <strong>spam folder</strong>. 
-              The activation link is valid for 24 hours.
+              We've automatically sent a new link to your inbox. Didn't receive
+              it? Please check your <strong>spam folder</strong>. The link is
+              valid for 24 hours.
             </p>
           </div>
 
@@ -69,8 +71,8 @@ export default function ActivationModal({
             >
               Back to Login
             </button>
-            <Button 
-              onClick={onResend} 
+            <Button
+              onClick={onResend}
               disabled={isLoading}
               className="order-1 sm:order-2"
             >

@@ -17,7 +17,7 @@ export const markAsRead = async (id: string) => {
 };
 
 export const markAllAsRead = async () => {
-  const res = await api.patch<LaravelNotification[]>("/notifications/read-all");
+  const res = await api.patch<LaravelNotification[]>("/notifications/mark-all-read");
   return res.data;
 };
 
@@ -27,6 +27,6 @@ export const deleteNotification = async (id: string) => {
 };
 
 export const deleteAllNotifications = async () => {
-  const res = await api.delete<LaravelNotification[]>("/notifications/all");
+  const res = await api.delete<LaravelNotification[]>("/notifications/delete-all");
   return res.data;
 };

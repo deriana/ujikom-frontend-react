@@ -83,6 +83,15 @@ export const navItems: NavItem[] = [
     ),
   },
   {
+    name: "Leave Balances",
+    path: "/employee-leave-balances",
+    icon: <Wallet size={20} />,
+    permission: buildPermission(
+      RESOURCES.LEAVE_TYPES,
+      PERMISSIONS.BASE.INDEX,
+    ),
+  },
+  {
     name: "Leaves",
     path: "/leaves",
     icon: <Palmtree size={20} />,
