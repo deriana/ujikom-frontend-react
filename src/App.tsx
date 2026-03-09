@@ -67,9 +67,17 @@ import JobListPage from "./components/landing/JobListPage";
 import ResetPasswordPage from "./pages/AuthPages/ResetPassword";
 import ForgotPasswordPage from "./pages/AuthPages/ForgotPassword";
 import EmployeeLeaveBalances from "./pages/LeaveType/EmployeeLeaveBalance";
+import { useIsMobile } from "./hooks/useIsMobile";
+import MobileLayout from "./layout/MobileLayout";
+import MobileHome from "./pages/Mobile/Home";
+import { useRoleName } from "./hooks/useRoleName";
+import { ROLES } from "./constants/Roles";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
+
+  const { isRole } = useRoleName();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -83,7 +91,6 @@ export default function App() {
     { path: "/calendar", element: <Calendar /> },
     { path: "/blank", element: <Blank /> },
     { path: "/profile", element: <Profile /> },
-    { path: "/attendance/single", element: <SingleAttendance /> },
   ];
 
   const protectedRoutes = [
@@ -311,7 +318,65 @@ export default function App() {
       resource: RESOURCES.WORK_SCHEDULE,
       permission: PERMISSIONS.BASE.RESTORE,
     },
+    {
+      path: "/home",
+      element: <MobileHome />,
+    },
   ];
+
+  const renderRoutes = (
+    <>
+      {publicRoutes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ))}
+      const renderRoutes = (
+      <>
+        {publicRoutes.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
+
+        {protectedRoutes.map(({ path, element, resource, permission }) => {
+          const isAdminRole = isRole(ROLES.ADMIN) || isRole(ROLES.OWNER);
+          const isMobilePath = path === "/home";
+          const isAdminPath = path === "/dashboard/admin";
+
+          let finalElement = element;
+
+          if (isMobilePath && isAdminRole) {
+            finalElement = <Navigate to="/dashboard/admin" replace />;
+          }
+
+          else if (isMobilePath && !isMobile) {
+            finalElement = <Navigate to="/dashboard/employee" replace />;
+          }
+
+          else if (isAdminPath && !isAdminRole) {
+            finalElement = isMobile ? (
+              <Navigate to="/home" replace />
+            ) : (
+              <Navigate to="/dashboard/employee" replace />
+            );
+          }
+
+          return resource && permission ? (
+            <Route
+              key={path}
+              element={
+                <PermissionRoute
+                  permission={buildPermission(resource, permission)}
+                />
+              }
+            >
+              <Route path={path} element={finalElement} />
+            </Route>
+          ) : (
+            <Route key={path} path={path} element={finalElement} />
+          );
+        })}
+      </>
+      );
+    </>
+  );
 
   return (
     <>
@@ -320,43 +385,47 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <Toaster position="top-right" containerStyle={{ zIndex: 999999 }} />
+
         <Routes>
-          {/* 🔒 Protected Area */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              {publicRoutes.map(({ path, element }) => (
-                <Route key={path} path={path} element={element} />
-              ))}
-
-              {protectedRoutes.map(({ path, element, resource, permission }) =>
-                resource && permission ? (
-                  <Route
-                    key={path}
-                    element={
-                      <PermissionRoute
-                        permission={buildPermission(resource, permission)}
-                      />
-                    }
-                  >
-                    <Route path={path} element={element} />
-                  </Route>
-                ) : (
-                  <Route key={path} path={path} element={element} />
-                ),
-              )}
-            </Route>
-          </Route>
-
-          <Route path="/attendance" element={<FaceScanner />} />
-
-          {/* 🔓 Public Routes */}
+          {/* 🔓 1. Public Routes (Taruh di paling atas) */}
           <Route path="/login" element={<SignIn />} />
-          <Route path="/set-password" element={<FinalizeActivationPage />} /> 
+          <Route path="/set-password" element={<FinalizeActivationPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/" element={<LandingPageWrapper />} />
-          {/* <Route path="/careers" element={<JobListPage />} /> */}
           <Route path="/careers/:jobId" element={<CareerPage />} />
+          <Route path="/attendance" element={<FaceScanner />} />
+
+          {/* 🔒 2. Protected Area */}
+          <Route element={<ProtectedRoute />}>
+          <Route path="/attendance/single" element={<SingleAttendance />} />
+            <Route
+              element={
+                isRole(ROLES.ADMIN) || isRole(ROLES.OWNER) ? (
+                  <AppLayout />
+                ) : isMobile ? (
+                  <MobileLayout />
+                ) : (
+                  <AppLayout />
+                )
+              }
+            >
+              {isMobile && !isRole(ROLES.ADMIN) && !isRole(ROLES.OWNER) && (
+                <>
+                  <Route path="/home" element={<MobileHome />} />
+
+                  <Route
+                    path="/dashboard/employee"
+                    element={<Navigate to="/home" replace />}
+                  />
+                </>
+              )}
+              
+              {renderRoutes}
+            </Route>
+          </Route>
+
+          {/* 🚫 3. Error Pages & Fallback */}
           <Route path="/403" element={<Forbidden />} />
           <Route path="/404" element={<NotFound />} />
           <Route path="/500" element={<ServerError />} />

@@ -2,24 +2,27 @@ import React, { useCallback, useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import * as faceapi from "@vladmandic/face-api";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  CheckCircle2,
-  XCircle,
-  Camera,
-  RefreshCw,
-  Loader2,
-  ShieldCheck,
-  MapPin,
-  Info,
-} from "lucide-react";
 import { handleMutation } from "@/utils/handleMutation";
 import {
   useAttendanceStatusToday,
   useSendSingleAttendance,
 } from "@/hooks/useAttendance";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
+import GrantedPermission from "@/components/Attendance/Single/GrantedPermisson";
+import AttendanceMobileComponent from "@/components/Attendance/Single/MobileComponent";
+import AttendanceWebComponent from "@/components/Attendance/Single/WebComponent";
+
+type PermissionStatus = "loading" | "prompt" | "granted" | "denied";
+
+interface PermissionState {
+  camera: PermissionStatus;
+  location: PermissionStatus;
+}
 
 const SingleAttendance: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isModelsLoaded, setIsModelsLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
@@ -29,10 +32,20 @@ const SingleAttendance: React.FC = () => {
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const isMobile = useIsMobile();
+
+  const [permissions, setPermissions] = useState<PermissionState>({
+    camera: "loading",
+    location: "loading",
+  });
 
   const { mutateAsync: sendSingleAttendance } = useSendSingleAttendance();
   const { data: attendanceStatus } = useAttendanceStatusToday();
 
+    const handleNavigate = (path: string | number) => {
+    navigate(path as any);
+  };
+  
   // 1. Initial Setup (Models & Geolocation)
   useEffect(() => {
     const loadModels = async () => {
@@ -49,16 +62,64 @@ const SingleAttendance: React.FC = () => {
       }
     };
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) =>
-        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => setCoords({ lat: 0, lng: 0 }),
-    );
-
+    checkInitialPermissions();
     loadModels();
   }, []);
 
-  // 2. Logic Capture & Send to Backend
+  const checkInitialPermissions = async () => {
+    try {
+      const camStatus = await navigator.permissions.query({ name: "camera" as any });
+      const locStatus = await navigator.permissions.query({ name: "geolocation" });
+
+      setPermissions({
+        camera: camStatus.state as PermissionStatus,
+        location: locStatus.state as PermissionStatus,
+      });
+
+      if (locStatus.state === "granted") {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        });
+      }
+    } catch (e) {
+      // Fallback for browsers that don't support permissions.query for camera
+      setPermissions(prev => ({ ...prev, camera: "prompt", location: "prompt" }));
+    }
+  };
+
+  const requestAccess = async () => {
+    let camResult: PermissionStatus = "denied";
+    let locResult: PermissionStatus = "denied";
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(track => track.stop());
+      camResult = "granted";
+    } catch (err) {
+      camResult = "denied";
+    }
+
+    const getLoc = () => new Promise<PermissionStatus>((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          resolve("granted");
+        },
+        () => resolve("denied"),
+        { timeout: 5000 }
+      );
+    });
+
+    locResult = await getLoc();
+
+    setPermissions({ camera: camResult, location: locResult });
+  };
+
+  const isAllGranted = permissions.camera === "granted" && permissions.location === "granted";
+  const isAnyDenied = permissions.camera === "denied" || permissions.location === "denied";
+
+  const isLocationReady = !!coords;
+
   const handleCapture = useCallback(async () => {
     if (!webcamRef.current || !isModelsLoaded) return;
 
@@ -142,181 +203,51 @@ const SingleAttendance: React.FC = () => {
     return res.blob();
   };
 
+  // --- PERMISSION PRE-CHECK UI ---
+  if (!isAllGranted) {
+    return (
+      <GrantedPermission
+        permissions={permissions}
+        isAnyDenied={isAnyDenied}
+        requestAccess={requestAccess}
+      />
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <AttendanceMobileComponent
+        attendanceStatus={attendanceStatus}
+        coords={coords}
+        errorMessage={errorMessage}
+        handleCapture={handleCapture}
+        handleReset={handleReset}
+        imgSrc={imgSrc}
+        isLocationReady={isLocationReady}
+        isModelsLoaded={isModelsLoaded}
+        isProcessing={isProcessing}
+        isSuccess={isSuccess}
+        navigate={handleNavigate}
+        webcamRef={webcamRef}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen p-4 md:p-8 flex items-center justify-center font-sans">
-      <div
-        className={`w-full max-w-6xl rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-125 ${
-          attendanceStatus?.status === "completed" ? "opacity-75" : ""
-        }`}
-      >
-        {/* LEFT: CAMERA PANEL */}
-        <div
-          className={`w-full md:w-7/12 relative bg-zinc-100 dark:bg-black flex items-center justify-center p-4 ${
-            attendanceStatus?.status === "completed" ? "grayscale" : ""
-          }`}
-        >
-          {!imgSrc ? (
-            <div className="relative w-full h-full min-h-75 overflow-hidden rounded-4xl">
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                mirrored={true}
-                className="w-full h-full object-cover"
-              />
-              {/* CCTV Style Overlay */}
-              <div className="absolute inset-0 pointer-events-none border-20 border-black/10"></div>
-              <div className="absolute top-6 left-6 w-10 h-10 border-t-4 border-l-4 border-emerald-500 rounded-tl-lg"></div>
-              <div className="absolute bottom-6 right-6 w-10 h-10 border-b-4 border-r-4 border-emerald-500 rounded-br-lg"></div>
-
-              <div className="absolute top-6 right-6 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] text-white font-bold tracking-widest">
-                  LIVE
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="w-full h-full rounded-4xl overflow-hidden border-4 border-zinc-200 dark:border-zinc-800 animate-in fade-in duration-500">
-              <img
-                src={imgSrc}
-                className="w-full h-full object-cover grayscale-[0.2]"
-                alt="Captured"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* RIGHT: STATUS & ACTION PANEL */}
-        <div className="w-full md:w-5/12 p-8 md:p-12 flex flex-col justify-between">
-          <div className="space-y-6">
-            <div
-              className={`flex items-center gap-2 w-fit px-4 py-1.5 rounded-full border ${
-                attendanceStatus?.status === "completed"
-                  ? "text-emerald-700 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-300 dark:border-emerald-600"
-                  : "text-emerald-600 bg-emerald-500/10 border-emerald-500/20"
-              }`}
-            >
-              <ShieldCheck size={16} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
-                {attendanceStatus?.status === "completed"
-                  ? "✓ Attendance Complete"
-                  : "Biometric Identity"}
-              </span>
-            </div>
-
-            <div>
-              <h2 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
-                {attendanceStatus?.status === "absent" && "Quick Scan"}
-                {attendanceStatus?.status === "clocked_in" && "Clock Out"}
-                {attendanceStatus?.status === "completed" && "All Set!"}
-              </h2>
-              <p className="text-zinc-500 mt-2 text-sm leading-relaxed">
-                {attendanceStatus?.status === "absent" &&
-                  "Face the camera and ensure there's enough lighting for instant verification."}
-                {attendanceStatus?.status === "clocked_in" &&
-                  "You've already clocked in. Please face the camera to clock out."}
-                {attendanceStatus?.status === "completed" &&
-                  "Your attendance for today is complete. See you tomorrow!"}
-              </p>
-            </div>
-
-            {/* Response Area */}
-            <div className="pt-4">
-              {isSuccess === null ? (
-                <div className="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 flex items-start gap-4">
-                  <Info className="text-zinc-400 mt-1" size={20} />
-                  <p className="text-xs text-zinc-500 leading-relaxed">
-                    {attendanceStatus?.status === "completed"
-                      ? "Your attendance is already complete for today."
-                      : "Face detection score must be above 60% for accurate attendance recording."}
-                  </p>
-                </div>
-              ) : isSuccess ? (
-                <div className="p-8 rounded-4xl bg-emerald-50 dark:bg-emerald-500/5 border-2 border-emerald-500/30 text-center space-y-3 animate-in slide-in-from-bottom-4">
-                  <CheckCircle2
-                    className="mx-auto text-emerald-500"
-                    size={56}
-                  />
-                  <h3 className="text-2xl font-bold text-emerald-900 dark:text-emerald-400 tracking-tight">
-                    Success!
-                  </h3>
-                  <p className="text-xs text-emerald-700 dark:text-emerald-500 opacity-70">
-                    Attendance data has been successfully verified by the system.
-                  </p>
-                </div>
-              ) : (
-                <div className="p-8 rounded-4xl bg-red-50 dark:bg-red-500/5 border-2 border-red-500/30 text-center space-y-3 animate-in slide-in-from-bottom-4">
-                  <XCircle className="mx-auto text-red-500" size={56} />
-                  <h3 className="text-2xl font-bold text-red-900 dark:text-red-400 tracking-tight">
-                    Failed
-                  </h3>
-                  <p className="text-xs text-red-700 dark:text-red-400 opacity-70">
-                    {errorMessage}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-12 space-y-4">
-            {isSuccess === null ? (
-              <button
-                disabled={
-                  !isModelsLoaded ||
-                  isProcessing ||
-                  attendanceStatus?.status === "completed"
-                }
-                onClick={handleCapture}
-                className={`w-full py-5 rounded-2xl font-black text-lg shadow-2xl flex items-center justify-center gap-3 transition-all ${
-                  attendanceStatus?.status === "completed"
-                    ? "bg-zinc-300 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400 cursor-not-allowed"
-                    : "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-30"
-                }`}
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="animate-spin" size={24} />
-                    <span>SCANNING...</span>
-                  </>
-                ) : attendanceStatus?.status === "completed" ? (
-                  <>
-                    <CheckCircle2 size={24} />
-                    <span>ATTENDANCE COMPLETED</span>
-                  </>
-                ) : attendanceStatus?.status === "clocked_in" ? (
-                  <>
-                    <Camera size={24} />
-                    <span>CHECK OUT NOW</span>
-                  </>
-                ) : (
-                  <>
-                    <Camera size={24} />
-                    <span>CHECK IN NOW</span>
-                  </>
-                )}
-              </button>
-            ) : (
-              <button
-                onClick={handleReset}
-                className="w-full py-5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all"
-              >
-                <RefreshCw size={20} />
-                Try Again
-              </button>
-            )}
-
-            {/* Coordinates Info */}
-            <div className="flex items-center justify-center gap-2 text-[10px] text-zinc-400 font-mono">
-              <MapPin size={10} />
-              {coords
-                ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`
-                : "Detecting Location..."}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <AttendanceWebComponent
+      attendanceStatus={attendanceStatus}
+      coords={coords}
+      errorMessage={errorMessage}
+      handleCapture={handleCapture}
+      handleReset={handleReset}
+      imgSrc={imgSrc}
+      isLocationReady={isLocationReady}
+      isModelsLoaded={isModelsLoaded}
+      isProcessing={isProcessing}
+      isSuccess={isSuccess}
+      navigate={handleNavigate}
+      webcamRef={webcamRef}
+    />
   );
 };
 

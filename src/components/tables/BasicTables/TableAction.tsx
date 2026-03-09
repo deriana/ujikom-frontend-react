@@ -91,37 +91,43 @@ export default function TableActions<T extends string | number>({
       variant: string;
       icon: React.ReactNode;
       perm: keyof typeof PERMISSIONS.BASE;
+      hoverColor: string;
     }
   > = {
     delete: {
       label: "Delete",
-      variant: "danger",
-      icon: <Trash2 size={16} />,
+      variant: "outline",
+      icon: <Trash2 size={16} className="text-slate-500 group-hover:text-red-500" />,
       perm: "DESTROY",
+      hoverColor: "text-red-500",
     },
     forceDelete: {
       label: "Permanently Delete",
-      variant: "destructive",
-      icon: <Trash2 size={16} />,
+      variant: "outline",
+      icon: <Trash2 size={16} className="text-slate-500 group-hover:text-red-500" />,
       perm: "FORCE_DELETE",
+      hoverColor: "text-red-500",
     },
     restore: {
       label: "Restore",
-      variant: "success",
-      icon: <RotateCcw size={16} />,
+      variant: "outline",
+      icon: <RotateCcw size={16} className="text-slate-500 group-hover:text-green-500" />,
       perm: "RESTORE",
+      hoverColor: "text-green-500",
     },
     archive: {
       label: "Archive",
-      variant: "secondary",
-      icon: <Archive size={16} />,
+      variant: "outline",
+      icon: <Archive size={16} className="text-slate-500 group-hover:text-gray-500" />,
       perm: "ARCHIVE",
+      hoverColor: "text-gray-500",
     },
     unarchive: {
       label: "Unarchive",
-      variant: "secondary",
-      icon: <XCircle size={16} />,
+      variant: "outline",
+      icon: <XCircle size={16} className="text-slate-500 group-hover:text-gray-500" />,
       perm: "UNARCHIVE",
+      hoverColor: "text-gray-500",
     },
   };
 
@@ -222,10 +228,10 @@ export default function TableActions<T extends string | number>({
           <Button
             onClick={() => !isDisabled && handleOpenStandard(type)}
             size="sm"
-            variant={config.variant as any}
+            variant="outline"
             disabled={isDisabled}
             className={
-              isDisabled ? "opacity-30 cursor-not-allowed grayscale" : ""
+              isDisabled ? "opacity-30 cursor-not-allowed grayscale" : "group"
             }
           >
             {config.icon}
@@ -274,14 +280,15 @@ export default function TableActions<T extends string | number>({
                 <Button
                   onClick={() => !isViewDisabled && onShow(id)}
                   size="sm"
+                  variant="outline"
                   disabled={isViewDisabled}
-                  className={
+                  className={`group ${
                     isViewDisabled
                       ? "opacity-30 grayscale cursor-not-allowed"
                       : ""
-                  }
+                  }`}
                 >
-                  <Eye size={16} />
+                  <Eye size={16} className="text-slate-500 group-hover:text-blue-500" />
                 </Button>
               </div>
             </Tooltip>
@@ -302,15 +309,15 @@ export default function TableActions<T extends string | number>({
                 <Button
                   onClick={() => !isEditDisabled && onEdit(id)}
                   size="sm"
-                  variant="warning"
+                  variant="outline"
                   disabled={isEditDisabled}
-                  className={
+                  className={`group ${
                     isEditDisabled
                       ? "opacity-30 grayscale cursor-not-allowed"
                       : ""
-                  }
+                  }`}
                 >
-                  <Pencil size={16} />
+                  <Pencil size={16} className="text-slate-500 group-hover:text-yellow-500" />
                 </Button>
               </div>
             </Tooltip>
@@ -330,9 +337,12 @@ export default function TableActions<T extends string | number>({
                 <Button
                   onClick={() => handleOpenCustom(action)}
                   size="sm"
-                  variant={action.variant as any}
+                  variant="outline"
+                  className="group"
                 >
-                  {action.icon}
+                  <span className="text-slate-500 group-hover:text-gray-500">
+                    {action.icon}
+                  </span>
                 </Button>
               </Tooltip>
             );
@@ -384,13 +394,13 @@ export default function TableActions<T extends string | number>({
             )}
 
             <div className="flex items-center gap-3 mt-6 lg:justify-end">
-              <Button onClick={handleCancel} size="sm" variant="info">
+              <Button onClick={handleCancel} size="sm" variant="outline">
                 Cancel
               </Button>
               <Button
                 size="sm"
                 onClick={handleConfirmAction}
-                variant={modalInfo.variant as any}
+                variant="outline"
               >
                 Confirm {modalInfo.label}
               </Button>

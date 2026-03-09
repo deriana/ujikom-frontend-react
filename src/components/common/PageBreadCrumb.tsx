@@ -1,3 +1,4 @@
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { Link } from "react-router-dom";
 
 interface Crumb {
@@ -11,6 +12,10 @@ interface BreadcrumbProps {
 }
 
 const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, crumbs }) => {
+  const isMobile = useIsMobile()
+
+  if (isMobile) return null;
+
   const items = crumbs ?? [
     { name: "Home", href: "/" },
     { name: pageTitle || "Page" },

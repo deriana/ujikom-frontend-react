@@ -23,6 +23,7 @@ import {
   UserCircle,
   Trash2,
   LayoutDashboard,
+  Camera,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -43,6 +44,14 @@ export type NavItem = {
   subItems?: NavSubItem[];
   hideForAdmin?: boolean;
 };
+
+export type NavMobileItem = {
+  name: string;
+  icon: React.ReactNode;
+  path: string;
+  permission?: string;
+  primary?: boolean;
+}
 
 export const navItems: NavItem[] = [
   {
@@ -316,5 +325,24 @@ export const othersItems: NavItem[] = [
     name: "Settings",
     path: "/settings",
     permission: buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX),
+  },
+];
+
+export const mobileItems: NavMobileItem[] = [
+  {
+    name: "Home",
+    icon: <LayoutDashboard size={22} />,
+    path: "/home",
+  },
+  {
+    name: "Absensi",
+    icon: <Camera size={22} />,
+    path: "/attendance/single",
+    primary: true,
+  },
+  {
+    name: "Profil",
+    icon: <UserCircle size={22} />,
+    path: "/profile",
   },
 ];

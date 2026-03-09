@@ -3,7 +3,7 @@ import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
 import { 
-  Bell, Check, Trash2, MailOpen, 
+  Bell, Trash2, MailOpen, 
   CheckCircle2, AlertCircle, Info, BellRing, Loader2 
 } from "lucide-react";
 import { handleMutation } from "@/utils/handleMutation";
@@ -142,63 +142,59 @@ export default function Notification() {
                     <p className="text-sm text-gray-500">Loading latest updates...</p>
                 </div>
             ) : notifications.length > 0 ? (
-              <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
+              <div className="divide-y divide-gray-50 dark:divide-gray-800/50 overflow-hidden">
                 {paginatedNotifications.map((notif: LaravelNotification) => (
-                  <div
-                    key={notif.id}
-                    className={`group relative flex gap-4 p-4 transition-all duration-200 sm:rounded-xl my-1 ${
-                      !notif.read_at 
-                        ? "bg-blue-50/40 dark:bg-blue-900/10 border-l-4 border-blue-500" 
-                        : "hover:bg-gray-50 dark:hover:bg-gray-800/40 border-l-4 border-transparent"
-                    }`}
-                  >
-                    {/* Icon Type (Dinamis berdasarkan Title) */}
-                    <div className="shrink-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-                      {getIcon(notif.data.title)}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0 text-left">
-                      <div className="flex justify-between items-start gap-2">
-                        <h4 className={`text-sm font-semibold truncate ${!notif.read_at ? "text-gray-900 dark:text-white" : "text-gray-600 dark:text-gray-400"}`}>
-                          {notif.data.title}
-                        </h4>
-                        <span className="shrink-0 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-                          {timeAgo(notif.created_at)}
-                        </span>
+                  <div key={notif.id} className="relative my-1 sm:rounded-xl overflow-hidden">
+                    <div
+                      onClick={() => !notif.read_at && !markReadMutation.isPending && handleMarkAsRead(notif.id)}
+                      className={`relative flex items-center gap-4 p-4 transition-colors duration-200 cursor-pointer bg-white dark:bg-gray-900 ${
+                        !notif.read_at 
+                          ? "bg-blue-50/40 dark:bg-blue-900/10 border-l-4 border-blue-500" 
+                          : "hover:bg-gray-50 dark:hover:bg-gray-800/40 border-l-4 border-transparent opacity-70"
+                      } ${markReadMutation.isPending && markReadMutation.variables === notif.id ? "pointer-events-none opacity-50" : ""}`}
+                    >
+                      {/* Icon Type */}
+                      <div className="shrink-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                        {markReadMutation.isPending && markReadMutation.variables === notif.id ? (
+                          <Loader2 className="animate-spin text-blue-500" size={18} />
+                        ) : (
+                          getIcon(notif.data.title)
+                        )}
                       </div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
-                        {notif.data.message}
-                      </p>
-                      
-                      {/* Interactive Actions */}
-                      <div className="flex items-center gap-4 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {!notif.read_at && (
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 text-left">
+                        <div className="flex justify-between items-start gap-2">
+                          <h4 className={`text-sm font-semibold truncate ${!notif.read_at ? "text-gray-900 dark:text-white" : "text-gray-600 dark:text-gray-400"}`}>
+                            {notif.data.title}
+                          </h4>
+                          <span className="shrink-0 text-[11px] font-medium text-gray-400 uppercase tracking-wider">
+                            {timeAgo(notif.created_at)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+                          {notif.data.message}
+                        </p>
+                      </div>
+
+                      {/* Action Area */}
+                      <div className="flex items-center shrink-0 gap-3">
+                        {!notif.read_at ? (
+                          <span className="h-2 w-2 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)]"></span>
+                        ) : (
                           <button
-                            onClick={() => handleMarkAsRead(notif.id)}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(notif.id);
+                            }}
+                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            title="Delete notification"
                           >
-                            <Check size={14} strokeWidth={3} /> Mark as Read
+                            <Trash2 size={18} />
                           </button>
                         )}
-                        <button
-                          onClick={() => handleDelete(notif.id)}
-                          className="inline-flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-600 dark:text-red-400/80 dark:hover:text-red-400"
-                        >
-                          <Trash2 size={14} strokeWidth={2} /> Delete
-                        </button>
                       </div>
                     </div>
-
-                    {/* Unread Dot Indicator */}
-                    {!notif.read_at && (
-                      <div className="absolute top-4 right-4 sm:relative sm:top-0 sm:right-0 flex items-center">
-                         <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-                        </span>
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

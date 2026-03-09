@@ -8,6 +8,9 @@ import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import ActivationModal from "./ActivationModal";
+import { useRoleName } from "@/hooks/useRoleName";
+import { ROLES } from "@/constants/Roles";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function SignInForm() {
   const { login, resendActivation } = useAuth();
@@ -22,7 +25,8 @@ export default function SignInForm() {
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
 
-  // SignInForm.tsx
+  const { isRole } = useRoleName();
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,12 +40,18 @@ export default function SignInForm() {
       setLoading(true);
       await login(email, password);
       toast.success("Login successful");
-      navigate("/");
+      if (isRole(ROLES.ADMIN) || isRole(ROLES.OWNER)) {
+        navigate("/dashboard/admin");
+      } else if (isMobile) {
+        navigate("/home");
+      } else {
+        navigate("/dashboard/employee");
+      }
     } catch (err: any) {
       const errorData = err?.response?.data;
 
       if (err?.response?.status === 403 && errorData?.needs_activation) {
-        const userEmail = errorData.email || email; 
+        const userEmail = errorData.email || email;
         setPendingEmail(userEmail);
         setShowActivationModal(true);
 

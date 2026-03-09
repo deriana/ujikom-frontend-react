@@ -6,6 +6,7 @@ import ShowUsersSkeleton from "@/components/skeleton/ShowUsersSkeleton";
 import EditProfilePhotoModal from "@/components/UserProfile/EditProfilePhotoModal";
 import { useGetProfile, useUploadProfilePhoto } from "@/hooks/useUser";
 import ProfileContent from "@/components/UserProfile/ProfileContent";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function Profile() {
   const {
@@ -56,6 +57,9 @@ export default function Profile() {
     }
   };
 
+    const isMobile = useIsMobile()
+  
+
   return (
     <>
       <PageMeta title="Show Users" />
@@ -65,12 +69,13 @@ export default function Profile() {
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 lg:p-6">
         {isFetchingUser ? (
-          <ShowUsersSkeleton />
+          <ShowUsersSkeleton isMobile={isMobile} />
         ) : (
           <div className="space-y-6">
             <ProfileContent
               user={profileData}
               onChangePhoto={handleOpenPhotoModal}
+              isMobile={isMobile}
             />
 
             <EditProfilePhotoModal

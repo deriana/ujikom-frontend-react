@@ -21,7 +21,7 @@ export default function AppProviders({
           </ThemeProvider>
         </AuthProvider>
 
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </AppWrapper>
   );
