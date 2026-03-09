@@ -232,11 +232,13 @@ export default function OvertimesTable() {
         baseNamePermission={RESOURCES.OVERTIME}
         newFilterComponent={
           <>
-            <FilterDropdown
-              value={employeeFilter}
-              options={employeeOptions}
-              onChange={setEmployeeFilter}
-            />
+            {employeeOptions.length > 2 && (
+              <FilterDropdown
+                value={employeeFilter}
+                options={employeeOptions}
+                onChange={setEmployeeFilter}
+              />
+            )}
             <FilterDropdown
               value={statusFilter}
               options={statusOptions}
@@ -260,7 +262,11 @@ export default function OvertimesTable() {
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 
-      <OvertimeShowModal uuid={show.showId} isOpen={show.isOpen} onClose={show.close} />
+      <OvertimeShowModal
+        uuid={show.showId}
+        isOpen={show.isOpen}
+        onClose={show.close}
+      />
     </>
   );
 }

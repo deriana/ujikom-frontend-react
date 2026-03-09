@@ -153,7 +153,9 @@ export default function AttendanceRequestsTable() {
           <span className="font-semibold text-gray-900 dark:text-gray-100">
             {row.employee?.name} {/* Sesuai nested object employee */}
           </span>
-          <span className="text-xs text-gray-500">NIK: {row.employee?.nik}</span>
+          <span className="text-xs text-gray-500">
+            NIK: {row.employee?.nik}
+          </span>
         </div>
       ),
     },
@@ -186,7 +188,7 @@ export default function AttendanceRequestsTable() {
         </span>
       ),
     },
-     {
+    {
       header: "Status",
       render: (row) => {
         const statusConfig = {
@@ -224,7 +226,7 @@ export default function AttendanceRequestsTable() {
     //       <TableActions
     //         id={row.uuid}
     //         dataName={`Request - ${row.employee.name}`}
-    //         baseNamePermission={RESOURCES.ATTENDANCE_REQUEST} 
+    //         baseNamePermission={RESOURCES.ATTENDANCE_REQUEST}
     //         actions={
     //           row.can?.approve
     //             ? [
@@ -296,11 +298,13 @@ export default function AttendanceRequestsTable() {
         baseNamePermission={RESOURCES.EARLY_LEAVE}
         newFilterComponent={
           <>
-            <FilterDropdown
-              value={employeeFilter}
-              options={employeeOptions}
-              onChange={setEmployeeFilter}
-            />
+            {employeeOptions.length > 2 && (
+              <FilterDropdown
+                value={employeeFilter}
+                options={employeeOptions}
+                onChange={setEmployeeFilter}
+              />
+            )}
             <FilterDropdown
               value={statusFilter}
               options={statusOptions}

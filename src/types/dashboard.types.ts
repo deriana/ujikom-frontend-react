@@ -152,3 +152,25 @@ export interface EmployeeDashboardData {
     salary: SalaryLog[];
   };
 }
+
+export interface MobileHomeData {
+  attendance_status: {
+    is_checked_in: boolean;
+    is_checked_out: boolean;
+    clock_in_time: string;
+    clock_out_time: string;
+    attendance_id: number | null;
+  };
+  today_schedule: TodaySchedule;
+  office: {
+    lat: number;
+    lng: number;
+    radius: number;
+  };
+  activities: Array<{
+    type: string;
+    time: string;
+    label: string;
+    status: string;
+  }>;
+}

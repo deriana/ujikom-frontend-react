@@ -1,5 +1,6 @@
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Crumb {
   name: string;
@@ -12,14 +13,26 @@ interface BreadcrumbProps {
 }
 
 const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, crumbs }) => {
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
-  if (isMobile) return null;
+  if (isMobile) {
+    return (
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 -ml-2 text-gray-500 transition-colors rounded-full hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-xl font-bold text-gray-800 dark:text-white/90">
+          {pageTitle}
+        </h1>
+      </div>
+    );
+  }
 
-  const items = crumbs ?? [
-    { name: "Home", href: "/" },
-    { name: pageTitle || "Page" },
-  ];
+  const items = crumbs ?? [{ name: "Home", href: "/" }, { name: pageTitle || "Page" }];
 
   return (
     <div className="flex justify-start sm:justify-end mb-6">

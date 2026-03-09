@@ -3,8 +3,11 @@ import { Bell } from "lucide-react";
 import MobileNavBar from "./MobileNavBar";
 import { SiteBrand } from "@/components/SiteBrand";
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
+import { useNotifications } from "@/hooks/useNotification";
 
 const MobileLayout = () => {
+  const { data: notifications = [] } = useNotifications();
+  const unreadCount = notifications.filter((n) => !n.read_at).length;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -14,7 +17,11 @@ const MobileLayout = () => {
           <ThemeToggleButton />
           <Link to="/notifications" className="relative p-2 text-gray-600 dark:text-gray-400">
             <Bell size={24} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-900"></span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white border-2 border-white dark:border-gray-900">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </Link>
         </div>
       </header>

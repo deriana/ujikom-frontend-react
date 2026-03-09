@@ -24,6 +24,11 @@ import {
   Trash2,
   LayoutDashboard,
   Camera,
+  Scan,
+  ClipboardList,
+  ScanFace,
+  ChartBar,
+  Activity,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -335,13 +340,23 @@ export const mobileItems: NavMobileItem[] = [
     path: "/home",
   },
   {
-    name: "Absensi",
-    icon: <Camera size={22} />,
-    path: "/attendance/single",
-    primary: true,
+    name: "Stats",
+    icon: <ChartBar size={22} />,
+    path: "/stats",
+  },
+  // {
+  //   name: "Attendances",
+  //   icon: <ScanFace size={22} />,
+  //   path: "/attendance/single",
+  //   primary: true, 
+  // },
+  {
+    name: "Activity",
+    icon: <Activity size={22} />,
+    path: "/activity",
   },
   {
-    name: "Profil",
+    name: "Profile",
     icon: <UserCircle size={22} />,
     path: "/profile",
   },

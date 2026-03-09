@@ -25,6 +25,7 @@ import {
 import FilterDropdown from "@/components/FilterDropdown";
 // import { Check, X } from "lucide-react";
 import { formatDateID } from "@/utils/date";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function LeavesTable() {
   const { data: leaves = [], isLoading, isError, error } = useLeaves();
@@ -351,11 +352,13 @@ export default function LeavesTable() {
         baseNamePermission={RESOURCES.LEAVE}
         newFilterComponent={
           <>
-            <FilterDropdown
-              value={employeeFilter}
-              options={employeeOptions}
-              onChange={setEmployeeFilter}
-            />
+            {employeeOptions.length > 2 && (
+              <FilterDropdown
+                value={employeeFilter}
+                options={employeeOptions}
+                onChange={setEmployeeFilter}
+              />
+            )}
             <FilterDropdown
               value={leaveTypeFilter}
               options={leaveTypeOptions}

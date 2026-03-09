@@ -1,9 +1,25 @@
+import { useMobileHomeData } from "@/hooks/useDashboard";
+import MobileHomeSkeleton from "@/components/skeleton/MobileHomeSkeleton";
+import HomeHeader from "@/components/Mobile/HomeHeader";
+import AttendanceCard from "@/components/Mobile/AttendanceCard";
+import QuickActionGrid from "@/components/Mobile/QuickActionGrid";
+import { MobileHomeData } from "@/types";
+import DynamicActivity from "@/components/Mobile/DynamicActivity";
+
 export default function MobileHome() {
+  const { data: attendanceData, isLoading } = useMobileHomeData();
+
+  if (isLoading) {
+    return <MobileHomeSkeleton />;
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-      <div className="bg-white p-6 rounded-2xl shadow-sm">
-        <h2 className="text-xl font-bold text-gray-800">Selamat Datang</h2>
-        <p className="text-gray-500 mt-2">INI MOBILE HOME</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in fade-in duration-500">
+      <HomeHeader />
+      <div className="px-5 mt-6 space-y-8">
+        <AttendanceCard attendanceData={attendanceData as MobileHomeData} />
+        <QuickActionGrid />
+        <DynamicActivity attendanceData={attendanceData as MobileHomeData} />
       </div>
     </div>
   );

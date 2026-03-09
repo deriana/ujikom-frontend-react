@@ -97,35 +97,35 @@ export default function TableActions<T extends string | number>({
     delete: {
       label: "Delete",
       variant: "outline",
-      icon: <Trash2 size={16} className="text-slate-500 group-hover:text-red-500" />,
+      icon: <Trash2 size={16} className="text-red-500" />,
       perm: "DESTROY",
       hoverColor: "text-red-500",
     },
     forceDelete: {
       label: "Permanently Delete",
       variant: "outline",
-      icon: <Trash2 size={16} className="text-slate-500 group-hover:text-red-500" />,
+      icon: <Trash2 size={16} className="text-red-500" />,
       perm: "FORCE_DELETE",
       hoverColor: "text-red-500",
     },
     restore: {
       label: "Restore",
       variant: "outline",
-      icon: <RotateCcw size={16} className="text-slate-500 group-hover:text-green-500" />,
+      icon: <RotateCcw size={16} className="text-emerald-500" />,
       perm: "RESTORE",
       hoverColor: "text-green-500",
     },
     archive: {
       label: "Archive",
       variant: "outline",
-      icon: <Archive size={16} className="text-slate-500 group-hover:text-gray-500" />,
+      icon: <Archive size={16} className="text-gray-500" />,
       perm: "ARCHIVE",
       hoverColor: "text-gray-500",
     },
     unarchive: {
       label: "Unarchive",
       variant: "outline",
-      icon: <XCircle size={16} className="text-slate-500 group-hover:text-gray-500" />,
+      icon: <XCircle size={16} className="text-gray-500" />,
       perm: "UNARCHIVE",
       hoverColor: "text-gray-500",
     },
@@ -288,7 +288,7 @@ export default function TableActions<T extends string | number>({
                       : ""
                   }`}
                 >
-                  <Eye size={16} className="text-slate-500 group-hover:text-blue-500" />
+                  <Eye size={16} className="text-blue-500" />
                 </Button>
               </div>
             </Tooltip>
@@ -317,7 +317,7 @@ export default function TableActions<T extends string | number>({
                       : ""
                   }`}
                 >
-                  <Pencil size={16} className="text-slate-500 group-hover:text-yellow-500" />
+                  <Pencil size={16} className="text-amber-500" />
                 </Button>
               </div>
             </Tooltip>
@@ -340,9 +340,7 @@ export default function TableActions<T extends string | number>({
                   variant="outline"
                   className="group"
                 >
-                  <span className="text-slate-500 group-hover:text-gray-500">
-                    {action.icon}
-                  </span>
+                  {action.icon}
                 </Button>
               </Tooltip>
             );
@@ -400,7 +398,11 @@ export default function TableActions<T extends string | number>({
               <Button
                 size="sm"
                 onClick={handleConfirmAction}
-                variant="outline"
+                variant={
+                  activeStandardAction === "delete" || activeStandardAction === "forceDelete"
+                    ? "destructive"
+                    : (modalInfo.variant as any)
+                }
               >
                 Confirm {modalInfo.label}
               </Button>
