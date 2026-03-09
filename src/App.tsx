@@ -63,7 +63,7 @@ import SingleAttendance from "./pages/Attendance/SingleFaceRecognition";
 import FinalizeActivationPage from "./pages/AuthPages/FinalizeActivation";
 import { LandingPageWrapper } from "./pages/Landing/Index";
 import CareerPage from "./pages/Careers/CareerPage";
-import JobListPage from "./components/landing/JobListPage";
+// import JobListPage from "./components/landing/JobListPage";
 import ResetPasswordPage from "./pages/AuthPages/ResetPassword";
 import ForgotPasswordPage from "./pages/AuthPages/ForgotPassword";
 import EmployeeLeaveBalances from "./pages/LeaveType/EmployeeLeaveBalance";
@@ -72,6 +72,8 @@ import MobileLayout from "./layout/MobileLayout";
 import MobileHome from "./pages/Mobile/Home";
 import { useRoleName } from "./hooks/useRoleName";
 import { ROLES } from "./constants/Roles";
+import MobileStats from "./pages/Mobile/Stats";
+import PayrollDetailMobile from "./pages/Mobile/PayrollDetail";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -322,6 +324,14 @@ export default function App() {
       path: "/home",
       element: <MobileHome />,
     },
+    {
+      path: "/stats",
+      element: <MobileStats />,
+    },
+    {
+      path: "/payroll/:uuid",
+      element: <PayrollDetailMobile />
+    }
   ];
 
   const renderRoutes = (

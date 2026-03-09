@@ -174,3 +174,26 @@ export interface MobileHomeData {
     status: string;
   }>;
 }
+
+export interface WeeklyTrend {
+  day: string;
+  work_minutes: number;
+  status: 'present' | 'absent' | 'leave' | 'late' | string; 
+}
+export interface SalaryLog {
+  period: string;       
+  net_salary: number;
+  status: number;      
+}
+export interface UpcomingHoliday {
+  uuid: string;
+  name: string;
+  date: string;         
+  is_recurring: boolean | number;
+}
+export interface MobileStatsData {
+  personal_stats: PersonalStats;
+  weekly_trend: WeeklyTrend[];
+  salary_logs: SalaryLog[];
+  upcoming_holidays: UpcomingHoliday[];
+}

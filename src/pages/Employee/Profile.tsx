@@ -63,7 +63,7 @@ export default function Profile() {
   return (
     <>
       <PageMeta title="Show Users" />
-      <PageBreadcrumb
+      <PageBreadcrumb pageTitle="Profile"
         crumbs={[{ name: "Home", href: "/" }, { name: "Profile" }]}
       />
 

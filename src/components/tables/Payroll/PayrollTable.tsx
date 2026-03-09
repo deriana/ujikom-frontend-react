@@ -25,6 +25,7 @@ import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import MonthPicker from "@/components/form/MonthPicker";
 import PayrollModal from "@/pages/Payroll/Modal";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
@@ -57,6 +58,7 @@ export default function PayrollTable() {
     refetch,
   } = usePayrolls();
   const isMobile =  useIsMobile();
+  const navigate = useNavigate();
 
   const { mutateAsync: updatePayroll } = useUpdatePayroll();
   const { mutateAsync: createPayroll } = useCreatePayroll();
@@ -140,6 +142,10 @@ export default function PayrollTable() {
   const show = useShowModal<string>();
 
   const handleShow = (uuid: string) => {
+    if (isMobile) {
+      navigate(`/payroll/${uuid}`);
+      return;
+    }
     show.open(uuid);
   };
 

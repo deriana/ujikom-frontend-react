@@ -1,4 +1,4 @@
-import { AdminDashboardData, ApiResponse, EmployeeDashboardData, MobileHomeData } from "@/types";
+import { AdminDashboardData, ApiResponse, EmployeeDashboardData, MobileHomeData, MobileStatsData } from "@/types";
 import api from "./axios";
 
 export const getAdminDashboard = async (date?: string) => {
@@ -12,5 +12,9 @@ export const getEmployeeDashboard = async () => {
 }
 export const getMobileHomeData = async () => {
     const res = await api.get<ApiResponse<MobileHomeData>>("/mobile-home-data");
+  return res.data.data;
+}
+export const getMobileStatsData = async () => {
+    const res = await api.get<ApiResponse<MobileStatsData>>("/mobile-stats-data");
   return res.data.data;
 }

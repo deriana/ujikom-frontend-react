@@ -2,6 +2,7 @@ import {
   getAdminDashboard,
   getEmployeeDashboard,
   getMobileHomeData,
+  getMobileStatsData,
 } from "@/api/dashboard.api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -28,3 +29,11 @@ export const useMobileHomeData = () => {
     staleTime: 1000 * 60 * 5,
   });
 };
+
+export const useMobileStatsData = () => {
+  return useQuery({
+    queryKey: ["dashboard", "mobile-stats"],
+    queryFn: () => getMobileStatsData(),
+    staleTime: 1000 * 60 * 5,
+  })
+}

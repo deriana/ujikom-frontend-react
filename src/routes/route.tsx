@@ -23,10 +23,6 @@ import {
   UserCircle,
   Trash2,
   LayoutDashboard,
-  Camera,
-  Scan,
-  ClipboardList,
-  ScanFace,
   ChartBar,
   Activity,
 } from "lucide-react";
@@ -350,6 +346,11 @@ export const mobileItems: NavMobileItem[] = [
   //   path: "/attendance/single",
   //   primary: true, 
   // },
+  {
+    name: "Payroll",
+    icon: <Wallet size={22} />,
+    path: "/payroll",
+  },
   {
     name: "Activity",
     icon: <Activity size={22} />,
