@@ -95,7 +95,7 @@ export default function GeoSetting({ data }: { data: GeoFencingValues }) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari lokasi kantor (contoh: Jakarta Selatan)..."
+            placeholder="Search office location (e.g. South Jakarta)..."
             className="w-full pl-12 pr-36 py-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm shadow-sm transition-all
                      focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 dark:focus:ring-indigo-400/30"
           />
@@ -103,7 +103,7 @@ export default function GeoSetting({ data }: { data: GeoFencingValues }) {
             type="submit"
             className="absolute right-2 top-2 bottom-2 px-6 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-xl text-xs font-bold transition-all active:scale-95"
           >
-            Cari Lokasi
+            Search Location
           </button>
         </form>
 
@@ -147,11 +147,11 @@ export default function GeoSetting({ data }: { data: GeoFencingValues }) {
             <div className="flex justify-between items-end">
               <div className="space-y-1">
                 <h5 className="text-sm font-bold flex items-center gap-2">
-                  <Navigation size={16} className="text-indigo-500" /> Radius
-                  Jangkauan
+                  <Navigation size={16} className="text-indigo-500" /> Geofence
+                  Radius
                 </h5>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Atur batas jarak absensi karyawan
+                  Set the maximum distance for employee attendance
                 </p>
               </div>
               <div className="text-3xl font-black text-indigo-600 dark:text-indigo-400">

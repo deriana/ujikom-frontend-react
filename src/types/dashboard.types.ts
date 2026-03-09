@@ -37,6 +37,12 @@ export interface MonthlyChart {
   absent: number[];
 }
 
+export interface OfficeLocation {
+  lat: number;
+  lng: number;
+  radius_meters: number;
+}
+
 export interface AdminDashboardData {
   employee_stats: EmployeeStats;
   attendance_today: AttendanceToday;
@@ -44,6 +50,7 @@ export interface AdminDashboardData {
   pending_tasks: PendingTasks;
   map_locations: MapLocation[];
   monthly_chart: MonthlyChart;
+  office_location: OfficeLocation;
 }
 
 export interface EmployeeProfile {
@@ -103,7 +110,7 @@ export interface PendingApprovalItem {
   id: string;
   title: string;
   subtitle: string;
-  type: 'leave' | 'overtime' | 'attendance';
+  type: "leave" | "overtime" | "attendance";
   status: string;
 }
 

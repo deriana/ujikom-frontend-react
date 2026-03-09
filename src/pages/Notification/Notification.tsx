@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
@@ -20,6 +20,9 @@ import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 export default function Notification() {
   const { data: notifications = [], isLoading } = useNotifications();
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   
   const markReadMutation = useMarkAsRead();
   const markAllReadMutation = useMarkAllAsRead();
@@ -86,6 +89,14 @@ export default function Notification() {
 
   const unreadCount = notifications.filter((n) => !n.read_at).length;
 
+  const totalPages = Math.ceil(notifications.length / itemsPerPage);
+  
+  const paginatedNotifications = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return notifications.slice(startIndex, startIndex + itemsPerPage);
+  }, [notifications, currentPage]);
+
+
   return (
     <>
       <PageMeta title="Notification Center" />
@@ -132,7 +143,7 @@ export default function Notification() {
                 </div>
             ) : notifications.length > 0 ? (
               <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
-                {notifications.map((notif: LaravelNotification) => (
+                {paginatedNotifications.map((notif: LaravelNotification) => (
                   <div
                     key={notif.id}
                     className={`group relative flex gap-4 p-4 transition-all duration-200 sm:rounded-xl my-1 ${
@@ -203,6 +214,33 @@ export default function Notification() {
               </div>
             )}
           </div>
+
+          {/* Pagination Controls */}
+          {notifications.length > itemsPerPage && (
+            <div className="flex items-center justify-between px-4 py-6 border-t border-gray-100 dark:border-gray-800">
+              <p className="text-xs text-gray-500">
+                Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{" "}
+                <span className="font-medium">{Math.min(currentPage * itemsPerPage, notifications.length)}</span> of{" "}
+                <span className="font-medium">{notifications.length}</span> results
+              </p>
+              <div className="flex gap-2">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                  className="px-3 dark:text-white py-1 text-xs font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Previous
+                </button>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                  className="px-3 dark:text-white py-1 text-xs font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </ComponentCard>
       </div>
 

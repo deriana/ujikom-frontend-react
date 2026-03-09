@@ -1,5 +1,5 @@
 {
-  "name": "tailadmin-react",
+  "name": "hris-hideri-frontend",
   "private": true,
   "version": "2.1.0",
   "type": "module",
@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",
@@ -48,6 +49,8 @@
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@tailwindcss/postcss": "^4.0.8",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.0.10",
     "@types/react": "^19.0.12",
@@ -57,12 +60,14 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
+    "jsdom": "^28.1.0",
     "postcss": "^8.5.2",
     "tailwindcss": "^4.0.8",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
     "vite": "^6.1.0",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "vitest": "^4.0.18"
   },
   "overrides": {
     "react-helmet-async": {

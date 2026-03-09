@@ -10,7 +10,12 @@ import AttendanceMapCard from "@/components/dashboard/AttendanceMapCard";
 import { useMemo, useState } from "react";
 
 export default function AdminDashboard() {
-  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const today = useMemo(() => {
+    const date = new Date();
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().split("T")[0];
+  }, []);
   const [selectedDate, setSelectedDate] = useState(today);
 
   const { data, isLoading, error } = useAdminDashboard(selectedDate);
@@ -50,7 +55,7 @@ export default function AdminDashboard() {
         <div className="col-span-12">
           <MonthlyAttendanceChart
             chartData={data?.monthly_chart}
-            onDateChange={(newDate) => setSelectedDate(newDate)} 
+            onDateChange={(newDate) => setSelectedDate(newDate)}
           />
         </div>
 
@@ -64,7 +69,7 @@ export default function AdminDashboard() {
 
         {/* Row 4 */}
         <div className="col-span-12">
-          <AttendanceMapCard locations={data?.map_locations} />{" "}
+          <AttendanceMapCard locations={data?.map_locations} officeLocation={data?.office_location} />{" "}
         </div>
       </div>
     </>
