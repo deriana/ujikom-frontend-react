@@ -10,7 +10,6 @@ import {
   FileClock,
   Clock,
   DollarSign,
-  FileCheck2,
   Database,
   ShieldCheck,
   Users,
@@ -23,7 +22,9 @@ import {
   UserCircle,
   Trash2,
   LayoutDashboard,
-  Camera,
+  FileCheck2,
+  ChartBar,
+  Activity,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -331,17 +332,32 @@ export const othersItems: NavItem[] = [
 export const mobileItems: NavMobileItem[] = [
   {
     name: "Home",
-    icon: <LayoutDashboard size={22} />,
     path: "/home",
+    icon: <LayoutDashboard size={22} />,
   },
   {
-    name: "Absensi",
-    icon: <Camera size={22} />,
-    path: "/attendance/single",
-    primary: true,
+    name: "Stats",
+    icon: <ChartBar size={22} />,
+    path: "/stats",
   },
   {
-    name: "Profil",
+    name: "Approval",
+    icon: <FileCheck2 size={22} />,
+    path: "/approval",
+    permission: "has-any-approval",
+  },
+  // {
+  //   name: "Payroll",
+  //   icon: <Wallet size={22} />,
+  //   path: "/payroll",
+  // },
+  {
+    name: "Activity",
+    icon: <Activity size={22} />,
+    path: "/activity",
+  },
+  {
+    name: "Profile",
     icon: <UserCircle size={22} />,
     path: "/profile",
   },

@@ -915,12 +915,46 @@ input[type="number"] {
   }
 
   .dark .flatpickr-monthSelect-month.selected {
-    background: #3b82f6 !important; 
+    background: #3b82f6 !important;
     color: #ffffff !important;
     border-color: #3b82f6 !important;
   }
 
   .dark .flatpickr-monthSelect-month.today {
     border-color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .flatpickr-weekday:nth-child(7n + 1),
+  .flatpickr-weekday:nth-child(7n) {
+    color: #ef4444 !important;
+    font-weight: 700 !important;
+  }
+
+  .flatpickr-day:nth-child(7n-6) {
+    color: #ef4444 !important;
+  }
+
+  .flatpickr-day:nth-child(7n) {
+    color: #ef4444 !important;
+  }
+
+  .flatpickr-day.selected,
+  .flatpickr-day.startRange,
+  .flatpickr-day.endRange {
+    color: #ffffff !important;
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+  }
+
+  .flatpickr-day:nth-child(7n-6):hover,
+  .flatpickr-day:nth-child(7n):hover {
+    background: #fee2e2 !important;
+  }
+
+  .flatpickr-day.prevMonthDay:nth-child(7n-6),
+  .flatpickr-day.nextMonthDay:nth-child(7n-6),
+  .flatpickr-day.prevMonthDay:nth-child(7n),
+  .flatpickr-day.nextMonthDay:nth-child(7n) {
+    color: #fca5a5 !important;
   }
 }

@@ -244,7 +244,7 @@ export default function AttendanceShowModal({
             onClick={onClose}
             className="w-full py-4 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-lg active:scale-[0.98]"
           >
-            Selesai & Tutup
+            Done & Close
           </button>
         </div>
           </>

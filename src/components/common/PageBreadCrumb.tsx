@@ -1,5 +1,6 @@
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Link } from "react-router-dom";
+import PageHeader from "../Mobile/PageHeader";
 
 interface Crumb {
   name: string;
@@ -9,12 +10,27 @@ interface Crumb {
 interface BreadcrumbProps {
   pageTitle?: string;
   crumbs?: Crumb[];
+  hideItem?: boolean;
 }
 
-const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle, crumbs }) => {
-  const isMobile = useIsMobile()
+const PageBreadcrumb: React.FC<BreadcrumbProps> = ({
+  pageTitle,
+  crumbs,
+  hideItem = false,
+}) => {
+  const isMobile = useIsMobile();
 
-  if (isMobile) return null;
+  if (isMobile) {
+    return (
+      <PageHeader
+        to="/home"
+        title={pageTitle || "Page"}
+        subtitle={`${pageTitle} Management`}
+        align="center"
+        hideItem={hideItem}
+      />
+    );
+  }
 
   const items = crumbs ?? [
     { name: "Home", href: "/" },

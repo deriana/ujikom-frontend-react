@@ -19,6 +19,7 @@ import {
   updateBiometricData,
   adminChangePassword,
   getEmployeeLeaveBalances,
+  getMyLeaveBalances,
 } from "@/api/user.api";
 import { BiometricDataInput, PasswordUpdateInput, UserInput } from "@/types/user.types";
 
@@ -252,6 +253,14 @@ export const useGetEmployeeLeaveBalances = () => {
   return useQuery({
     queryKey: ["users", "employee-leave-balances"],
     queryFn: getEmployeeLeaveBalances,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export const useGetMyLeaveBalances = () => {
+    return useQuery({
+    queryKey: ["users", "my-leave-balances"],
+    queryFn: getMyLeaveBalances,
     staleTime: 1000 * 60 * 5,
   });
 }

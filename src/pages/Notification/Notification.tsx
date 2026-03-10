@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
 import { 
-  Bell, Trash2, MailOpen, 
-  CheckCircle2, AlertCircle, Info, BellRing, Loader2 
+  Bell, Trash2, MailOpen, ArrowLeft,
+  CheckCircle2, AlertCircle, Info, BellRing, Loader2
 } from "lucide-react";
 import { handleMutation } from "@/utils/handleMutation";
 import { 
@@ -19,6 +20,7 @@ import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 
 export default function Notification() {
   const { data: notifications = [], isLoading } = useNotifications();
+  const navigate = useNavigate();
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,6 +103,12 @@ export default function Notification() {
     <>
       <PageMeta title="Notification Center" />
       <PageBreadcrumb pageTitle="Notifications" />
+
+      <div className="max-w-4xl mx-auto mb-4">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors uppercase tracking-wider">
+          <ArrowLeft size={16} strokeWidth={3} /> Back
+        </button>
+      </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
         <ComponentCard className="overflow-hidden border-none shadow-sm dark:bg-gray-900/50 dark:border dark:border-white/5">

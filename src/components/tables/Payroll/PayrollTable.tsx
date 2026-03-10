@@ -24,6 +24,8 @@ import Button from "@/components/ui/button/Button";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import MonthPicker from "@/components/form/MonthPicker";
 import PayrollModal from "@/pages/Payroll/Modal";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
@@ -55,6 +57,8 @@ export default function PayrollTable() {
     error,
     refetch,
   } = usePayrolls();
+  const isMobile =  useIsMobile();
+  const navigate = useNavigate();
 
   const { mutateAsync: updatePayroll } = useUpdatePayroll();
   const { mutateAsync: createPayroll } = useCreatePayroll();
@@ -138,6 +142,10 @@ export default function PayrollTable() {
   const show = useShowModal<string>();
 
   const handleShow = (uuid: string) => {
+    if (isMobile) {
+      navigate(`/payroll/${uuid}`);
+      return;
+    }
     show.open(uuid);
   };
 
@@ -330,21 +338,7 @@ export default function PayrollTable() {
     },
   ];
 
-  const StatusFilter = (
-    <FilterDropdown
-      value={statusFilter.toString()}
-      options={statusOptions}
-      onChange={(val) => setStatusFilter(val === "all" ? "all" : Number(val))}
-    />
-  );
-
-  const EmployeeFilter = (
-    <FilterDropdown
-      value={employeeFilter}
-      options={employeeOptions}
-      onChange={setEmployeeFilter}
-    />
-  );
+ 
 
   // Filtered data
   const filteredPayrolls = useMemo(() => {
@@ -378,6 +372,22 @@ export default function PayrollTable() {
     );
   }
 
+   const StatusFilter = (
+    filteredPayrolls.length > 1 && <FilterDropdown
+      value={statusFilter.toString()}
+      options={statusOptions}
+      onChange={(val) => setStatusFilter(val === "all" ? "all" : Number(val))}
+    />
+  );
+
+  const EmployeeFilter = (
+    employeeOptions.length > 2 && <FilterDropdown
+      value={employeeFilter}
+      options={employeeOptions}
+      onChange={setEmployeeFilter}
+    />
+  );
+
   return (
     <>
       <DataTable
@@ -409,6 +419,7 @@ export default function PayrollTable() {
         enableSelection
         selectedIds={selectedIds}
         onSelectionChange={setSelectedIds}
+        hideChecbox={!filteredPayrolls.some((p) => p.can?.pay)}
         selectionActions={(selectedIds) =>
           selectedIds.length > 0 && (
             <Button

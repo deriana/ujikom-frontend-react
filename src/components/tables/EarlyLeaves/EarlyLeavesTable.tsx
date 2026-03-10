@@ -288,11 +288,13 @@ export default function EarlyLeavesTable() {
         baseNamePermission={RESOURCES.EARLY_LEAVE}
         newFilterComponent={
           <>
-            <FilterDropdown
-              value={employeeFilter}
-              options={employeeOptions}
-              onChange={setEmployeeFilter}
-            />
+            {employeeOptions.length > 2 && (
+              <FilterDropdown
+                value={employeeFilter}
+                options={employeeOptions}
+                onChange={setEmployeeFilter}
+              />
+            )}
             <FilterDropdown
               value={statusFilter}
               options={statusOptions}

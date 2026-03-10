@@ -11,9 +11,12 @@ import {
 } from "@/components/ui/table";
 import Tooltip from "@/components/ui/tooltip";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { Column } from "@/types";
 import { Download, Plus } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { DataTableCard } from "./DataTableCard";
+import { TableCardSkeleton } from "@/components/skeleton/TableCardSkeleton";
 
 type NestedKeys<T> = {
   [K in keyof T & (string | number)]: T[K] extends object
@@ -39,9 +42,10 @@ interface DataTableProps<T> {
   baseNamePermission?: string;
   extraFilters?: Record<string, string>;
   enableSelection?: boolean;
-  selectedIds?: (string | number)[]; 
+  selectedIds?: (string | number)[];
   onSelectionChange?: (selectedIds: (string | number)[]) => void;
   selectionActions?: (selectedIds: (string | number)[]) => React.ReactNode;
+  hideChecbox?: boolean;
 }
 
 export function DataTable<T extends object>({
@@ -61,7 +65,8 @@ export function DataTable<T extends object>({
   enableSelection = false,
   onSelectionChange,
   selectionActions,
-  selectedIds: controlledSelectedIds, 
+  selectedIds: controlledSelectedIds,
+  hideChecbox = false,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -71,9 +76,13 @@ export function DataTable<T extends object>({
     key: keyof T | "index";
     direction: "asc" | "desc";
   }>({ key: "index", direction: "asc" });
-  const [internalSelectedIds, setInternalSelectedIds] = useState<(string | number)[]>([]);
+  const [internalSelectedIds, setInternalSelectedIds] = useState<
+    (string | number)[]
+  >([]);
   const isControlled = controlledSelectedIds !== undefined;
-  const currentSelectedIds = isControlled ? controlledSelectedIds : internalSelectedIds;
+  const currentSelectedIds = isControlled
+    ? controlledSelectedIds
+    : internalSelectedIds;
   const handleSetSelectedIds = (newSelected: (string | number)[]) => {
     if (!isControlled) {
       setInternalSelectedIds(newSelected);
@@ -84,6 +93,8 @@ export function DataTable<T extends object>({
   const getNestedValue = (obj: any, path: string) => {
     return path.split(".").reduce((acc, key) => acc?.[key], obj);
   };
+
+  const isMobile = useIsMobile();
 
   // FILTERING
   const filteredData = useMemo(() => {
@@ -211,25 +222,46 @@ export function DataTable<T extends object>({
     !loading && data.length > 0 && filteredData.length === 0;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5">
+    <div className="rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5">
       {/* FILTER BAR */}
-      <div className="flex flex-col gap-4 px-5 py-4 border-b border-gray-100 dark:border-white/5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 px-4 py-4 border-b border-gray-100 dark:border-white/5 lg:px-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
-          <h3 className="text-sm font-semibold text-gray-800 dark:text-white/90">
-            {tableTitle}
-          </h3>
+          <div className="flex items-center justify-between flex-1 lg:flex-none">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-white/90">
+              {tableTitle}
+            </h3>
+
+            {isMobile && handleCreate && (
+              <Can
+                value={buildPermission(
+                  baseNamePermission!,
+                  PERMISSIONS.BASE.CREATE,
+                )}
+              >
+                <button
+                  onClick={handleCreate}
+                  className="p-2 ml-2 text-blue-600 transition bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400"
+                >
+                  <Plus size={20} />
+                </button>
+              </Can>
+            )}
+          </div>
+
           {enableSelection && currentSelectedIds.length > 0 && (
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded-full">
-              {currentSelectedIds.length} Selected
+              {currentSelectedIds.length} {isMobile ? "" : "Selected"}
             </span>
           )}
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          {enableSelection && currentSelectedIds.length > 0 && selectionActions && (
-            <div className="flex items-center gap-2 mr-2 border-r pr-2 border-gray-200 dark:border-gray-700">
-              {selectionActions(currentSelectedIds)}
-            </div>
-          )}
+          {enableSelection &&
+            currentSelectedIds.length > 0 &&
+            selectionActions && (
+              <div className="flex items-center gap-2 mr-2 border-r pr-2 border-gray-200 dark:border-gray-700">
+                {selectionActions(currentSelectedIds)}
+              </div>
+            )}
 
           {searchableKeys.length > 0 && (
             <input
@@ -243,7 +275,17 @@ export function DataTable<T extends object>({
             />
           )}
 
-          {newFilterComponent}
+          {newFilterComponent && (
+            <div
+              className={
+                isMobile
+                  ? "grid grid-cols-2 gap-3 [&>*:last-child:nth-child(odd)]:col-span-2"
+                  : "contents"
+              }
+            >
+              {newFilterComponent}
+            </div>
+          )}
 
           {statusConfig && (
             <FilterDropdown
@@ -265,10 +307,11 @@ export function DataTable<T extends object>({
               setLimit(Number(val));
               setPage(1);
             }}
-            options={[10, 20, 30, 40, 50].map((n) => ({
+            options={[5, 10, 20, 30, 40, 50].map((n) => ({
               label: `Show ${n}`,
               value: String(n),
             }))}
+            searchable={false}
           />
 
           {handleExport && (
@@ -281,7 +324,7 @@ export function DataTable<T extends object>({
               <Tooltip content={`Export ${label}`} position="bottom">
                 <button
                   onClick={handleExport}
-                  className="inline-flex items-center justify-center gap-2 px-4 h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="inline-flex items-center justify-center gap-2 px-4 h-11 lg:h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <Download size={16} />
                   <span className="sm:hidden">Export {label}</span>
@@ -289,7 +332,7 @@ export function DataTable<T extends object>({
               </Tooltip>
             </Can>
           )}
-          {handleCreate && (
+          {!isMobile && handleCreate && (
             <Can
               value={buildPermission(
                 baseNamePermission!,
@@ -299,7 +342,7 @@ export function DataTable<T extends object>({
               <Tooltip content={`Create ${label}`} position="bottom">
                 <button
                   onClick={handleCreate}
-                  className="inline-flex items-center justify-center gap-2 px-4 h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="inline-flex items-center justify-center gap-2 px-4 h-11 lg:h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <Plus size={16} />
                   <span className="sm:hidden">Create {label}</span>
@@ -311,11 +354,11 @@ export function DataTable<T extends object>({
       </div>
 
       {/* TABLE */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto hidden lg:block">
         <Table className="w-full text-sm text-left">
           <TableHeader className="sticky top-0 bg-white dark:bg-white/5 z-10 border-b dark:border-white/10">
             <TableRow>
-              {enableSelection && (
+              {enableSelection && !hideChecbox && (
                 <TableCell isHeader className="px-5 py-3 w-10">
                   <Checkbox
                     checked={isAllSelected}
@@ -389,7 +432,7 @@ export function DataTable<T extends object>({
                     key={rowId}
                     className={`border-b dark:border-white/10 ${isSelected ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
                   >
-                    {enableSelection && (
+                    {enableSelection && !hideChecbox && (
                       <TableCell className="px-5 py-3">
                         <Checkbox
                           checked={isSelected}
@@ -422,6 +465,34 @@ export function DataTable<T extends object>({
         </Table>
       </div>
 
+      {isMobile && loading && (
+        <div className="lg:hidden">
+          <TableCardSkeleton rows={5} />
+        </div>
+      )}
+
+      {isMobile && !loading && (isEmpty || isFilteredEmpty) && (
+        <div className="lg:hidden px-5 py-10 text-center text-sm text-gray-500 border-t dark:border-white/10">
+          {isEmpty
+            ? `No ${label.toLowerCase()} available.`
+            : `No matching ${label.toLowerCase()} found.`}
+        </div>
+      )}
+
+      {isMobile && !loading && !isEmpty && !isFilteredEmpty && (
+        <div className="lg:hidden border-t dark:border-white/10">
+          <DataTableCard
+            data={paginatedData}
+            columns={columns}
+            getRowId={(row, index) => getRowId(row, (page - 1) * limit + index)}
+            enableSelection={enableSelection}
+            selectedIds={currentSelectedIds}
+            onSelectRow={handleSelectRow}
+            hideCheckbox={hideChecbox}
+          />
+        </div>
+      )}
+
       {/* PAGINATION */}
       <div className="flex items-center justify-between px-5 py-4 border-t">
         <span className="text-sm text-gray-500">
@@ -432,7 +503,7 @@ export function DataTable<T extends object>({
           <button
             disabled={page === 1}
             onClick={() => setPage((p) => p - 1)}
-            className="px-3 py-1 text-gray-800 text-theme-sm dark:text-white/90 border rounded disabled:opacity-50"
+            className="px-4 py-2 lg:px-3 lg:py-1 text-gray-800 text-theme-sm dark:text-white/90 border rounded-lg lg:rounded disabled:opacity-50 font-medium min-h-11 lg:min-h-0"
           >
             Prev
           </button>
@@ -440,7 +511,7 @@ export function DataTable<T extends object>({
           <button
             disabled={page === totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1 text-gray-800 text-theme-sm dark:text-white/90 border rounded disabled:opacity-50"
+            className="px-4 py-2 lg:px-3 lg:py-1 text-gray-800 text-theme-sm dark:text-white/90 border rounded-lg lg:rounded disabled:opacity-50 font-medium min-h-11 lg:min-h-0"
           >
             Next
           </button>

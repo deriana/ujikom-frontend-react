@@ -16,6 +16,7 @@ import { formatRupiah } from "@/utils/currency";
 import { PayrollStatusEnum } from "@/types/payroll.types";
 import Button from "@/components/ui/button/Button";
 import { handleMutation } from "@/utils/handleMutation";
+import { formatDateID } from "@/utils/date";
 
 interface PayrollShowModalProps {
   uuid: string | null;
@@ -106,13 +107,13 @@ export default function PayrollShowModal({
               />
             )}
             <div>
-              <div className="flex items-center gap-3 flex-wrap">
-                <h4 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+              <div className="flex items-center gap-2 md:gap-3 flex-wrap">
+                <h4 className="text-xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
                   {payroll.employee.name}
                 </h4>
                 {payroll && (
                   <Badge
-                    size="md"
+                    size="sm"
                     variant="light"
                     color={
                       payroll.status.label === PayrollStatusEnum.FINALIZED
@@ -126,11 +127,10 @@ export default function PayrollShowModal({
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
+              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2 flex-wrap">
                 <Briefcase size={16} />{" "}
                 {payroll.employee.position.name || "Position N/A"} •
-                <Calendar size={16} className="ml-2" /> Period:{" "}
-                {payroll.period.start} - {payroll.period.end}
+                <Calendar size={16} className="md:ml-2" /> Period: {formatDateID(payroll.period.start)} - {formatDateID(payroll.period.end)}
               </p>
             </div>
           </div>

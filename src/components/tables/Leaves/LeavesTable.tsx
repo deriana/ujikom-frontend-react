@@ -23,7 +23,7 @@ import {
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-// import { Check, X } from "lucide-react";
+import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 
 export default function LeavesTable() {
@@ -202,14 +202,19 @@ export default function LeavesTable() {
     {
       header: "Duration",
       render: (row) => (
-        <div className="text-sm">
-          <div className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-            {formatDateID(row.date_start)}
+        <div className="flex flex-col gap-1">
+          <div className="text-sm">
+            <div className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              {formatDateID(row.date_start)}
+            </div>
+            <div className="text-xs text-gray-400 dark:text-gray-500 ml-3">
+              Until {formatDateID(row.date_end)}
+            </div>
           </div>
-          <div className="text-xs text-gray-400 dark:text-gray-500 ml-3">
-            Until {formatDateID(row.date_end)}
-          </div>
+          <span className="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider ml-3">
+            {row.duration_label} Total
+          </span>
         </div>
       ),
     },
@@ -241,7 +246,52 @@ export default function LeavesTable() {
         </div>
       ),
     },
+    {
+      header: "Progress",
+      render: (row) => (
+        <div className="flex flex-col gap-1.5 min-w-30">
+          <div className="flex -space-x-2 overflow-hidden">
+            {row.approval_levels.map((lvl, i) => (
+              <div
+                key={i}
+                title={`${lvl.nama_approver} (Level ${lvl.level})`}
+                className={`inline-flex items-center justify-center w-7 h-7 rounded-full border-2 border-white dark:border-gray-800 text-white shadow-sm transition-transform hover:scale-110 ${
+                  lvl.status === 1
+                    ? "bg-emerald-500"
+                    : lvl.status === 2
+                    ? "bg-rose-500"
+                    : "bg-gray-300 dark:bg-gray-600"
+                }`}
+              >
+                {lvl.status === 1 ? (
+                  <CheckCircle2 size={12} />
+                ) : lvl.status === 2 ? (
+                  <XCircle size={12} />
+                ) : (
+                  <Clock size={12} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-0.5 mt-1">
+            <span className="text-[9px] text-gray-400 uppercase font-semibold leading-none">
+              Lvl 1: Manager • Lvl 2: HR/Dir
+            </span>
+          </div>
 
+          {row.approval_status === 0 && row.next_approver && (
+            <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium animate-pulse">
+              Waiting: {row.next_approver}
+            </p>
+          )}
+          {row.approval_status !== 0 && (
+            <p className="text-[10px] text-gray-400 font-medium">
+              Process Completed
+            </p>
+          )}
+        </div>
+      ),
+    },
     {
       header: "Status",
       render: (row) => {
@@ -351,11 +401,13 @@ export default function LeavesTable() {
         baseNamePermission={RESOURCES.LEAVE}
         newFilterComponent={
           <>
-            <FilterDropdown
-              value={employeeFilter}
-              options={employeeOptions}
-              onChange={setEmployeeFilter}
-            />
+            {employeeOptions.length > 2 && (
+              <FilterDropdown
+                value={employeeFilter}
+                options={employeeOptions}
+                onChange={setEmployeeFilter}
+              />
+            )}
             <FilterDropdown
               value={leaveTypeFilter}
               options={leaveTypeOptions}
