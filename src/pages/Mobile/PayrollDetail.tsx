@@ -22,9 +22,9 @@ import { useState } from "react";
 // Gunakan skeleton yang sudah disederhanakan untuk mobile
 const MobileSkeleton = () => (
   <div className="animate-pulse p-5 space-y-6">
-    <div className="h-10 w-10 bg-gray-200 rounded-full" />
-    <div className="h-32 bg-gray-200 rounded-3xl" />
-    <div className="h-64 bg-gray-200 rounded-3xl" />
+    <div className="h-10 w-10 bg-gray-100 dark:bg-gray-800 rounded-full" />
+    <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-3xl" />
+    <div className="h-64 bg-gray-100 dark:bg-gray-800 rounded-3xl" />
   </div>
 );
 

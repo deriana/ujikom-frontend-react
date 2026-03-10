@@ -20,6 +20,7 @@ export default function Activity() {
     dateParam,
     changeMonth,
     selectDate,
+    setViewDate, 
   } = useCalendar();
 
   const { data, isLoading } = useMobileDailyTrackerData(dateParam);
@@ -70,6 +71,7 @@ export default function Activity() {
           onNextMonth={() => changeMonth(1)}
           onSelectDate={selectDate}
           getDayStatus={getDayStatus}
+          onViewDateChange={setViewDate}
         />
 
         {/* ACTIVE LEAVE POINTER CARD */}

@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface ActivityCalendarProps {
   viewDate: Date;
@@ -9,6 +10,7 @@ interface ActivityCalendarProps {
   onNextMonth: () => void;
   onSelectDate: (day: number) => void;
   getDayStatus: (day: number) => { bg: string; text: string } | null;
+  onViewDateChange: (date: Date) => void;
 }
 
 export default function ActivityCalendar({
@@ -20,7 +22,40 @@ export default function ActivityCalendar({
   onNextMonth,
   onSelectDate,
   getDayStatus,
+  onViewDateChange,
 }: ActivityCalendarProps) {
+  const [yearInput, setYearInput] = useState(viewDate.getFullYear().toString());
+
+  useEffect(() => {
+    setYearInput(viewDate.getFullYear().toString());
+  }, [viewDate]);
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newDate = new Date(viewDate);
+    newDate.setMonth(parseInt(e.target.value));
+    onViewDateChange(newDate);
+  };
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setYearInput(val);
+    const year = parseInt(val);
+    if (!isNaN(year) && year >= 1900 && year <= 2100) {
+      const newDate = new Date(viewDate);
+      newDate.setFullYear(year);
+      onViewDateChange(newDate);
+    }
+  };
+
+  const handleYearBlur = () => {
+    setYearInput(viewDate.getFullYear().toString());
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-4 shadow-sm border dark:border-neutral-800">
       {/* Header Navigasi */}
@@ -28,9 +63,29 @@ export default function ActivityCalendar({
         <button onClick={onPrevMonth} className="p-2 rounded-xl hover:bg-white dark:hover:bg-neutral-700 transition-all">
           <ChevronLeft size={18} className="dark:text-white" />
         </button>
-        <span className="font-bold text-sm dark:text-white">
-          {viewDate.toLocaleString("default", { month: "long", year: "numeric" })}
-        </span>
+
+        <div className="flex items-center px-2 py-1 rounded-xl hover:bg-white/80 dark:hover:bg-neutral-700/50 transition-all cursor-pointer group">
+          <select
+            value={viewDate.getMonth()}
+            onChange={handleMonthChange}
+            className="bg-transparent font-bold text-sm dark:text-white outline-none cursor-pointer appearance-none pr-1"
+          >
+            {months.map((month, idx) => (
+              <option key={month} value={idx} className="dark:bg-gray-800 text-black dark:text-white">
+                {month}
+              </option>
+            ))}
+          </select>
+          <span className="text-gray-400 dark:text-neutral-500 font-medium mx-0.5"></span>
+          <input
+            type="number"
+            value={yearInput}
+            onChange={handleYearChange}
+            onBlur={handleYearBlur}
+            className="bg-transparent font-bold text-sm dark:text-white w-12 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:text-blue-600 dark:focus:text-blue-400 transition-colors"
+          />
+        </div>
+
         <button onClick={onNextMonth} className="p-2 rounded-xl hover:bg-white dark:hover:bg-neutral-700 transition-all">
           <ChevronRight size={18} className="dark:text-white" />
         </button>

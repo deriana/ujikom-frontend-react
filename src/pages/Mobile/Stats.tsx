@@ -33,24 +33,19 @@ export default function MobileStats() {
   if (isLoading || !stats) return <Skeleton />;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-5 pb-24 space-y-6 overflow-x-hidden">
-      {/* 1. HEADER */}
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 overflow-x-hidden">
       <PersonalStatsHeader />
 
-      <TopStatGrid stats={stats.personal_stats} />
-
-      <WorkHourTarget
-        variant="neutral"
-        totalKerja={stats.personal_stats.total_menit_kerja}
-      />
-
-      <LastSalary lastSalary={stats.salary_logs?.[0]} />
-
-      <WeeklyTrendChart weeklyTrend={stats.weekly_trend} />
-
-      {/* 4.5 UPCOMING HOLIDAY / APPROVED LEAVE */}
-      <UpcomingHoliday upcomingHoliday={stats.upcoming_holidays?.[0]} />
+      <main className="p-6 space-y-6">
+        <TopStatGrid stats={stats.personal_stats} />
+        <WorkHourTarget
+          variant="neutral"
+          totalKerja={stats.personal_stats.total_menit_kerja}
+        />
+        <LastSalary lastSalary={stats.salary_logs?.[0]} />
+        <WeeklyTrendChart weeklyTrend={stats.weekly_trend} />
+        <UpcomingHoliday upcomingHoliday={stats.upcoming_holidays?.[0]} />
+      </main>
     </div>
   );
 }

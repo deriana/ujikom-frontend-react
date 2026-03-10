@@ -3,15 +3,14 @@ import { AuthContext } from "@/context/AuthContext";
 import { 
   Palmtree, 
   Info, 
-  ChevronLeft, 
   CalendarCheck, 
   Activity, 
   Stethoscope, 
   Baby,
   AlertCircle,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useGetMyLeaveBalances } from "@/hooks/useUser";
+import PageHeader from "@/components/Mobile/PageHeader";
 
 // --- Skeleton Component (Local) ---
 const LeaveBalanceSkeleton = () => (
@@ -38,7 +37,6 @@ const getLeaveIcon = (name: string) => {
 export default function LeaveBalances() {
   const { user } = useContext(AuthContext);
   const { data: employeeData, isLoading } = useGetMyLeaveBalances();
-  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
   // Kalkulasi Total Sisa (Hanya yang tidak unlimited)
@@ -53,8 +51,8 @@ export default function LeaveBalances() {
     return (
       <div className="min-h-screen bg-transparent pb-24">
         <header className="p-6 flex items-center justify-between">
-            <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
-            <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
+            <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse" />
+            <div className="h-6 w-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
             <div className="w-10" />
         </header>
         <LeaveBalanceSkeleton />
@@ -65,23 +63,11 @@ export default function LeaveBalances() {
   return (
     <div className="min-h-screen bg-transparent dark:bg-transparent pb-24">
       {/* Header Navigation */}
-      <header className="p-6 flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 -ml-2 rounded-full bg-white dark:bg-gray-800 shadow-sm border dark:border-gray-700"
-        >
-          <ChevronLeft size={20} className="dark:text-white" />
-        </button>
-        <div className="text-center">
-          <h1 className="text-lg font-black dark:text-white uppercase tracking-tighter">
-            Leave Balances
-          </h1>
-          <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">
-            Period {currentYear}
-          </p>
-        </div>
-        <div className="w-10" />
-      </header>
+      <PageHeader
+        to="/home"
+        title="Leave Balances"
+        subtitle={`Period ${currentYear}`}
+      />
 
       <main className="px-6 space-y-6">
         {/* Greeting & Summary Card */}

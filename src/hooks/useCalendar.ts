@@ -19,8 +19,13 @@ export const useCalendar = (initialDate: Date = new Date()) => {
     setSelectedDate(new Date(viewDate.getFullYear(), viewDate.getMonth(), day));
   };
 
+  const setManualViewDate = (date: Date) => {
+    setViewDate(date);
+  };  
+
   return {
     viewDate,
+    setViewDate: setManualViewDate,
     selectedDate,
     today,
     daysArray,

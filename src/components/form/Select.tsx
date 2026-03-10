@@ -49,7 +49,6 @@ const Select = <T extends string | number>({
     };
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      setTimeout(() => searchInputRef.current?.focus(), 100);
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
     } else {
