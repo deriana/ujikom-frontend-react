@@ -4,15 +4,12 @@ import { Link } from "react-router-dom";
 import ThemeTogglerTwo from "../../components/common/ThemeTogglerTwo";
 import { SiteBrand } from "@/components/SiteBrand";
 import Quote from "@/components/common/Quote";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const isMobile = useIsMobile();
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-white z-1 dark:bg-gray-900 sm:p-0">
       <div className="relative flex flex-col justify-center w-full h-screen lg:flex-row dark:bg-gray-900 sm:p-0 z-10">
@@ -25,8 +22,8 @@ export default function AuthLayout({
           
           {/* Floating Geometric Bubbles */}
           <div className="absolute top-[15%] right-[10%] w-16 h-16 bg-indigo-100/40 dark:bg-indigo-900/40 rounded-full border-4 border-indigo-200/30 dark:border-indigo-700/30 hidden sm:block animate-bounce shadow-xl" style={{ animationDuration: '4s' }} />
-          <div className="absolute bottom-[20%] left-[5%] w-24 h-24 bg-brand-50/50 dark:bg-brand-900/30 rounded-full border-[8px] border-brand-100/40 dark:border-brand-800/40 hidden sm:block animate-pulse shadow-lg" />
-          <div className="absolute top-[45%] left-[-30px] w-20 h-20 bg-indigo-400/20 rounded-full border-2 border-indigo-300/30 hidden lg:block backdrop-blur-sm" />
+          <div className="absolute bottom-[20%] left-[5%] w-24 h-24 bg-brand-50/50 dark:bg-brand-900/30 rounded-full border-8 border-brand-100/40 dark:border-brand-800/40 hidden sm:block animate-pulse shadow-lg" />
+          <div className="absolute top-[45%] -left-7.5 w-20 h-20 bg-indigo-400/20 rounded-full border-2 border-indigo-300/30 hidden lg:block backdrop-blur-sm" />
           
           {/* Small Dots */}
           <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-indigo-500 rounded-full opacity-40 animate-ping" />
