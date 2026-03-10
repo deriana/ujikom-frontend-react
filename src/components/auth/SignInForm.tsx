@@ -8,9 +8,6 @@ import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import { EyeClosedIcon, EyeIcon } from "lucide-react";
 import ActivationModal from "./ActivationModal";
-import { useRoleName } from "@/hooks/useRoleName";
-import { ROLES } from "@/constants/Roles";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function SignInForm() {
   const { login, resendActivation } = useAuth();
@@ -21,12 +18,10 @@ export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [capsLockActive, setCapsLockActive] = useState(false);
 
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
-
-  const { isRole } = useRoleName();
-  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,13 +35,7 @@ export default function SignInForm() {
       setLoading(true);
       await login(email, password);
       toast.success("Login successful");
-      if (isRole(ROLES.ADMIN) || isRole(ROLES.OWNER)) {
-        navigate("/dashboard/admin");
-      } else if (isMobile) {
-        navigate("/home");
-      } else {
-        navigate("/dashboard/employee");
-      }
+      navigate("/");
     } catch (err: any) {
       const errorData = err?.response?.data;
 
@@ -82,6 +71,14 @@ export default function SignInForm() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.getModifierState("CapsLock")) {
+      setCapsLockActive(true);
+    } else {
+      setCapsLockActive(false);
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -99,7 +96,7 @@ export default function SignInForm() {
             <div>
               <Label>Email *</Label>
               <Input
-                placeholder="info@gmail.com"
+                placeholder="employee@gmail.com"
                 value={email}
                 onChange={(e: any) => setEmail(e.target.value)}
               />
@@ -113,18 +110,30 @@ export default function SignInForm() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e: any) => setPassword(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
                 <span
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2"
                 >
                   {showPassword ? (
-                    <EyeIcon className="size-5 dark:text-white/90" />
+                    <EyeIcon
+                      key="eye-open"
+                      className="size-5 text-gray-500 dark:text-white/90"
+                    />
                   ) : (
-                    <EyeClosedIcon className="size-5 dark:text-white/90" />
+                    <EyeClosedIcon
+                      key="eye-closed"
+                      className="size-5 text-gray-500 dark:text-white/90"
+                    />
                   )}
                 </span>
               </div>
+              {capsLockActive && (
+                <p className="mt-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                  <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" /> Caps Lock is ON
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">

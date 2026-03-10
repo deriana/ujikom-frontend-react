@@ -342,9 +342,9 @@ export function DataTable<T extends object>({
               <Tooltip content={`Create ${label}`} position="bottom">
                 <button
                   onClick={handleCreate}
-                  className="inline-flex items-center justify-center gap-2 px-4 h-11 lg:h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="inline-flex items-center justify-center gap-2 px-4 h-11 lg:h-9.5 w-full sm:w-auto text-sm font-medium text-gray-700 transition bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-white/5 dark:border-white/10 dark:text-white/90 dark:hover:bg-white/10"
                 >
-                  <Plus size={16} />
+                  <Plus size={16} className="text-blue-600 dark:text-blue-400" />
                   <span className="sm:hidden">Create {label}</span>
                 </button>
               </Tooltip>

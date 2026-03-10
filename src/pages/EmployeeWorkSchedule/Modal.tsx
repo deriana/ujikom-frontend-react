@@ -15,6 +15,7 @@ import DatePicker from "@/components/form/date-picker";
 import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { useWorkSchedules } from "@/hooks/useWorkSchedules";
 import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
+import Checkbox from "@/components/form/input/Checkbox";
 
 interface EmployeeWorkScheduleModalProps {
   isOpen: boolean;
@@ -150,25 +151,40 @@ export default function EmployeeWorkScheduleModal({
                       <ArrowRight size={20} />
                     </div>
 
-                    <div className="w-full space-y-1.5">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
-                        Ends On (Optional)
+                    <div className={`w-full space-y-1.5 transition-all duration-300 ${data.end_date === null ? "opacity-50 grayscale pointer-events-none" : ""}`}>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase ml-1 flex justify-between items-center">
+                        Ends On
                       </label>
-                      <DatePicker
-                        id="end-date-picker"
-                        value={data.end_date || ""}
-                        onChange={(_, dateStr) =>
-                          setData((p) => ({ ...p, end_date: dateStr || null }))
-                        }
-                        placeholder="No end date"
-                      />
+                      {data.end_date !== null ? (
+                        <DatePicker
+                          id="end-date-picker"
+                          value={data.end_date || ""}
+                          onChange={(_, dateStr) =>
+                            setData((p) => ({ ...p, end_date: dateStr || null }))
+                          }
+                          placeholder="YYYY-MM-DD"
+                        />
+                      ) : (
+                        <div className="h-11 flex items-center px-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-gray-400 text-sm italic">
+                          No expiration date
+                        </div>
+                      )}
                     </div>
                   </div>
+
+                  <label className="flex items-center gap-3 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <Checkbox
+                      checked={data.end_date === null}
+                      onChange={(checked) => setData(prev => ({ ...prev, end_date: checked ? null : "" }))}
+                      className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+                    />
+                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Set as Permanent Schedule</span>
+                  </label>
                 </div>
 
                 {/* --- UX Context Box --- */}
                 <div
-                  className={`transition-all duration-300 overflow-hidden ${!data.end_date ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}
+                  className={`transition-all duration-300 overflow-hidden ${data.end_date === null ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}
                 >
                   <div className="flex items-center gap-3 p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/20">
                     <div className="bg-blue-500 rounded-full p-1 shadow-lg shadow-blue-200 dark:shadow-none">

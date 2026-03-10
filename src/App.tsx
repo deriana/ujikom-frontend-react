@@ -67,7 +67,6 @@ import CareerPage from "./pages/Careers/CareerPage";
 import ResetPasswordPage from "./pages/AuthPages/ResetPassword";
 import ForgotPasswordPage from "./pages/AuthPages/ForgotPassword";
 import EmployeeLeaveBalances from "./pages/LeaveType/EmployeeLeaveBalance";
-import { useIsMobile } from "./hooks/useIsMobile";
 import MobileLayout from "./layout/MobileLayout";
 import MobileHome from "./pages/Mobile/Home";
 import { useRoleName } from "./hooks/useRoleName";
@@ -78,6 +77,8 @@ import Activity from "./pages/Mobile/Activity";
 import ApprovalMenu from "./pages/Mobile/ApprovalMenu";
 import MobileGuard from "./routes/MobileGuard";
 import LeaveBalances from "./pages/Mobile/LeaveBalance";
+import RouteServiceProvider from "./providers/RouteServiceProvider";
+import { useIsMobile } from "./hooks/useIsMobile";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -355,62 +356,64 @@ export default function App() {
       path: "/leave-balances",
       element: <LeaveBalances />,
       isMobileOnly: true,
-    }
+    },
   ];
 
-const renderRoutes = (
-  <>
-    {publicRoutes.map(({ path, element }) => (
-      <Route key={path} path={path} element={element} />
-    ))}
+  const renderRoutes = (
+    <>
+      {publicRoutes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ))}
 
-    {protectedRoutes.map(({ path, element, resource, permission, isMobileOnly }) => {
-      const isAdminRole = isRole(ROLES.ADMIN) || isRole(ROLES.OWNER);
-      const isMobilePath = path === "/home";
-      const isAdminPath = path === "/dashboard/admin";
+      {protectedRoutes.map(
+        ({ path, element, resource, permission, isMobileOnly }) => {
+          const isAdminRole = isRole(ROLES.ADMIN) || isRole(ROLES.OWNER);
+          const isMobilePath = path === "/home";
+          const isAdminPath = path === "/dashboard/admin";
 
-      let finalElement = element;
+          let finalElement = element;
 
-      // Logika redirect yang sudah ada
-      if (isMobilePath && isAdminRole) {
-        finalElement = <Navigate to="/dashboard/admin" replace />;
-      } else if (isAdminPath && !isAdminRole) {
-        finalElement = isMobile ? (
-          <Navigate to="/home" replace />
-        ) : (
-          <Navigate to="/dashboard/employee" replace />
-        );
-      }
-
-      // --- LOGIKA BARU: Guard untuk isMobileOnly ---
-      const routeContent = (
-        <Route 
-          key={path} 
-          path={path} 
-          element={isMobileOnly ? <MobileGuard /> : finalElement} 
-        >
-          {isMobileOnly && <Route index element={finalElement} />}
-        </Route>
-      );
-
-      // Gabungkan dengan PermissionRoute jika ada
-      return resource && permission ? (
-        <Route
-          key={`perm-${path}`}
-          element={
-            <PermissionRoute
-              permission={buildPermission(resource, permission)}
-            />
+          // Logika redirect yang sudah ada
+          if (isMobilePath && isAdminRole) {
+            finalElement = <Navigate to="/dashboard/admin" replace />;
+          } else if (isAdminPath && !isAdminRole) {
+            finalElement = isMobile ? (
+              <Navigate to="/home" replace />
+            ) : (
+              <Navigate to="/dashboard/employee" replace />
+            );
           }
-        >
-          {routeContent}
-        </Route>
-      ) : (
-        routeContent
-      );
-    })}
-  </>
-);
+
+          // --- LOGIKA BARU: Guard untuk isMobileOnly ---
+          const routeContent = (
+            <Route
+              key={path}
+              path={path}
+              element={isMobileOnly ? <MobileGuard /> : finalElement}
+            >
+              {isMobileOnly && <Route index element={finalElement} />}
+            </Route>
+          );
+
+          // Gabungkan dengan PermissionRoute jika ada
+          return resource && permission ? (
+            <Route
+              key={`perm-${path}`}
+              element={
+                <PermissionRoute
+                  permission={buildPermission(resource, permission)}
+                />
+              }
+            >
+              {routeContent}
+            </Route>
+          ) : (
+            routeContent
+          );
+        },
+      )}
+    </>
+  );
 
   return (
     <>
@@ -421,12 +424,19 @@ const renderRoutes = (
         <Toaster position="top-right" containerStyle={{ zIndex: 999999 }} />
 
         <Routes>
+          <Route
+            path="/"
+            element={
+              <RouteServiceProvider>
+                <LandingPageWrapper />
+              </RouteServiceProvider>
+            }
+          />
           {/* 🔓 1. Public Routes (Taruh di paling atas) */}
           <Route path="/login" element={<SignIn />} />
           <Route path="/set-password" element={<FinalizeActivationPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/" element={<LandingPageWrapper />} />
           <Route path="/careers/:jobId" element={<CareerPage />} />
           <Route path="/attendance" element={<FaceScanner />} />
 
