@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "@/context/AuthContext";
-import { mobileItems } from "@/routes/route";
-
+import { mobileItems, } from "@/routes/route"; // Import helper yang tadi
+import { hasAnyApprovalPermission } from "@/utils/permission";
 
 export default function MobileNavBar() {
   const { permissions = [] } = useContext(AuthContext);
@@ -11,7 +11,12 @@ export default function MobileNavBar() {
   const isActive = (path: string) => location.pathname === path;
 
   const filteredItems = mobileItems.filter((item) => {
-    if (!item.permission) return true; // Tampilkan jika tidak butuh permission
+    if (!item.permission) return true;
+
+    if (item.permission === "has-any-approval") {
+      return hasAnyApprovalPermission(permissions);
+    }
+
     return permissions.includes(item.permission);
   });
 
@@ -26,14 +31,14 @@ export default function MobileNavBar() {
               item.primary 
                 ? "-mt-12 bg-blue-600 dark:bg-blue-500 p-4 rounded-full shadow-lg shadow-blue-200 dark:shadow-blue-900/20 text-white" 
                 : isActive(item.path) 
-                  ? "text-blue-600 dark:text-blue-500" 
+                  ? "text-blue-600 dark:text-blue-500 font-bold" 
                   : "text-gray-400 dark:text-gray-500"
             } ${item.primary && isActive(item.path) ? "scale-110" : ""}`}
           >
-            <div className={item.primary ? "scale-110" : ""}>
+            <div className={item.primary ? "scale-110" : "transition-transform duration-200 active:scale-90"}>
               {item.icon}
             </div>
-            {!item.primary && <span className="text-[10px] font-medium">{item.name}</span>}
+            {!item.primary && <span className="text-[10px] font-medium tracking-tight">{item.name}</span>}
           </Link>
         ))}
       </div>

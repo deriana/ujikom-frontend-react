@@ -1,10 +1,11 @@
 import {
   getAdminDashboard,
   getEmployeeDashboard,
+  getMobileDailyTrackerData,
   getMobileHomeData,
   getMobileStatsData,
 } from "@/api/dashboard.api";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export const useAdminDashboard = (date?: string) => {
   return useQuery({
@@ -36,4 +37,13 @@ export const useMobileStatsData = () => {
     queryFn: () => getMobileStatsData(),
     staleTime: 1000 * 60 * 5,
   })
+}
+
+export const useMobileDailyTrackerData = (date?: string) => {
+  return useQuery({
+    queryKey: ["dashboard", "mobile-daily-tracker", date], 
+    queryFn: () => getMobileDailyTrackerData(date),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  });
 }

@@ -144,3 +144,8 @@ export const getEmployeeLeaveBalances = async () => {
   const res = await api.get<ApiResponse<EmployeeLeavaBalances>>("/users/employee-leave-balances");
   return res.data.data;
 };
+
+export const getMyLeaveBalances = async () => {
+  const res = await api.get<ApiResponse<EmployeeLeavaBalances>>("/users/my-leave-balances");
+  return res.data.data;
+}

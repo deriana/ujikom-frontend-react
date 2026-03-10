@@ -197,3 +197,88 @@ export interface MobileStatsData {
   salary_logs: SalaryLog[];
   upcoming_holidays: UpcomingHoliday[];
 }
+
+export interface MobileDailyTrackerData {
+  tracker: {
+    date: string;
+    clock_in: {
+      time: string;
+      is_done: boolean;
+      late_minutes: number;
+      status: string;
+    };
+    clock_out: {
+      time: string;
+      is_done: boolean;
+      status: string;
+      early_leave_minutes: number;
+      is_early_leave_approved: boolean;
+    };
+    overtime: {
+      is_requested: boolean;
+      minutes: number;
+      reason: string;
+      status: string;
+    };
+    early_leave: {
+      is_requested: boolean;
+      minutes: number;
+      reason: string;
+      status: string;
+    };
+    leave: {
+      is_on_leave: boolean;
+      type: string;
+      reason: string;
+      status: string;
+    };
+    work_duration: {
+      work_minutes: number;
+      formatted_work: string;
+      overtime_minutes?: number;
+      formatted_overtime?: string;
+    };
+    payday_info: {
+      next_payday: string;
+      days_remaining: number;
+    };
+    holiday_info: {
+      is_holiday: boolean;
+      holiday_name: string | null;
+    };
+    annual_leave_summary: Array<{
+      type: string;
+      start: string;
+      end: string;
+      status: string;
+      is_upcoming: boolean;
+    }>;
+  };
+  timeline: Array<{
+    time: string | null;
+    event: string;
+    desc: string;
+  }>;
+  schedule: {
+    start: string;
+    end: string;
+    label: string;
+  };
+  yearly_holidays: Array<{
+    full_date: string;
+    name: string;
+    date: string;
+  }>;
+  my_approved_leaves: Array<{
+    type: string;
+    start: string;
+    end: string;
+    status: string;
+    is_upcoming: boolean;
+  }>;
+  upcoming_holidays: Array<{
+    name: string;
+    date: string;
+    days_away: number;
+  }>;
+}

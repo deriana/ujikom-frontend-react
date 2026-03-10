@@ -1,5 +1,6 @@
 import { ChevronRight, ClipboardList, Clock } from "lucide-react";
 import { MobileHomeData } from "@/types";
+import { Link } from "react-router-dom";
 
 interface DynamicActivityProps {
   attendanceData: MobileHomeData;
@@ -15,9 +16,12 @@ export default function DynamicActivity({ attendanceData }: DynamicActivityProps
                 Activities
               </h2>
             </div>
-            <button className="px-3 py-1 rounded-lg bg-gray-100 dark:bg-white/5 text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 active:scale-95 transition-all">
+            <Link 
+              to="/activity"
+              className="px-3 py-1 rounded-lg bg-gray-100 dark:bg-white/5 text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 active:scale-95 transition-all"
+            >
               VIEW ALL <ChevronRight size={12} strokeWidth={3} />
-            </button>
+            </Link>
           </div>
 
           <div className="space-y-3">

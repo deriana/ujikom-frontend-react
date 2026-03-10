@@ -74,6 +74,10 @@ import { useRoleName } from "./hooks/useRoleName";
 import { ROLES } from "./constants/Roles";
 import MobileStats from "./pages/Mobile/Stats";
 import PayrollDetailMobile from "./pages/Mobile/PayrollDetail";
+import Activity from "./pages/Mobile/Activity";
+import ApprovalMenu from "./pages/Mobile/ApprovalMenu";
+import MobileGuard from "./routes/MobileGuard";
+import LeaveBalances from "./pages/Mobile/LeaveBalance";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -320,73 +324,93 @@ export default function App() {
       resource: RESOURCES.WORK_SCHEDULE,
       permission: PERMISSIONS.BASE.RESTORE,
     },
+    // Mobile View
     {
       path: "/home",
       element: <MobileHome />,
+      isMobileOnly: true,
     },
     {
       path: "/stats",
       element: <MobileStats />,
+      isMobileOnly: true,
     },
     {
       path: "/payroll/:uuid",
-      element: <PayrollDetailMobile />
+      element: <PayrollDetailMobile />,
+      isMobileOnly: true,
+    },
+    {
+      path: "/activity",
+      element: <Activity />,
+      isMobileOnly: true,
+    },
+    {
+      path: "/approval",
+      element: <ApprovalMenu />,
+      permission: "has-any-approval",
+      isMobileOnly: true,
+    },
+    {
+      path: "/leave-balances",
+      element: <LeaveBalances />,
+      isMobileOnly: true,
     }
   ];
 
-  const renderRoutes = (
-    <>
-      {publicRoutes.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} />
-      ))}
-      const renderRoutes = (
-      <>
-        {publicRoutes.map(({ path, element }) => (
-          <Route key={path} path={path} element={element} />
-        ))}
+const renderRoutes = (
+  <>
+    {publicRoutes.map(({ path, element }) => (
+      <Route key={path} path={path} element={element} />
+    ))}
 
-        {protectedRoutes.map(({ path, element, resource, permission }) => {
-          const isAdminRole = isRole(ROLES.ADMIN) || isRole(ROLES.OWNER);
-          const isMobilePath = path === "/home";
-          const isAdminPath = path === "/dashboard/admin";
+    {protectedRoutes.map(({ path, element, resource, permission, isMobileOnly }) => {
+      const isAdminRole = isRole(ROLES.ADMIN) || isRole(ROLES.OWNER);
+      const isMobilePath = path === "/home";
+      const isAdminPath = path === "/dashboard/admin";
 
-          let finalElement = element;
+      let finalElement = element;
 
-          if (isMobilePath && isAdminRole) {
-            finalElement = <Navigate to="/dashboard/admin" replace />;
-          }
+      // Logika redirect yang sudah ada
+      if (isMobilePath && isAdminRole) {
+        finalElement = <Navigate to="/dashboard/admin" replace />;
+      } else if (isAdminPath && !isAdminRole) {
+        finalElement = isMobile ? (
+          <Navigate to="/home" replace />
+        ) : (
+          <Navigate to="/dashboard/employee" replace />
+        );
+      }
 
-          else if (isMobilePath && !isMobile) {
-            finalElement = <Navigate to="/dashboard/employee" replace />;
-          }
-
-          else if (isAdminPath && !isAdminRole) {
-            finalElement = isMobile ? (
-              <Navigate to="/home" replace />
-            ) : (
-              <Navigate to="/dashboard/employee" replace />
-            );
-          }
-
-          return resource && permission ? (
-            <Route
-              key={path}
-              element={
-                <PermissionRoute
-                  permission={buildPermission(resource, permission)}
-                />
-              }
-            >
-              <Route path={path} element={finalElement} />
-            </Route>
-          ) : (
-            <Route key={path} path={path} element={finalElement} />
-          );
-        })}
-      </>
+      // --- LOGIKA BARU: Guard untuk isMobileOnly ---
+      const routeContent = (
+        <Route 
+          key={path} 
+          path={path} 
+          element={isMobileOnly ? <MobileGuard /> : finalElement} 
+        >
+          {isMobileOnly && <Route index element={finalElement} />}
+        </Route>
       );
-    </>
-  );
+
+      // Gabungkan dengan PermissionRoute jika ada
+      return resource && permission ? (
+        <Route
+          key={`perm-${path}`}
+          element={
+            <PermissionRoute
+              permission={buildPermission(resource, permission)}
+            />
+          }
+        >
+          {routeContent}
+        </Route>
+      ) : (
+        routeContent
+      );
+    })}
+  </>
+);
 
   return (
     <>
@@ -408,7 +432,7 @@ export default function App() {
 
           {/* 🔒 2. Protected Area */}
           <Route element={<ProtectedRoute />}>
-          <Route path="/attendance/single" element={<SingleAttendance />} />
+            <Route path="/attendance/single" element={<SingleAttendance />} />
             <Route
               element={
                 isRole(ROLES.ADMIN) || isRole(ROLES.OWNER) ? (
@@ -430,7 +454,7 @@ export default function App() {
                   />
                 </>
               )}
-              
+
               {renderRoutes}
             </Route>
           </Route>
