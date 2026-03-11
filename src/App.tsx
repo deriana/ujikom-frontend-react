@@ -81,6 +81,7 @@ import RouteServiceProvider from "./providers/RouteServiceProvider";
 import { useIsMobile } from "./hooks/useIsMobile";
 import AssessmentCategory from "./pages/AssessmentCategory/Index";
 import AssessmentPage from "./pages/Assessment/Index";
+import { DivisionWithTeamAndEmployee } from "./pages/Division/DivisionWithTeamAndEmployee";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -100,6 +101,10 @@ export default function App() {
     { path: "/calendar", element: <Calendar /> },
     { path: "/blank", element: <Blank /> },
     { path: "/profile", element: <Profile /> },
+  {
+  path: "/divisions/all",
+  element: <DivisionWithTeamAndEmployee />, // Pastikan 'element' dieja dengan benar
+},
   ];
 
   const protectedRoutes = [

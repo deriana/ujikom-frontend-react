@@ -118,6 +118,11 @@ export const navItems: NavItem[] = [
     ),
   },
   {
+    name: "Division Employees",
+    path: "/divisions/all",
+    icon: <Network size={20} />,
+  },
+  {
     name: "Leave Balances",
     path: "/employee-leave-balances",
     icon: <Wallet size={20} />,

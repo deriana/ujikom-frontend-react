@@ -83,7 +83,25 @@ const Calendar: React.FC = () => {
     return result;
   })();
 
-  const allEvents = [...events, ...paydayEvents];
+  /** Generate Assessment events for the 1st of every month (±12 months) */
+  const assessmentEvents: CalendarEvent[] = (() => {
+    const result: CalendarEvent[] = [];
+    const today = new Date();
+    for (let offset = -12; offset <= 12; offset++) {
+      const d = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+      result.push({
+        id: `assessment-${dateStr}`,
+        title: "Assessment Time",
+        start: dateStr,
+        allDay: true,
+        extendedProps: { calendar: "Assessment" },
+      });
+    }
+    return result;
+  })();
+
+  const allEvents = [...events, ...paydayEvents, ...assessmentEvents];
 
   const upcomingEvents = allEvents
     .sort((a, b) => new Date(a.start as string).getTime() - new Date(b.start as string).getTime())
@@ -147,7 +165,11 @@ const Calendar: React.FC = () => {
                     <div className="flex-1">
                       <h4 className="font-bold text-gray-900 dark:text-white">{event.title}</h4>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {event.extendedProps.calendar === "Payday" ? "Monthly Disbursement" : "Holiday Event"}
+                        {event.extendedProps.calendar === "Payday" 
+                          ? "Monthly Disbursement" 
+                          : event.extendedProps.calendar === "Assessment"
+                          ? "Performance Review"
+                          : "Holiday Event"}
                       </p>
                     </div>
                     <div className={`h-2 w-2 rounded-full ${event.extendedProps.calendar === "Payday" ? "bg-emerald-500" : "bg-amber-500"}`} />
@@ -309,6 +331,18 @@ const renderEventContent = (eventInfo: any) => {
       <div className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-linear-to-br from-emerald-500 via-emerald-600 to-teal-600 dark:from-emerald-600 dark:via-emerald-700 dark:to-teal-700 shadow-sm border border-emerald-400/50 dark:border-emerald-500/30 text-white font-bold text-[10px] ring-1 ring-emerald-400/20 dark:ring-emerald-500/20 animate-in fade-in slide-in-from-top-1 duration-500 hover:scale-[1.02] transition-transform overflow-hidden cursor-pointer">
         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
         <span className="shrink-0 text-xs drop-shadow-sm">💰</span>
+        <span className="truncate uppercase tracking-widest drop-shadow-sm font-black">
+          {eventInfo.event.title}
+        </span>
+      </div>
+    );
+  }
+
+  if (calendarType === "Assessment") {
+    return (
+      <div className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-linear-to-br from-blue-500 via-blue-600 to-indigo-600 dark:from-blue-600 dark:via-blue-700 dark:to-indigo-700 shadow-sm border border-blue-400/50 dark:border-blue-500/30 text-white font-bold text-[10px] ring-1 ring-blue-400/20 dark:ring-blue-500/20 animate-in fade-in slide-in-from-top-1 duration-500 hover:scale-[1.02] transition-transform overflow-hidden cursor-pointer">
+        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <span className="shrink-0 text-xs drop-shadow-sm">📝</span>
         <span className="truncate uppercase tracking-widest drop-shadow-sm font-black">
           {eventInfo.event.title}
         </span>

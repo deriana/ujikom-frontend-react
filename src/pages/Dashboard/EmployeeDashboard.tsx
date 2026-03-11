@@ -32,7 +32,6 @@ export default function EmployeeDashboard() {
   if (isLoading) {
     return (
       <>
-        <PageMeta title="Loading Dashboard..." />
         <EmployeeDashboardSkeleton />
       </>
     );
