@@ -18,4 +18,6 @@ export const RESOURCES = {
   OVERTIME: "overtime",
   PAYROLL: "payroll",
   DASHBOARD: "dashboard",
+  ASSESSMENT_CATEGORY: "assessment-category",
+  ASSESSMENT: "assessment",
 } as const;

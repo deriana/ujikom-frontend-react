@@ -1,4 +1,4 @@
-import { Calendar, ClipboardList, Clock, FileClock, LayoutGrid, Palmtree, Timer, Wallet, Scale } from "lucide-react";
+import { Calendar, ClipboardList, Clock, FileClock, LayoutGrid, Palmtree, Timer, Wallet, Scale, ClipboardCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function QuickActionGrid() {
@@ -21,6 +21,12 @@ export default function QuickActionGrid() {
           icon: <ClipboardList size={22} className="text-cyan-600" />,
           bg: "bg-cyan-50",
           path: "/attendance-requests",
+        },
+        {
+          name: "Assess",
+          icon: <ClipboardCheck size={22} className="text-emerald-600" />,
+          bg: "bg-emerald-50",
+          path: "/assessments",
         },
         {
           name: "Overtime",

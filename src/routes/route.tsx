@@ -23,6 +23,7 @@ import {
   Trash2,
   LayoutDashboard,
   FileCheck2,
+  ClipboardList,
   ChartBar,
   Activity,
 } from "lucide-react";
@@ -150,6 +151,12 @@ export const navItems: NavItem[] = [
     permission: buildPermission(RESOURCES.PAYROLL, PERMISSIONS.BASE.INDEX),
   },
   {
+    name: "Assessments",
+    path: "/assessments",
+    icon: <ClipboardList size={20} />,
+    permission: buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.INDEX),
+  },
+  {
     name: "Approval",
     icon: <FileCheck2 size={20} />,
     subItems: [
@@ -255,6 +262,15 @@ export const navItems: NavItem[] = [
         icon: <FileText size={18} />,
         permission: buildPermission(
           RESOURCES.LEAVE_TYPES,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Assessment Category",
+        path: "/assessment_category",
+        icon: <ClipboardList size={18} />,
+        permission: buildPermission(
+          RESOURCES.ASSESSMENT_CATEGORY,
           PERMISSIONS.BASE.INDEX,
         ),
       },

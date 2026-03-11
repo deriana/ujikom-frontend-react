@@ -79,6 +79,8 @@ import MobileGuard from "./routes/MobileGuard";
 import LeaveBalances from "./pages/Mobile/LeaveBalance";
 import RouteServiceProvider from "./providers/RouteServiceProvider";
 import { useIsMobile } from "./hooks/useIsMobile";
+import AssessmentCategory from "./pages/AssessmentCategory/Index";
+import AssessmentPage from "./pages/Assessment/Index";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -262,6 +264,20 @@ export default function App() {
       element: <Notification />,
     },
 
+    {
+      path: "/assessment_category",
+      element: <AssessmentCategory />,
+      resource: RESOURCES.ASSESSMENT_CATEGORY,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/assessments",
+      element: <AssessmentPage />,
+      resource: RESOURCES.ASSESSMENT,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
     /** Approval Route */
     {
       path: "/approval/leave",
@@ -367,31 +383,13 @@ export default function App() {
 
       {protectedRoutes.map(
         ({ path, element, resource, permission, isMobileOnly }) => {
-          const isAdminRole = isRole(ROLES.ADMIN) || isRole(ROLES.OWNER);
-          const isMobilePath = path === "/home";
-          const isAdminPath = path === "/dashboard/admin";
-
-          let finalElement = element;
-
-          // Logika redirect yang sudah ada
-          if (isMobilePath && isAdminRole) {
-            finalElement = <Navigate to="/dashboard/admin" replace />;
-          } else if (isAdminPath && !isAdminRole) {
-            finalElement = isMobile ? (
-              <Navigate to="/home" replace />
-            ) : (
-              <Navigate to="/dashboard/employee" replace />
-            );
-          }
-
-          // --- LOGIKA BARU: Guard untuk isMobileOnly ---
           const routeContent = (
             <Route
               key={path}
               path={path}
-              element={isMobileOnly ? <MobileGuard /> : finalElement}
+              element={isMobileOnly ? <MobileGuard /> : element}
             >
-              {isMobileOnly && <Route index element={finalElement} />}
+              {isMobileOnly && <Route index element={element} />}
             </Route>
           );
 
