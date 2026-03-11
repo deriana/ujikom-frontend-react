@@ -82,8 +82,8 @@ export default function AttendanceMobileComponent({
               <h2 className="text-2xl font-black text-white">
                 {!isLocationReady ? "Detecting Location..." : (
                   <>
-                    {attendanceStatus?.status === "absent" && "Check In"}
-                    {attendanceStatus?.status === "clocked_in" && "Check Out"}
+                    {attendanceStatus?.status === "absent" && "Clock In"}
+                    {attendanceStatus?.status === "clocked_in" && "Clock Out"}
                     {attendanceStatus?.status === "completed" && "Completed"}
                   </>
                 )}

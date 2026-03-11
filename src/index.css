@@ -975,4 +975,74 @@ input[type="number"] {
   input::-webkit-caps-lock-indicator {
     display: none !important;
   }
+
+  /* 1. MATIKAN SEMUA BACKGROUND HOVER PADA WRAPPER */
+  .dark .flatpickr-time .numInputWrapper:hover,
+  .dark .flatpickr-time .numInputWrapper:focus-within,
+  .dark .flatpickr-time .numInputWrapper {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* 2. MATIKAN BACKGROUND PADA AREA JAM/MENIT SECARA KESELURUHAN */
+  .dark .flatpickr-time:hover {
+    background: transparent !important;
+  }
+
+  /* 3. PASTIKAN INPUT TIDAK PUNYA BACKGROUND SAAT HOVER */
+  .dark .flatpickr-time input.numInput:hover,
+  .dark .flatpickr-time input.numInput:focus {
+    background: transparent !important; /* Ganti ke #374151 jika tetap ingin ada highlight tipis */
+    color: white !important;
+    outline: none !important;
+  }
+
+  /* 4. HILANGKAN TRANSISI AGAR TIDAK ADA FLASH ABU-ABU */
+  .dark .flatpickr-time .numInputWrapper,
+  .dark .flatpickr-time input {
+    transition: none !important;
+  }
+
+  /* Memastikan teks jam, menit, dan separator semuanya putih */
+  .dark .flatpickr-time input,
+  .dark .flatpickr-time .flatpickr-time-separator,
+  .dark .flatpickr-time .flatpickr-am-pm {
+    color: white !important;
+    background: transparent !important;
+  }
+
+  /* Highlight hanya pada input angka saat di-hover agar user tahu itu bisa diubah */
+  .dark .flatpickr-time input:hover,
+  .dark .flatpickr-time input:focus {
+    background: #374151 !important; /* gray-700 */
+    border-radius: 4px;
+  }
+
+  /* Merapikan posisi panah (arrow) agar warnanya tidak tenggelam */
+  .dark .flatpickr-time .arrowUp:hover,
+  .dark .flatpickr-time .arrowDown:hover {
+    background: #4b5563 !important; /* gray-600 */
+  }
+  /* Menghilangkan ring focus pada semua input di dalam flatpickr */
+  .dark .flatpickr-time input:focus,
+  .dark .flatpickr-time .numInputWrapper:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Memastikan state normal (bukan hover/focus) tidak punya background */
+  .dark .flatpickr-time .numInputWrapper {
+    background: transparent !important;
+  }
+  /* Menghilangkan ring focus di semua input angka flatpickr */
+  .dark .flatpickr-time input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important; /* Agar saat focus pun tidak jadi abu-abu */
+  }
+
+  /* Memastikan wrapper tidak berubah warna saat element di dalamnya focus */
+  .dark .flatpickr-time .numInputWrapper:focus-within {
+    background: transparent !important;
+  }
 }

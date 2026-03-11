@@ -69,10 +69,34 @@ export const navItems: NavItem[] = [
     hideForAdmin: true,
   },
   {
-    name: "Attendances Report",
+    name: "Attendances",
     icon: <ClipboardCheck size={20} />,
-    path: "/attendances/report",
-    permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+    subItems: [
+      {
+        name: "Attendance Report",
+        path: "/attendances/report",
+        icon: <FileSpreadsheet size={18} />,
+        permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Attendance Requests",
+        path: "/attendance-requests",
+        icon: <FileText size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE_REQUEST,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Attendance Correction",
+        path: "/attendance-correction",
+        icon: <FileCheck2 size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE_REQUEST,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+    ],
   },
   {
     name: "Employee Shifts",
@@ -112,15 +136,6 @@ export const navItems: NavItem[] = [
     path: "/early-leaves",
     icon: <FileClock size={20} />,
     permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.INDEX),
-  },
-  {
-    name: "Attendance Requests",
-    path: "/attendance-requests",
-    icon: <FileSpreadsheet size={20} />,
-    permission: buildPermission(
-      RESOURCES.ATTENDANCE_REQUEST,
-      PERMISSIONS.BASE.INDEX,
-    ),
   },
   {
     name: "Overtimes",

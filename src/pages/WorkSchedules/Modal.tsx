@@ -2,7 +2,8 @@ import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import Input from "@/components/form/input/InputField";
 import { WorkScheduleInput } from "@/types";
-import { WORK_MODE_OPTIONS } from "@/constants/WorkMode";
+import { WORK_MODE, WORK_MODE_OPTIONS } from "@/constants/WorkMode";
+import TimePicker from "@/components/form/time-picker";
 import {
   CalendarClock,
   Settings2,
@@ -34,7 +35,7 @@ export default function WorkScheduleModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-xl m-4">
-      <div className="relative w-full rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl border border-gray-100 dark:border-gray-800">
+      <div className="relative w-full overflow-visible rounded-3xl bg-white p-8 dark:bg-gray-900 shadow-2xl border border-gray-100 dark:border-gray-800">
         {/* Header Section */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-1">
@@ -83,12 +84,16 @@ export default function WorkScheduleModal({
                 </label>
                 <select
                   value={data.work_mode_id || ""}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const modeId = Number(e.target.value);
+                    const isOfficeMode = modeId === WORK_MODE.OFFICE.id;
+
                     setData({
                       ...data,
-                      work_mode_id: Number(e.target.value),
-                    })
-                  }
+                      work_mode_id: modeId,
+                      requires_office_location: isOfficeMode,
+                    });
+                  }}
                   className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white transition-all appearance-none"
                 >
                   <option value="" disabled>
@@ -106,35 +111,23 @@ export default function WorkScheduleModal({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Start Time */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                    <Clock size={14} /> Start Time
-                  </label>
-                  <Input
-                    type="time"
-                    value={data.work_start_time || ""}
-                    onChange={(e) =>
-                      setData({ ...data, work_start_time: e.target.value })
+                  <TimePicker
+                    label="Start Time"
+                    value={data.work_start_time || "00:00"}
+                    onChange={(value: string) =>
+                      setData({ ...data, work_start_time: value })
                     }
-                    onClick={(e) => e.currentTarget.showPicker()}
-                    className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 cursor-pointer"
-                    trailingIcon={<Clock size={18} />}
                   />
                 </div>
 
                 {/* End Time */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                    <Clock size={14} /> End Time
-                  </label>
-                  <Input
-                    type="time"
-                    value={data.work_end_time || ""}
-                    onChange={(e) =>
-                      setData({ ...data, work_end_time: e.target.value })
+                  <TimePicker
+                    label="End Time"
+                    value={data.work_end_time || "00:00"}
+                    onChange={(value: string) =>
+                      setData({ ...data, work_end_time: value })
                     }
-                    onClick={(e) => e.currentTarget.showPicker()}
-                    className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 cursor-pointer"
-                    trailingIcon={<Clock size={18} />}
                   />
                 </div>
               </div>
@@ -142,34 +135,22 @@ export default function WorkScheduleModal({
               {/* Break Time Range */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                    <Clock size={14} /> Break Start
-                  </label>
-                  <Input
-                    type="time"
-                    value={data.break_start_time || ""}
-                    onChange={(e) =>
-                      setData({ ...data, break_start_time: e.target.value })
+                  <TimePicker
+                    label="Break Start"
+                    value={data.break_start_time || "00:00"}
+                    onChange={(value: string) =>
+                      setData({ ...data, break_start_time: value })
                     }
-                    onClick={(e) => e.currentTarget.showPicker()}
-                    className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 cursor-pointer"
-                    trailingIcon={<Clock size={18} />}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                    <Clock size={14} /> Break End
-                  </label>
-                  <Input
-                    type="time"
-                    value={data.break_end_time || ""}
-                    onChange={(e) =>
-                      setData({ ...data, break_end_time: e.target.value })
+                  <TimePicker
+                    label="Break End"
+                    value={data.break_end_time || "00:00"}
+                    onChange={(value: string) =>
+                      setData({ ...data, break_end_time: value })
                     }
-                    onClick={(e) => e.currentTarget.showPicker()}
-                    className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 cursor-pointer"
-                    trailingIcon={<Clock size={18} />}
                   />
                 </div>
               </div>
@@ -197,46 +178,53 @@ export default function WorkScheduleModal({
               </div>
             </div>
 
-            {/* Location Requirement Toggle */}
-            <div
-              onClick={() =>
-                setData({
-                  ...data,
-                  requires_office_location: !data.requires_office_location,
-                })
-              }
-              className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
-                data.requires_office_location
-                  ? "bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800"
-                  : "bg-gray-50 border-gray-100 dark:bg-gray-800/40 dark:border-gray-800"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`p-2 rounded-lg ${data.requires_office_location ? "bg-blue-500 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-500"}`}
-                >
-                  <MapPin size={18} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">
-                    Requires Office Location
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Employee must be at the designated office to clock in.
+            {/* Location Requirement Section - Tanpa Toggle/Checkbox */}
+            <div className="space-y-3">
+              {!data.work_mode_id ? (
+                /* 1. Belum pilih mode */
+                <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 border-dashed">
+                  <div className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-400">
+                    <MapPin size={18} />
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                    Select a work mode to see location requirements.
                   </p>
                 </div>
-              </div>
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all ${
-                  data.requires_office_location
-                    ? "border-blue-500 bg-blue-500"
-                    : "border-gray-300 dark:border-gray-600"
-                }`}
-              >
-                {data.requires_office_location && (
-                  <CheckCircle2 size={16} className="text-white" />
-                )}
-              </div>
+              ) : Number(data.work_mode_id) === WORK_MODE.OFFICE.id ? (
+                /* 2. Mode WFO (Wajib Lokasi) */
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800 animate-in fade-in zoom-in duration-300">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-500 text-white">
+                      <MapPin size={18} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-blue-900 dark:text-blue-300">
+                        Office Location Required
+                      </p>
+                      <p className="text-xs text-blue-700/70 dark:text-blue-400/60">
+                        Attendance is only valid within office coordinates.
+                      </p>
+                    </div>
+                  </div>
+                  <CheckCircle2 size={20} className="text-blue-500" />
+                </div>
+              ) : (
+                /* 3. Mode WFH / Hybrid (Bebas Lokasi) */
+                <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-900/30 animate-in fade-in zoom-in duration-300">
+                  <div className="p-2 rounded-lg bg-emerald-500 text-white">
+                    <MapPin size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-emerald-900 dark:text-emerald-300">
+                      Anywhere Access
+                    </p>
+                    <p className="text-xs text-emerald-700/70 dark:text-emerald-400/60 italic">
+                      Location tracking is disabled for{" "}
+                      {Number(data.work_mode_id) === 2 ? "WFH" : "Hybrid"} mode.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

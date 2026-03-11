@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   sendBulkAttendance,
   getAttendance,
@@ -22,10 +22,16 @@ export const useSendBulkAttendance = () => {
 };
 
 export const useSendSingleAttendance = () => {
+  const qc = useQueryClient();
+
   return useMutation({
     mutationFn: (data: SingleAttendanceInput) => sendSingleAttendance(data),
     onSuccess: (data) => {
       console.log("Attendance processed successfully", data);
+
+      qc.invalidateQueries({
+        queryKey: ["dashboard", "mobile-home"],
+      });
     },
     onError: (error) => {
       console.error("Failed to process single attendance", error);

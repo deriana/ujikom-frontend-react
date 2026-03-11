@@ -1,7 +1,4 @@
-import {
-  useLeaveApprovals,
-  useLeaveApprovalsList,
-} from "@/hooks/useLeave";
+import { useLeaveApprovals, useLeaveApprovalsList } from "@/hooks/useLeave";
 import TableActions from "../BasicTables/TableAction";
 import { RESOURCES } from "@/constants/Resource";
 import { DataTable } from "../BasicTables/DataTable";
@@ -17,13 +14,18 @@ import {
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-import { Check, X } from "lucide-react";
+import { Check, CheckCircle2, Clock, X, XCircle } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 import { useShowModal } from "@/hooks/useShowModal";
 import { Column, Leave } from "@/types";
 
 export default function LeavesApprovalTable() {
-  const { data: leaves = [], isLoading, isError, error } = useLeaveApprovalsList();
+  const {
+    data: leaves = [],
+    isLoading,
+    isError,
+    error,
+  } = useLeaveApprovalsList();
   const { mutateAsync: approveLeave } = useLeaveApprovals();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
@@ -180,6 +182,68 @@ export default function LeavesApprovalTable() {
         );
       },
     },
+   {
+  header: "Approval Progress",
+  render: (row) => {
+    // Menghitung jumlah yang sudah approve
+    const approvedCount = row.approval_levels.filter(lvl => lvl.status === 1).length;
+    const totalLevels = row.approval_levels.length;
+    const isFullyApproved = approvedCount === totalLevels;
+
+    return (
+      <div className="flex flex-col gap-2 min-w-32">
+        {/* Lingkaran Status (Avatar Stack) */}
+        <div className="flex -space-x-2 overflow-hidden">
+          {row.approval_levels.map((lvl, i) => (
+            <div
+              key={i}
+              title={`${lvl.nama_approver} (Level ${lvl.level})`}
+              className={`relative inline-flex items-center justify-center w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 text-white shadow-sm transition-all hover:z-10 hover:scale-110 ${
+                lvl.status === 1
+                  ? "bg-emerald-500" // Hijau untuk Approved
+                  : lvl.status === 2
+                    ? "bg-rose-500"   // Merah untuk Rejected
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-400" // Abu untuk Pending
+              }`}
+            >
+              {lvl.status === 1 ? (
+                <CheckCircle2 size={14} strokeWidth={3} />
+              ) : lvl.status === 2 ? (
+                <XCircle size={14} />
+              ) : (
+                <span className="text-[10px] font-bold">{lvl.level}</span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Info Label */}
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded ${
+              isFullyApproved 
+                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" 
+                : "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+            }`}>
+              {approvedCount}/{totalLevels} Approved
+            </span>
+          </div>
+
+          {/* Status Text Berdasarkan Kondisi */}
+          {row.approval_status === 0 && row.next_approver ? (
+            <p className="text-[10px] text-gray-500 italic">
+              Next: <span className="font-semibold text-orange-500">{row.next_approver}</span>
+            </p>
+          ) : (
+            <p className={`text-[10px] font-medium ${isFullyApproved ? "text-emerald-600" : "text-gray-400"}`}>
+              {isFullyApproved ? "Finalized & Approved" : "Process Stopped"}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  },
+},
     {
       header: "Approval",
       render: (row) => {
@@ -233,7 +297,7 @@ export default function LeavesApprovalTable() {
           can={row.can}
         />
       ),
-    }
+    },
   ];
   if (isError) {
     return (

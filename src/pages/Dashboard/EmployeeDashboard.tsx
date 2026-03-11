@@ -9,6 +9,7 @@ import { UserInfo } from "@/components/dashboard/UserInfo";
 import { WorkHourTarget } from "@/components/dashboard/WorkHourTarget";
 import EmployeeDashboardSkeleton from "@/components/skeleton/EmployeeDashboardSkeleton";
 import { useEmployeeDashboard } from "@/hooks/useDashboard";
+import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 import { Calendar, Clock, Coffee, Timer, LayoutDashboard } from "lucide-react";
 
 export default function EmployeeDashboard() {
@@ -25,7 +26,8 @@ export default function EmployeeDashboard() {
 
   const { data, isLoading, error } = useEmployeeDashboard();
   const stats = data?.personal_stats;
-  console.log(data?.logs?.leave);
+  // console.log(data?.logs?.leave);
+  useNotificationPermission();
 
   if (isLoading) {
     return (

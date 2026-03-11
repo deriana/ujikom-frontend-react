@@ -251,7 +251,7 @@ export default function LeavesTable() {
       render: (row) => (
         <div className="flex flex-col gap-1.5 min-w-30">
           <div className="flex -space-x-2 overflow-hidden">
-            {row.approval_levels.map((lvl, i) => (
+            {row.approval_levels?.map((lvl, i) => (
               <div
                 key={i}
                 title={`${lvl.nama_approver} (Level ${lvl.level})`}

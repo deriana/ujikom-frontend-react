@@ -19,17 +19,20 @@ export default function AttendanceCard({
       return {
         text: "Attendance Completed",
         color: "bg-emerald-500",
+        shadow: "shadow-emerald-200",
         icon: <ClipboardList size={16} />,
       };
     if (isCheckedIn)
       return {
-        text: "Check Out Now",
+        text: "Clock Out Now",
         color: "bg-orange-500",
+        shadow: "shadow-orange-200",
         icon: <ScanFace size={16} />,
       };
     return {
-      text: "Check In Now",
+      text: "Clock In Now",
       color: "bg-blue-600",
+      shadow: "shadow-blue-200",
       icon: <ScanFace size={16} />,
     };
   };
@@ -45,7 +48,7 @@ export default function AttendanceCard({
   return (
     <div
     onClick={handleAttendanceClick}
-    className={`${getAttendanceHeader().color} rounded-4xl p-6 text-white shadow-xl shadow-blue-200 dark:shadow-none relative overflow-hidden transition-all active:scale-[0.98] cursor-pointer`}
+    className={`${getAttendanceHeader().color} ${getAttendanceHeader().shadow} rounded-4xl p-6 text-white shadow-xl dark:shadow-none relative overflow-hidden transition-all active:scale-[0.98] cursor-pointer`}
   >
     <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
 
@@ -75,7 +78,7 @@ export default function AttendanceCard({
     <div className="grid grid-cols-2 gap-8 relative z-10">
       <div className="space-y-1">
         <p className="text-blue-100/70 text-[10px] font-bold uppercase tracking-wider">
-          Check In
+            Clock In
         </p>
         <p className="text-3xl font-black ">
           {attendanceData?.attendance_status.clock_in_time || "--:--"}
@@ -88,7 +91,7 @@ export default function AttendanceCard({
       </div>
       <div className="space-y-1 border-l border-white/10 pl-6">
         <p className="text-blue-100/70 text-[10px] font-bold uppercase tracking-wider">
-          Check Out
+          Clock Out
         </p>
         <p
           className={`text-3xl font-black  ${!attendanceData?.attendance_status.is_checked_out ? "text-white/30" : ""}`}

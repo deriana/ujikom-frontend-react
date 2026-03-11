@@ -35,7 +35,7 @@ export interface Leave {
   duration_label: string;
   current_level: number;
   next_approver: string | null;
-  approval_levels: {
+  approval_levels?: {
     level: number;
     status: number;
     nama_approver: string;

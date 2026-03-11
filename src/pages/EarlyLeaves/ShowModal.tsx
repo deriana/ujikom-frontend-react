@@ -14,24 +14,10 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useState } from "react";
-import api from "@/api/axios";
 import toast from "react-hot-toast";
 import { APPROVAL_STATS } from "@/constants/Approval";
 import { formatDateID } from "@/utils/date";
-
-export const downloadEarlyLeaveAttachment = async (filename: string) => {
-  const response = await api.get(`/early_leaves/download-attachment/${filename}`, {
-    responseType: "blob",
-  });
-  const url = window.URL.createObjectURL(new Blob([response.data]));
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", filename);
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(url);
-};
+import { downloadAttachment } from "@/api/earlyLeave.api";
 
 interface EarlyLeaveShowModalProps {
   uuid: string | null;
@@ -101,7 +87,7 @@ export default function EarlyLeaveShowModal({
   const handleDownload = async (filename: string) => {
     try {
       setIsDownloading(true);
-      await downloadEarlyLeaveAttachment(filename);
+      await downloadAttachment(filename);
     } catch (error) {
       console.error("Download failed", error);
       toast.error("Failed to download file.");

@@ -14,7 +14,8 @@ export const useNotifications = () => {
   return useQuery({
     queryKey: ["notifications"],
     queryFn: getNotifications,
-    staleTime: 1000 * 60, // 1 minute (adjust as needed)
+    refetchInterval: 10000,
+    staleTime: 0, 
   });
 };
 
@@ -23,9 +24,9 @@ export const useUnreadNotifications = () => {
   return useQuery({
     queryKey: ["notifications", "unread"],
     queryFn: getUnreadNotifications,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchInterval: 10000, 
+    refetchOnWindowFocus: true, 
+    staleTime: 0,
   });
 };
 

@@ -3,6 +3,7 @@ import { Modal } from "@/components/ui/modal";
 import Input from "@/components/form/input/InputField";
 import { ShiftTemplateInput } from "@/types";
 import { Clock, CalendarClock, Info } from "lucide-react";
+import TimePicker from "@/components/form/time-picker";
 
 interface ShiftTemplateModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ export default function ShiftTemplateModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-xl m-4">
-      <div className="w-full overflow-hidden rounded-2xl bg-white dark:bg-gray-950 shadow-2xl border border-gray-100 dark:border-gray-800">
+      <div className="w-full overflow-visible rounded-2xl bg-white dark:bg-gray-950 shadow-2xl border border-gray-100 dark:border-gray-800">
         {/* Header Section */}
         <div className="relative bg-gray-50/50 dark:bg-gray-900/50 px-8 py-6 border-b border-gray-100 dark:border-gray-800">
           <h4 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -81,28 +82,26 @@ export default function ShiftTemplateModal({
           {/* Time Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 rounded-xl bg-gray-50/50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-800">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Work Start Time
-              </label>
-              <Input
-                type="time"
+              <TimePicker
+                label="Work Start Time"
+                placeholder="00:00"
                 value={shiftData.start_time}
-                onChange={(e) => handleTimeChange("start_time", e.target.value)}
-                onClick={(e) => e.currentTarget.showPicker()}
+                onChange={(value: string) =>
+                  handleTimeChange("start_time", value)
+                }
                 trailingIcon={<Clock size={18} className="text-gray-400" />}
                 className="cursor-pointer font-mono text-lg bg-white dark:bg-gray-900"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Work End Time
-              </label>
-              <Input
-                type="time"
+              <TimePicker
+                label="Work End Time"
+                placeholder="00:00"
                 value={shiftData.end_time}
-                onChange={(e) => handleTimeChange("end_time", e.target.value)}
-                onClick={(e) => e.currentTarget.showPicker()}
+                onChange={(value: string) =>
+                  handleTimeChange("end_time", value)
+                }
                 trailingIcon={<Clock size={18} className="text-gray-400" />}
                 className="cursor-pointer font-mono text-lg bg-white dark:bg-gray-900"
               />
@@ -132,7 +131,10 @@ export default function ShiftTemplateModal({
                 onChange={(e) =>
                   setShiftData({
                     ...shiftData,
-                    late_tolerance_minutes: e.target.value === "" ? undefined : Number(e.target.value),
+                    late_tolerance_minutes:
+                      e.target.value === ""
+                        ? undefined
+                        : Number(e.target.value),
                   })
                 }
                 placeholder="0"

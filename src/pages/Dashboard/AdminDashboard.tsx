@@ -8,6 +8,7 @@ import AdminDashboardSkeleton from "@/components/skeleton/AdminDashboardSkeleton
 import { useAdminDashboard } from "@/hooks/useDashboard";
 import AttendanceMapCard from "@/components/dashboard/AttendanceMapCard";
 import { useMemo, useState } from "react";
+import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 
 export default function AdminDashboard() {
   const today = useMemo(() => {
@@ -19,6 +20,8 @@ export default function AdminDashboard() {
   const [selectedDate, setSelectedDate] = useState(today);
 
   const { data, isLoading, error } = useAdminDashboard(selectedDate);
+
+  useNotificationPermission();
 
   if (isLoading) {
     return (

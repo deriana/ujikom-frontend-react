@@ -17,19 +17,19 @@ export default function AuthLayout({
         {/* SISI KIRI: FORM AREA (CHILDREN) */}
         <div className="relative flex items-center justify-center w-full h-full p-6 lg:w-1/2 sm:p-12 overflow-hidden">
           {/* --- BUBBLES DECORATION FOR FORM AREA --- */}
-          <div className="absolute top-[-10%] left-[-10%] w-80 h-80 bg-indigo-500/30 dark:bg-indigo-500/20 rounded-full blur-[80px] animate-pulse" />
-          <div className="absolute bottom-[5%] right-[-10%] w-96 h-96 bg-brand-500/25 dark:bg-brand-500/15 rounded-full blur-[100px]" />
+          <div className="absolute top-[-10%] left-[-10%] w-80 h-80 bg-indigo-500/30 dark:bg-indigo-500/20 rounded-full blur-[80px] animate-pulse z-0" />
+          <div className="absolute bottom-[5%] right-[-10%] w-96 h-96 bg-brand-500/25 dark:bg-brand-500/15 rounded-full blur-[100px] z-0" />
           
           {/* Floating Geometric Bubbles */}
-          <div className="absolute top-[15%] right-[10%] w-16 h-16 bg-indigo-100/40 dark:bg-indigo-900/40 rounded-full border-4 border-indigo-200/30 dark:border-indigo-700/30 hidden sm:block animate-bounce shadow-xl" style={{ animationDuration: '4s' }} />
-          <div className="absolute bottom-[20%] left-[5%] w-24 h-24 bg-brand-50/50 dark:bg-brand-900/30 rounded-full border-8 border-brand-100/40 dark:border-brand-800/40 hidden sm:block animate-pulse shadow-lg" />
-          <div className="absolute top-[45%] -left-7.5 w-20 h-20 bg-indigo-400/20 rounded-full border-2 border-indigo-300/30 hidden lg:block backdrop-blur-sm" />
+          <div className="absolute top-[15%] right-[10%] w-16 h-16 bg-indigo-100/40 dark:bg-indigo-900/40 rounded-full border-4 border-indigo-200/30 dark:border-indigo-700/30 hidden sm:block animate-bounce shadow-xl z-0" style={{ animationDuration: '8s' }} />
+          <div className="absolute bottom-[20%] left-[5%] w-24 h-24 bg-brand-50/50 dark:bg-brand-900/30 rounded-full border-8 border-brand-100/40 dark:border-brand-800/40 hidden sm:block animate-pulse shadow-lg z-0" style={{ animationDuration: '6s' }} />
+          <div className="absolute top-[45%] -left-7.5 w-20 h-20 bg-indigo-400/20 rounded-full border-2 border-indigo-300/30 hidden lg:block backdrop-blur-sm z-0" />
           
           {/* Small Dots */}
-          <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-indigo-500 rounded-full opacity-40 animate-ping" />
-          <div className="absolute bottom-1/3 right-1/4 w-4 h-4 bg-brand-500 rounded-full opacity-40 animate-ping" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-indigo-500 rounded-full opacity-40 animate-ping z-0" style={{ animationDuration: '3s' }} />
+          <div className="absolute bottom-1/3 right-1/4 w-4 h-4 bg-brand-500 rounded-full opacity-40 animate-ping z-0" style={{ animationDelay: '1.5s' }} />
 
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-md z-20">
              {children}
           </div>
         </div>
@@ -77,8 +77,8 @@ export default function AuthLayout({
           <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl opacity-30" />
         </div>
 
-        {/* Theme Toggler Tetap di Posisinya */}
-        <div className="fixed z-50 hidden bottom-6 right-6 sm:block">
+        {/* Theme Toggler: Visible on both mobile and desktop */}
+        <div className="fixed z-50 bottom-6 right-6">
           <ThemeTogglerTwo />
         </div>
       </div>

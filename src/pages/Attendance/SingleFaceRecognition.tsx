@@ -166,6 +166,9 @@ const SingleAttendance: React.FC = () => {
               queryKey: ["attendanceStatusToday"],
             });
             setIsSuccess(true);
+            setTimeout(() => {
+              navigate(-1);
+            }, 2000);
           } catch (err: any) {
             console.log("Error tertangkap di FE:", err);
 

@@ -1,6 +1,6 @@
 export const WORK_MODE = {
-  REMOTE: { id: 1, label: "WFO", color: "blue" },
-  OFFICE: { id: 2, label: "WFH", color: "green" },
+  OFFICE: { id: 1, label: "WFO", color: "green" },
+  REMOTE: { id: 2, label: "WFH", color: "blue" },
   HYBRID: { id: 3, label: "Hybrid", color: "yellow" },
 } as const;
 

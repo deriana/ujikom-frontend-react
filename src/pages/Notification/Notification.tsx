@@ -17,11 +17,13 @@ import {
 } from "@/hooks/useNotification";
 import { LaravelNotification } from "@/types/notification.types";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function Notification() {
   const { data: notifications = [], isLoading } = useNotifications();
   const navigate = useNavigate();
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const isMobile = useIsMobile()
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -104,11 +106,13 @@ export default function Notification() {
       <PageMeta title="Notification Center" />
       <PageBreadcrumb pageTitle="Notifications" />
 
-      <div className="max-w-4xl mx-auto mb-4">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors uppercase tracking-wider">
-          <ArrowLeft size={16} strokeWidth={3} /> Back
-        </button>
-      </div>
+      {!isMobile && (
+        <div className="max-w-4xl mx-auto mb-4">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors uppercase tracking-wider">
+            <ArrowLeft size={16} strokeWidth={3} /> Back
+          </button>
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto space-y-6">
         <ComponentCard className="overflow-hidden border-none shadow-sm dark:bg-gray-900/50 dark:border dark:border-white/5">

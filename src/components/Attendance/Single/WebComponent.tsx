@@ -202,12 +202,12 @@ export default function AttendanceWebComponent({
                 ) : attendanceStatus?.status === "clocked_in" ? (
                   <>
                     <Camera size={24} />
-                    <span>CHECK OUT NOW</span>
+                    <span>CLOCK OUT NOW</span>
                   </>
                 ) : (
                   <>
                     <Camera size={24} />
-                    <span>CHECK IN NOW</span>
+                    <span>CLOCK IN NOW</span>
                   </>
                 )}
               </button>

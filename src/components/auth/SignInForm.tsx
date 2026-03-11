@@ -84,10 +84,10 @@ export default function SignInForm() {
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
           <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-            Sign In
+            Welcome Back!
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Enter your email and password to sign in
+            Please enter your credentials to access your workspace.
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function SignInForm() {
             <div>
               <Label>Email *</Label>
               <Input
-                placeholder="employee@gmail.com"
+                placeholder="name@company.com"
                 value={email}
                 onChange={(e: any) => setEmail(e.target.value)}
               />
@@ -107,7 +107,7 @@ export default function SignInForm() {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e: any) => setPassword(e.target.value)}
                   onKeyDown={handleKeyDown}
