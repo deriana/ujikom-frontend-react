@@ -16,7 +16,7 @@ import LeaveModal from "@/pages/Leave/Modal";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   // APPROVAL_INPUT,
   APPROVAL_LABEL,
@@ -26,7 +26,11 @@ import FilterDropdown from "@/components/FilterDropdown";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 
-export default function LeavesTable() {
+interface LeavesTableProps {
+  onDataLoaded?: (data: any[]) => void;
+}
+
+export default function LeavesTable({ onDataLoaded }: LeavesTableProps) {
   const { data: leaves = [], isLoading, isError, error } = useLeaves();
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
@@ -35,6 +39,13 @@ export default function LeavesTable() {
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  // const [startDateFilter, setStartDateFilter] = useState<string>("");
+  // const [endDateFilter, setEndDateFilter] = useState<string>("");
+
+  // Gunakan JSON.stringify atau salinan array agar useEffect mendeteksi perubahan referensi
+  useEffect(() => {
+    onDataLoaded?.([...leaves]); // Mengirim salinan array baru
+  }, [leaves, onDataLoaded]);
 
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
@@ -157,28 +168,6 @@ export default function LeavesTable() {
       error: "Failed to delete leave",
     });
 
-  // const handleApprovalAction = (
-  //   uuid: string,
-  //   status: boolean,
-  //   note?: string,
-  // ) => {
-  //   const isApprove = status === APPROVAL_INPUT.APPROVED;
-
-  //   handleMutation(
-  //     () =>
-  //       approveLeave({
-  //         uuid,
-  //         status,
-  //         note,
-  //       }),
-  //     {
-  //       loading: isApprove ? "Approving leave..." : "Rejecting leave...",
-  //       success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
-  //       error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
-  //     },
-  //   );
-  // };
-
   const columns: Column<Leave>[] = [
     {
       header: "Employee & Type",
@@ -259,8 +248,8 @@ export default function LeavesTable() {
                   lvl.status === 1
                     ? "bg-emerald-500"
                     : lvl.status === 2
-                    ? "bg-rose-500"
-                    : "bg-gray-300 dark:bg-gray-600"
+                      ? "bg-rose-500"
+                      : "bg-gray-300 dark:bg-gray-600"
                 }`}
               >
                 {lvl.status === 1 ? (
@@ -323,48 +312,6 @@ export default function LeavesTable() {
         );
       },
     },
-    // {
-    //   header: "Approval",
-    //   render: (row) => {
-    //     return (
-    //       <TableActions
-    //         id={row.current_approval_uuid || ""}
-    //         dataName={`Leave - ${row.employee_name}`}
-    //         baseNamePermission={RESOURCES.LEAVE}
-    //         actions={
-    //           row.can?.approve
-    //             ? [
-    //                 {
-    //                   label: "Approve",
-    //                   variant: "success",
-    //                   icon: <Check size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.APPROVED,
-    //                       note,
-    //                     ),
-    //                 },
-    //                 {
-    //                   label: "Reject",
-    //                   variant: "danger",
-    //                   icon: <X size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.REJECTED,
-    //                       note,
-    //                     ),
-    //                 },
-    //               ]
-    //             : []
-    //         }
-    //       />
-    //     );
-    //   },
-    // },
     {
       header: "Action",
       render: (row) => (

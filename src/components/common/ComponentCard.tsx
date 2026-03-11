@@ -5,6 +5,7 @@ interface ComponentCardProps {
   children: React.ReactNode;
   className?: string;
   desc?: string;
+  headerAction?: React.ReactNode;
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
@@ -12,6 +13,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   children,
   className = "",
   desc = "",
+  headerAction,
 }) => {
   const isMobile = useIsMobile();
 
@@ -28,14 +30,19 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
     >
       {/* Header: Hanya tampil jika ada title */}
       {title && (
-        <div className={`${isMobile ? "px-6 py-4" : "px-6 py-5"}`}>
-          <h3 className="text-base font-bold text-gray-800 dark:text-white/90 uppercase tracking-tight">
-            {title}
-          </h3>
-          {desc && (
-            <p className="mt-1 text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              {desc}
-            </p>
+        <div className={`flex items-center justify-between ${isMobile ? "px-6 py-4" : "px-6 py-5"}`}>
+          <div>
+            <h3 className="text-base font-bold text-gray-800 dark:text-white/90 uppercase tracking-tight">
+              {title}
+            </h3>
+            {desc && (
+              <p className="mt-1 text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {desc}
+              </p>
+            )}
+          </div>
+          {!isMobile && headerAction && (
+            <div className="flex items-center gap-3">{headerAction}</div>
           )}
         </div>
       )}

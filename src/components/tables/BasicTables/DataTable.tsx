@@ -1,22 +1,11 @@
-import { Can } from "@/components/auth/Can";
-import FilterDropdown from "@/components/FilterDropdown";
-import Checkbox from "@/components/form/input/Checkbox";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Tooltip from "@/components/ui/tooltip";
-import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
+import { TableCardSkeleton } from "@/components/skeleton/TableCardSkeleton";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Column } from "@/types";
-import { Download, Plus } from "lucide-react";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DataTableCard } from "./DataTableCard";
-import { TableCardSkeleton } from "@/components/skeleton/TableCardSkeleton";
+import { DataTablePagination } from "./DataTablePagination";
+import { FilterBar } from "./FilterBar";
+import { TableList } from "./Table";
 
 type NestedKeys<T> = {
   [K in keyof T & (string | number)]: T[K] extends object
@@ -224,246 +213,47 @@ export function DataTable<T extends object>({
   return (
     <div className="rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5">
       {/* FILTER BAR */}
-      <div className="flex flex-col gap-4 px-4 py-4 border-b border-gray-100 dark:border-white/5 lg:px-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-between flex-1 lg:flex-none">
-            <h3 className="text-sm font-semibold text-gray-800 dark:text-white/90">
-              {tableTitle}
-            </h3>
-
-            {isMobile && handleCreate && (
-              <Can
-                value={buildPermission(
-                  baseNamePermission!,
-                  PERMISSIONS.BASE.CREATE,
-                )}
-              >
-                <button
-                  onClick={handleCreate}
-                  className="p-2 ml-2 text-blue-600 transition bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400"
-                >
-                  <Plus size={20} />
-                </button>
-              </Can>
-            )}
-          </div>
-
-          {enableSelection && currentSelectedIds.length > 0 && (
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded-full">
-              {currentSelectedIds.length} {isMobile ? "" : "Selected"}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          {enableSelection &&
-            currentSelectedIds.length > 0 &&
-            selectionActions && (
-              <div className="flex items-center gap-2 mr-2 border-r pr-2 border-gray-200 dark:border-gray-700">
-                {selectionActions(currentSelectedIds)}
-              </div>
-            )}
-
-          {searchableKeys.length > 0 && (
-            <input
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-3 py-2 text-sm border dark:text-gray-300 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-white/5 dark:border-white/10"
-            />
-          )}
-
-          {newFilterComponent && (
-            <div
-              className={
-                isMobile
-                  ? "grid grid-cols-2 gap-3 [&>*:last-child:nth-child(odd)]:col-span-2"
-                  : "contents"
-              }
-            >
-              {newFilterComponent}
-            </div>
-          )}
-
-          {statusConfig && (
-            <FilterDropdown
-              value={statusFilter}
-              onChange={(val) => {
-                setStatusFilter(val);
-                setPage(1);
-              }}
-              options={[
-                { label: "All Status", value: "all" },
-                ...statusConfig.options,
-              ]}
-            />
-          )}
-
-          <FilterDropdown
-            value={String(limit)}
-            onChange={(val) => {
-              setLimit(Number(val));
-              setPage(1);
-            }}
-            options={[5, 10, 20, 30, 40, 50].map((n) => ({
-              label: `Show ${n}`,
-              value: String(n),
-            }))}
-            searchable={false}
-          />
-
-          {handleExport && (
-            <Can
-              value={buildPermission(
-                baseNamePermission!,
-                PERMISSIONS.BASE.EXPORT,
-              )}
-            >
-              <Tooltip content={`Export ${label}`} position="bottom">
-                <button
-                  onClick={handleExport}
-                  className="inline-flex items-center justify-center gap-2 px-4 h-11 lg:h-9.5 w-full sm:w-auto text-sm font-medium text-white transition bg-emerald-600 rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  <Download size={16} />
-                  <span className="sm:hidden">Export {label}</span>
-                </button>
-              </Tooltip>
-            </Can>
-          )}
-          {!isMobile && handleCreate && (
-            <Can
-              value={buildPermission(
-                baseNamePermission!,
-                PERMISSIONS.BASE.CREATE,
-              )}
-            >
-              <Tooltip content={`Create ${label}`} position="bottom">
-                <button
-                  onClick={handleCreate}
-                  className="inline-flex items-center justify-center gap-2 px-4 h-11 lg:h-9.5 w-full sm:w-auto text-sm font-medium text-gray-700 transition bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-white/5 dark:border-white/10 dark:text-white/90 dark:hover:bg-white/10"
-                >
-                  <Plus size={16} className="text-blue-600 dark:text-blue-400" />
-                  <span className="sm:hidden">Create {label}</span>
-                </button>
-              </Tooltip>
-            </Can>
-          )}
-        </div>
-      </div>
+      <FilterBar
+        tableTitle={tableTitle}
+        handleCreate={handleCreate}
+        baseNamePermission={baseNamePermission}
+        enableSelection={enableSelection}
+        currentSelectedIds={currentSelectedIds}
+        selectionActions={selectionActions}
+        searchableKeys={searchableKeys}
+        search={search}
+        setSearch={setSearch}
+        setPage={setPage}
+        newFilterComponent={newFilterComponent}
+        statusConfig={statusConfig}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        limit={limit}
+        setLimit={setLimit}
+        handleExport={handleExport}
+        label={label}
+      />
 
       {/* TABLE */}
-      <div className="overflow-x-auto hidden lg:block">
-        <Table className="w-full text-sm text-left">
-          <TableHeader className="sticky top-0 bg-white dark:bg-white/5 z-10 border-b dark:border-white/10">
-            <TableRow>
-              {enableSelection && !hideChecbox && (
-                <TableCell isHeader className="px-5 py-3 w-10">
-                  <Checkbox
-                    checked={isAllSelected}
-                    onChange={handleSelectAll}
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
-                  />
-                </TableCell>
-              )}
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 w-16 cursor-pointer"
-                onClick={() => toggleSort("index")}
-              >
-                <div className="inline-flex items-center gap-1">
-                  <span>No</span>
-                  {sortConfig.key === "index" && (
-                    <span className="text-xs">
-                      {sortConfig.direction === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
-                </div>
-              </TableCell>
-
-              {columns.map((col, i) => (
-                <TableCell
-                  key={i}
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500"
-                >
-                  {col.header}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHeader>
-
-          {loading ? (
-            <TableSkeleton
-              cols={columns.length + (enableSelection ? 2 : 1)}
-              rows={5}
-            />
-          ) : isEmpty ? (
-            <TableBody>
-              <TableRow>
-                <td
-                  colSpan={columns.length + (enableSelection ? 2 : 1)}
-                  className="px-5 py-10 text-center text-gray-500"
-                >
-                  No {label.toLowerCase()} available.
-                </td>
-              </TableRow>
-            </TableBody>
-          ) : isFilteredEmpty ? (
-            <TableBody>
-              <TableRow>
-                <td
-                  colSpan={columns.length + (enableSelection ? 2 : 1)}
-                  className="px-5 py-10 text-center text-gray-500"
-                >
-                  No matching {label.toLowerCase()} found.
-                </td>
-              </TableRow>
-            </TableBody>
-          ) : (
-            <TableBody>
-              {paginatedData.map((row, index) => {
-                const globalIndex = (page - 1) * limit + index;
-                const rowId = getRowId(row, globalIndex);
-                const isSelected = currentSelectedIds.includes(rowId);
-                return (
-                  <TableRow
-                    key={rowId}
-                    className={`border-b dark:border-white/10 ${isSelected ? "bg-blue-50/50 dark:bg-blue-900/10" : ""}`}
-                  >
-                    {enableSelection && !hideChecbox && (
-                      <TableCell className="px-5 py-3">
-                        <Checkbox
-                          checked={isSelected}
-                          onChange={() => handleSelectRow(rowId)}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer"
-                        />
-                      </TableCell>
-                    )}
-                    <td className="px-5 py-3 text-gray-500">
-                      {(page - 1) * limit + index + 1}
-                    </td>
-
-                    {columns.map((col, i) => (
-                      <td
-                        key={i}
-                        className={`px-5 py-3 ${col.className || ""}`}
-                      >
-                        {col.render
-                          ? col.render(row)
-                          : col.accessor
-                            ? String(row[col.accessor] ?? "-")
-                            : "-"}
-                      </td>
-                    ))}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          )}
-        </Table>
-      </div>
+      <TableList
+        loading={loading}
+        columns={columns}
+        enableSelection={enableSelection}
+        hideCheckbox={hideChecbox}
+        isAllSelected={isAllSelected}
+        handleSelectAll={handleSelectAll}
+        sortConfig={sortConfig}
+        toggleSort={toggleSort}
+        isEmpty={isEmpty}
+        isFilteredEmpty={isFilteredEmpty}
+        paginatedData={paginatedData}
+        page={page}
+        limit={limit}
+        getRowId={getRowId}
+        currentSelectedIds={currentSelectedIds}
+        handleSelectRow={handleSelectRow}
+        label={label}
+      />
 
       {isMobile && loading && (
         <div className="lg:hidden">
@@ -494,29 +284,11 @@ export function DataTable<T extends object>({
       )}
 
       {/* PAGINATION */}
-      <div className="flex items-center justify-between px-5 py-4 border-t">
-        <span className="text-sm text-gray-500">
-          Page {page} of {totalPages}
-        </span>
-
-        <div className="flex gap-2">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((p) => p - 1)}
-            className="px-4 py-2 lg:px-3 lg:py-1 text-gray-800 text-theme-sm dark:text-white/90 border rounded-lg lg:rounded disabled:opacity-50 font-medium min-h-11 lg:min-h-0"
-          >
-            Prev
-          </button>
-
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((p) => p + 1)}
-            className="px-4 py-2 lg:px-3 lg:py-1 text-gray-800 text-theme-sm dark:text-white/90 border rounded-lg lg:rounded disabled:opacity-50 font-medium min-h-11 lg:min-h-0"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      <DataTablePagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={(newPage) => setPage(newPage)}
+      />
     </div>
   );
 }

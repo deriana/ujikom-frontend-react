@@ -14,20 +14,23 @@ import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   APPROVAL_INPUT,
   APPROVAL_LABEL,
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-import { Check, X, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { AuthContext } from "@/context/AuthContext";
 import EarlyLeaveModal from "@/pages/EarlyLeaves/Modal";
 import EarlyLeaveShowModal from "@/pages/EarlyLeaves/ShowModal";
 import { formatDateID } from "@/utils/date";
+interface EarlyLeavesTableProps {
+  onDataLoaded?: (data: any[]) => void;
+}
 
-export default function EarlyLeavesTable() {
+export default function EarlyLeavesTable({onDataLoaded}: EarlyLeavesTableProps) {
   const {
     data: earlyLeaves = [],
     isLoading,
@@ -43,6 +46,20 @@ export default function EarlyLeavesTable() {
 
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const filteredData = useMemo(() => {
+    return earlyLeaves.filter((item) => {
+      const matchEmployee = employeeFilter === "all" || item.employee_name === employeeFilter;
+      const matchStatus = statusFilter === "all" || item.status.toString() === statusFilter;
+      return matchEmployee && matchStatus;
+    });
+  }, [earlyLeaves, employeeFilter, statusFilter]);
+
+    useEffect(() => {
+      if (onDataLoaded) {
+        onDataLoaded(filteredData);
+      }
+    }, [filteredData, onDataLoaded]);
 
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
@@ -276,7 +293,8 @@ export default function EarlyLeavesTable() {
   }
 
   return (
-    <>
+    <>  
+
       <DataTable
         tableTitle="Early Leave Requests"
         data={earlyLeaves}

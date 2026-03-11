@@ -17,7 +17,15 @@ import FilterDropdown from "@/components/FilterDropdown";
 import { formatDateID } from "@/utils/date";
 import { handleMutation } from "@/utils/handleMutation";
 
-export default function AttendanceTable() {
+interface AttendanceTableProps {
+  onDataLoaded?: (data: Attendance[]) => void;
+  onLoading?: (isLoading: boolean) => void;
+}
+
+export default function AttendanceTable({
+  onDataLoaded,
+  onLoading,
+}: AttendanceTableProps) {
   const today = new Date().toISOString().split("T")[0];
 
   const [startDate, setStartDate] = useState<string>(today);
@@ -38,6 +46,16 @@ export default function AttendanceTable() {
     end_date: endDate,
   });
 
+  useEffect(() => {
+    onLoading?.(isLoading);
+  }, [isLoading, onLoading]);
+
+  useEffect(() => {
+    if (!isLoading && attendances && onDataLoaded) {
+      onDataLoaded(attendances);
+    }
+  }, [attendances, isLoading, onDataLoaded]);
+
   const { mutateAsync: exportAttendance } = useExportAttendance();
 
   const handleShow = (id: number) => {
@@ -52,10 +70,11 @@ export default function AttendanceTable() {
           end_date: endDate,
         }),
       {
-      loading: "Exporting...",
-      success: "Export successfully",
-      error: "Failed to export",
-    });
+        loading: "Exporting...",
+        success: "Export successfully",
+        error: "Failed to export",
+      },
+    );
 
   // Generate options for employee filter dynamically
   const employeeOptions = useMemo(() => {
