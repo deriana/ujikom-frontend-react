@@ -1,11 +1,14 @@
 import {
-  useCreateEarlyLeave,
-  useDeleteEarlyLeave,
-  useEarlyLeaveApprovals,
-  useEarlyLeaves,
-  useUpdateEarlyLeave,
-} from "@/hooks/useEarlyLeave";
-import { Column, EarlyLeave, EarlyLeaveInput } from "@/types";
+  useAttendanceCorrections,
+  useCreateAttendanceCorrection,
+  useUpdateAttendanceCorrection,
+  useDeleteAttendanceCorrection,
+} from "@/hooks/useAttendanceCorrection";
+import {
+  Column,
+  AttendanceCorrection,
+  AttendanceCorrectionInput,
+} from "@/types";
 import TableActions from "../BasicTables/TableAction";
 import { RESOURCES } from "@/constants/Resource";
 import { DataTable } from "../BasicTables/DataTable";
@@ -14,51 +17,50 @@ import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  APPROVAL_INPUT,
   APPROVAL_LABEL,
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-import { Clock } from "lucide-react";
-import { AuthContext } from "@/context/AuthContext";
-import EarlyLeaveModal from "@/pages/EarlyLeaves/Modal";
-import EarlyLeaveShowModal from "@/pages/EarlyLeaves/ShowModal";
+import { Clock, Info } from "lucide-react";
+import AttendanceCorrectionModal from "@/pages/AttendanceReport/Modal";
 import { formatDateID } from "@/utils/date";
-import toast from "react-hot-toast";
-interface EarlyLeavesTableProps {
+import { useNavigate } from "react-router-dom";
+import AttendanceShowModal from "@/pages/AttendanceReport/ShowModal";
+
+interface AttendanceCorrectionTableProps {
   onDataLoaded?: (data: any[]) => void;
 }
 
-export default function EarlyLeavesTable({
+export default function AttendanceCorrectionTable({
   onDataLoaded,
-}: EarlyLeavesTableProps) {
+}: AttendanceCorrectionTableProps) {
   const {
-    data: earlyLeaves = [],
+    data: corrections = [],
     isLoading,
     isError,
     error,
-  } = useEarlyLeaves();
-  const { mutateAsync: createEarlyLeave } = useCreateEarlyLeave();
-  const { mutateAsync: updateEarlyLeave } = useUpdateEarlyLeave();
-  const { mutateAsync: deleteEarlyLeave } = useDeleteEarlyLeave();
-  const { mutateAsync: approveEarlyLeave } = useEarlyLeaveApprovals();
+  } = useAttendanceCorrections();
+
+  const { mutateAsync: createCorrection } = useCreateAttendanceCorrection();
+  const { mutateAsync: updateCorrection } = useUpdateAttendanceCorrection();
+  const { mutateAsync: deleteCorrection } = useDeleteAttendanceCorrection();
   const { isRole } = useRoleName();
-  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
   const filteredData = useMemo(() => {
-    return earlyLeaves.filter((item) => {
+    return corrections.filter((item) => {
       const matchEmployee =
         employeeFilter === "all" || item.employee_name === employeeFilter;
       const matchStatus =
         statusFilter === "all" || item.status.toString() === statusFilter;
       return matchEmployee && matchStatus;
     });
-  }, [earlyLeaves, employeeFilter, statusFilter]);
+  }, [corrections, employeeFilter, statusFilter]);
 
   useEffect(() => {
     if (onDataLoaded) {
@@ -68,14 +70,14 @@ export default function EarlyLeavesTable({
 
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
-      new Set(earlyLeaves.map((l) => l.employee_name)),
+      new Set(corrections.map((l) => l.employee_name)),
     ).filter(Boolean);
 
     return [
       { label: "All Employees", value: "all" },
-      ...employees.map((name) => ({ label: name, value: name })),
+      ...employees.map((name) => ({ label: name!, value: name! })),
     ];
-  }, [earlyLeaves]);
+  }, [corrections]);
 
   const statusOptions = useMemo(() => {
     return [
@@ -87,13 +89,15 @@ export default function EarlyLeavesTable({
     ];
   }, []);
 
-  const show = useShowModal<string>();
-  const crud = useCrudModalForm<EarlyLeaveInput, FormData>({
-    label: "Early Leave Request",
+  const show = useShowModal<number>();
+  const crud = useCrudModalForm<AttendanceCorrectionInput, FormData>({
+    label: "Attendance Correction",
     emptyForm: {
       reason: "",
       attachment: null,
-      employee_nik: undefined,
+      attendance_id: undefined,
+      clock_in_requested: "",
+      clock_out_requested: "",
     },
     validate: (form) => {
       if (!form.reason || form.reason.trim().length < 3)
@@ -103,18 +107,25 @@ export default function EarlyLeavesTable({
     mapToPayload: (form) => {
       const formData = new FormData();
       formData.append("reason", form.reason.trim());
-      if (form.employee_nik) formData.append("employee_nik", form.employee_nik);
+      if (form.clock_in_requested)
+        formData.append("clock_in_requested", form.clock_in_requested);
+      if (form.clock_out_requested)
+        formData.append("clock_out_requested", form.clock_out_requested);
       if (form.attachment instanceof File)
         formData.append("attachment", form.attachment);
       return formData;
     },
-    createFn: (payload) => createEarlyLeave(payload as any),
+    createFn: (payload) => createCorrection(payload as any),
     updateFn: (uuid, payload) =>
-      updateEarlyLeave({ uuid, data: payload as any }),
+      updateCorrection({ uuid, data: payload as any }),
   });
 
+  const handleCreateRedirect = () => {
+    navigate("/attendances/report");
+  };
+
   const handleEdit = (uuid: string) => {
-    const item = earlyLeaves.find((p) => p.uuid === uuid);
+    const item = corrections.find((p) => p.uuid === uuid);
     if (!item) return;
 
     if (
@@ -122,14 +133,16 @@ export default function EarlyLeavesTable({
       !isRole(ROLES.HR) &&
       item.status !== APPROVAL_STATS.PENDING
     ) {
-      toast.error("You cannot edit a processed request.");
+      alert("You cannot edit a processed correction.");
       return;
     }
 
     crud.openEdit({
       uuid: item.uuid,
-      employee_nik: item.employee_nik,
+      employee_nik: item.employee_nik ?? undefined,
       reason: item.reason,
+      clock_in_requested: item.clock_in_requested || "",
+      clock_out_requested: item.clock_out_requested || "",
       attachment: item.attachment
         ? {
             exists: true,
@@ -141,37 +154,13 @@ export default function EarlyLeavesTable({
   };
 
   const handleDelete = (uuid: string) =>
-    handleMutation(() => deleteEarlyLeave(uuid), {
+    handleMutation(() => deleteCorrection(uuid), {
       loading: "Deleting...",
       success: "Deleted successfully",
-      error: "Failed to delete",
+      error: "Failed to delete correction",
     });
 
-  const handleApprovalAction = (
-    uuid: string,
-    status: boolean,
-    note?: string,
-  ) => {
-    const isApprove = status === APPROVAL_INPUT.APPROVED;
-
-    handleMutation(
-      () =>
-        approveEarlyLeave({
-          uuid,
-          status,
-          note,
-        }),
-      {
-        loading: isApprove
-          ? "Approving Early leave..."
-          : "Rejecting Early leave...",
-        success: `Early Leave ${isApprove ? "approved" : "rejected"} successfully`,
-        error: `Failed to ${isApprove ? "approve" : "reject"} Early leave`,
-      },
-    );
-  };
-
-  const columns: Column<EarlyLeave>[] = [
+  const columns: Column<AttendanceCorrection>[] = [
     {
       header: "Employee",
       render: (row) => (
@@ -184,15 +173,16 @@ export default function EarlyLeavesTable({
       ),
     },
     {
-      header: "Early Leave Info",
+      header: "Correction Info",
       render: (row) => (
         <div className="text-sm">
           <div className="font-medium text-gray-700 dark:text-gray-200">
-            {formatDateID(row.date)}
+            {formatDateID(row.attendance_date || "")}
           </div>
-          <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400 text-xs font-bold">
+          <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-xs font-bold">
             <Clock size={12} />
-            {row.minutes_early} Minutes Early
+            {row.clock_in_requested || "--:--"} /{" "}
+            {row.clock_out_requested || "--:--"}
           </div>
         </div>
       ),
@@ -239,58 +229,16 @@ export default function EarlyLeavesTable({
         );
       },
     },
-    // {
-    //   header: "Approval",
-    //   render: (row) => {
-    //     return (
-    //       <TableActions
-    //         id={row.uuid || ""}
-    //         dataName={`Early Leave - ${row.employee_name}`}
-    //         baseNamePermission={RESOURCES.EARLY_LEAVE}
-    //         actions={
-    //           row.can?.approve
-    //             ? [
-    //                 {
-    //                   label: "Approve",
-    //                   variant: "success",
-    //                   icon: <Check size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.APPROVED,
-    //                       note,
-    //                     ),
-    //                 },
-    //                 {
-    //                   label: "Reject",
-    //                   variant: "danger",
-    //                   icon: <X size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.REJECTED,
-    //                       note,
-    //                     ),
-    //                 },
-    //               ]
-    //             : []
-    //         }
-    //       />
-    //     );
-    //   },
-    // },
     {
       header: "Action",
       render: (row) => (
         <TableActions
           id={row.uuid}
-          dataName={row.employee_name}
+          dataName={row.employee_name || "Correction"}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onShow={() => show.open(row.uuid)}
-          baseNamePermission={RESOURCES.EARLY_LEAVE}
+          onShow={() => show.open(row.attendance_id)}
+          baseNamePermission={RESOURCES.ATTENDANCE_CORRECTION}
           can={row.can}
         />
       ),
@@ -307,15 +255,36 @@ export default function EarlyLeavesTable({
 
   return (
     <>
+      <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl flex items-start gap-3">
+        <Info
+          className="text-blue-600 dark:text-blue-400 shrink-0 mt-0.5"
+          size={18}
+        />
+        <div className="text-sm text-blue-700 dark:text-blue-300">
+          <p className="font-bold mb-1">How to request a correction?</p>
+          <p className="opacity-90">
+            New correction requests must be initiated from the{" "}
+            <span
+              className="font-bold underline cursor-pointer"
+              onClick={() => navigate("/attendances/report")}
+            >
+              Attendance Report
+            </span>
+            . Find the specific date you want to correct and click the edit
+            icon.
+          </p>
+        </div>
+      </div>
+
       <DataTable
-        tableTitle="Early Leave Requests"
-        data={earlyLeaves}
+        tableTitle="Attendance Correction Requests"
+        data={corrections}
         columns={columns}
         searchableKeys={["employee_name", "employee_nik"]}
         loading={isLoading}
-        handleCreate={crud.openCreate}
-        label="Early Leave"
-        baseNamePermission={RESOURCES.EARLY_LEAVE}
+        handleCreate={handleCreateRedirect}
+        label="Correction"
+        baseNamePermission={RESOURCES.ATTENDANCE_CORRECTION}
         newFilterComponent={
           <>
             {employeeOptions.length > 2 && (
@@ -338,18 +307,17 @@ export default function EarlyLeavesTable({
         }}
       />
 
-      <EarlyLeaveModal
+      <AttendanceCorrectionModal
         isOpen={crud.isOpen}
         onClose={crud.close}
-        earlyLeaveData={crud.form}
-        setEarlyLeaveData={crud.setForm}
+        attendanceData={crud.form}
+        setAttendanceData={crud.setForm}
         onSubmit={crud.submit}
         isLoading={crud.loading}
-        isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 
-      <EarlyLeaveShowModal
-        uuid={show.showId}
+      <AttendanceShowModal
+        id={show.showId}
         isOpen={show.isOpen}
         onClose={show.close}
       />

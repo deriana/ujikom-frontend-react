@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { LeaveInput } from "@/types/leave.types";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
@@ -10,11 +10,13 @@ import {
   X,
   UserCircle,
   Briefcase,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import DatePicker from "@/components/form/date-picker";
 import Select from "@/components/form/Select";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { useLeaveTypes } from "@/hooks/useLeaveType";
+import { useEmployeeOptions } from "@/hooks/useEmployeeInput";
 import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
 
 interface LeaveModalProps {
@@ -37,6 +39,7 @@ export default function LeaveModal({
   isUserAdminOrHR = false,
 }: LeaveModalProps) {
   const isEdit = !!leaveData.uuid;
+  const [showEmployeeSelect, setShowEmployeeSelect] = useState(false);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -57,11 +60,7 @@ export default function LeaveModal({
 
   const removeFile = () => setLeaveData({ ...leaveData, attachment: null });
 
-  const { data: employees = [], isLoading: loadingEmployees } = (
-    useGetEmployeeForInput as any
-  )({
-    enabled: isOpen,
-  });
+  const { employees, isLoading: loadingEmployees } = useEmployeeOptions();
   const { data: leaveTypes = [], isLoading: loadingLeaveTypes } = (
     useLeaveTypes as any
   )({
@@ -102,34 +101,52 @@ export default function LeaveModal({
           <div className="custom-scrollbar max-h-[65vh] overflow-y-auto px-1 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
               {/* Dropdown Employee - Hanya untuk Admin/HR */}
-              {isUserAdminOrHR && (
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                    <UserCircle size={14} /> Select Employee{" "}
-                    {isEdit && (
-                      <span className="text-[10px] lowercase font-normal opacity-70">
-                        (cannot be changed)
-                      </span>
+                {isUserAdminOrHR && (
+                  <div className="md:col-span-2 bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmployeeSelect(!showEmployeeSelect)}
+                      className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-100/50 dark:hover:bg-gray-800/60"
+                    >
+                      <div className="flex items-center gap-2">
+                        <UserCircle size={18} className="text-gray-500" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                          {leaveData.employee_nik 
+                            ? `Employee: ${leaveData.employee_nik}` 
+                            : "Select Employee (Admin/HR Only)"}
+                        </span>
+                      </div>
+                      {showEmployeeSelect ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+
+                    {showEmployeeSelect && (
+                      <div className="px-5 pb-5 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">
+                          Choose Target Employee
+                          {isEdit && (
+                            <span className="ml-1 lowercase font-normal opacity-70 italic">
+                              (cannot be changed)
+                            </span>
+                          )}
+                        </label>
+                        <Select
+                          options={employees.map((emp) => ({
+                            value: emp.nik,
+                            label: `${emp.nik} - ${emp.name}`,
+                          }))}
+                          placeholder="Choose an employee..."
+                          value={leaveData.employee_nik || ""}
+                          onChange={(val) =>
+                            setLeaveData({
+                              ...leaveData,
+                              employee_nik: val,
+                            })
+                          }
+                          disabled={isEdit}
+                        />
+                      </div>
                     )}
-                  </label>
-                  <div className="relative">
-                    <Select
-                      options={employees.map((emp: { nik: string; name: string }) => ({
-                        value: emp.nik,
-                        label: `${emp.nik} - ${emp.name}`,
-                      }))}
-                      placeholder="Choose an employee..."
-                      value={leaveData.employee_nik || ""}
-                      onChange={(val) =>
-                        setLeaveData({
-                          ...leaveData,
-                          employee_nik: val,
-                        })
-                      }
-                      disabled={isEdit}
-                    />
                   </div>
-                </div>
               )}
 
               {/* Dropdown Leave Type */}

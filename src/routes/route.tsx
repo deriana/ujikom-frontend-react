@@ -90,7 +90,7 @@ export const navItems: NavItem[] = [
       },
       {
         name: "Attendance Correction",
-        path: "/attendance-correction",
+        path: "/attendances/correction",
         icon: <FileCheck2 size={18} />,
         permission: buildPermission(
           RESOURCES.ATTENDANCE_REQUEST,
@@ -198,6 +198,15 @@ export const navItems: NavItem[] = [
           PERMISSIONS.BASE.APPROVE,
         ),
       },
+      {
+        name: "Attendance Correction Approval",
+        path: "/approval/attendance-correction",
+        icon: <FileCheck2 size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE_CORRECTION,
+          PERMISSIONS.BASE.APPROVE,
+        ),
+      }
     ],
   },
   {

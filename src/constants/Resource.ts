@@ -6,6 +6,7 @@ export const RESOURCES = {
   POSITION: "position",
   ALLOWANCE: "allowance",
   ATTENDANCE: "attendance",
+  ATTENDANCE_CORRECTION: "attendance-correction",
   HOLIDAY: "holiday",
   WORK_SCHEDULE: "work-schedule",
   EMPLOYEE_WORK_SCHEDULE: "employee-work-schedule",

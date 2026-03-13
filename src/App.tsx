@@ -82,6 +82,8 @@ import { useIsMobile } from "./hooks/useIsMobile";
 import AssessmentCategory from "./pages/AssessmentCategory/Index";
 import AssessmentPage from "./pages/Assessment/Index";
 import { DivisionWithTeamAndEmployee } from "./pages/Division/DivisionWithTeamAndEmployee";
+import AttendancCorrections from "./pages/AttendanceCorrection.tsx/Index";
+import AttendanceCorrectionApproval from "./pages/Approval/AttendanceCorrectionApproval";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -101,10 +103,10 @@ export default function App() {
     { path: "/calendar", element: <Calendar /> },
     { path: "/blank", element: <Blank /> },
     { path: "/profile", element: <Profile /> },
-  {
-  path: "/divisions/all",
-  element: <DivisionWithTeamAndEmployee />, // Pastikan 'element' dieja dengan benar
-},
+    {
+      path: "/divisions/all",
+      element: <DivisionWithTeamAndEmployee />, // Pastikan 'element' dieja dengan benar
+    },
   ];
 
   const protectedRoutes = [
@@ -124,6 +126,12 @@ export default function App() {
       path: "/attendances/report",
       element: <AttendancesReport />,
       resource: RESOURCES.ATTENDANCE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/attendances/correction",
+      element: <AttendancCorrections />,
+      resource: RESOURCES.ATTENDANCE_CORRECTION,
       permission: PERMISSIONS.BASE.INDEX,
     },
     {
@@ -306,6 +314,12 @@ export default function App() {
       path: "/approval/overtime",
       element: <OvertimeApproval />,
       resource: RESOURCES.OVERTIME,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/attendance-correction",
+      element: <AttendanceCorrectionApproval />,
+      resource: RESOURCES.ATTENDANCE_CORRECTION,
       permission: PERMISSIONS.BASE.APPROVE,
     },
 
