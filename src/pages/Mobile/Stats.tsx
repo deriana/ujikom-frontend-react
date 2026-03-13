@@ -5,6 +5,8 @@ import LastSalary from "@/components/Mobile/LastSalary";
 import WeeklyTrendChart from "@/components/Mobile/WeeklyTrendChart";
 import UpcomingHoliday from "./UpcomingHoliday";
 import PersonalStatsHeader from "@/components/Mobile/PersonalStatsHeader";
+import ReactApexChart from "react-apexcharts";
+import PerformanceChart from "@/components/Mobile/PerformanceChart";
 
 // Komponen Skeleton (Dummy)
 const Skeleton = () => (
@@ -32,6 +34,8 @@ export default function MobileStats() {
 
   if (isLoading || !stats) return <Skeleton />;
 
+  const performance = stats.performances?.[0];
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 overflow-x-hidden">
       <PersonalStatsHeader />
@@ -44,6 +48,7 @@ export default function MobileStats() {
         />
         <LastSalary lastSalary={stats.salary_logs?.[0]} />
         <WeeklyTrendChart weeklyTrend={stats.weekly_trend} />
+        <PerformanceChart performance={performance} />
         <UpcomingHoliday upcomingHoliday={stats.upcoming_holidays?.[0]} />
       </main>
     </div>

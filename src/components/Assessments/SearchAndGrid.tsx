@@ -6,6 +6,7 @@ import EmployeeAssessmentView from "@/components/Assessments/EmployeeAssessmentV
 import { Can } from "@/components/auth/Can";
 import { RESOURCES } from "@/constants/Resource";
 import Button from "@/components/ui/button/Button";
+import { useAuth } from "@/hooks/useAuth";
 import { buildPermission, PERMISSIONS } from "@/constants/Permissions";
 
 interface SearchAndGridProps {
@@ -33,6 +34,8 @@ export default function SearchAndGrid({
   openDeleteConfirm,
   onShow,
 }: SearchAndGridProps) {
+  const { user } = useAuth();
+
   return (
     <div className="space-y-4">
         <div className="flex items-center justify-between gap-4">
@@ -122,16 +125,23 @@ export default function SearchAndGrid({
                         ? buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.EDIT)
                         : buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.CREATE)
                     }
-                  >
+                  > 
+                    {user?.employee?.nik !== row.nik && (
                     <Button 
                       size="sm" 
                       variant={row.is_assessed ? "outline" : "primary"} 
                       onClick={() => handleAction(row)}
                       className="flex-1 rounded-xl h-10 text-xs font-bold"
-                    >
-                      {row.is_assessed ? "Edit Scores" : "Review"}
+                    > {row.is_assessed ? "Edit Scores" : "Review"}
                     </Button>
+                    )}
                   </Can>
+
+                  {!row.is_assessed && user?.employee?.nik === row.nik && (
+                    <div className="flex-1 text-center py-2 px-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                      <p className="text-[10px] font-medium text-gray-400 italic">Waiting for supervisor review</p>
+                    </div>
+                  )}
                   
                   {row.is_assessed && (
                     <Can value={buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.DESTROY)}>

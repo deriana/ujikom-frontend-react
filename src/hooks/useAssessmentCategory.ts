@@ -4,6 +4,7 @@ import {
   createAssessmentCategory,
   updateAssessmentCategory,
   deleteAssessmentCategory,
+  toggleStatusAssessmentCategory,
 } from "@/api/assessmentCategory.api";
 import { AssessmentCategoryInput } from "@/types/assessment.types";
 
@@ -34,6 +35,26 @@ export const useCreateAssessmentCategory = () => {
   });
 };
 
+// TOGGLE STATUS with optimistic update
+export const useToggleStatusAssessmentCategory = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (uuid: string) => toggleStatusAssessmentCategory(uuid),
+    onMutate: async (uuid) => {
+      await qc.cancelQueries({ queryKey: ["assessment", "categories"] });
+      const previous = qc.getQueryData(["assessment", "categories"]);
+      qc.setQueryData(["assessment", "categories"], (old: any[] = []) =>
+        old.map((d) => (d.uuid === uuid ? { ...d, is_active: !d.is_active } : d))
+      );
+      return { previous };
+    },
+    onError: (_err, _uuid, context: any) => {
+      if (context?.previous) qc.setQueryData(["assessment", "categories"], context.previous);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["assessment", "categories"] }),
+  });
+};
 // UPDATE with optimistic update
 export const useUpdateAssessmentCategory = () => {
   const qc = useQueryClient();

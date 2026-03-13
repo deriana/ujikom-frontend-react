@@ -3,6 +3,7 @@ import {
   useDeleteAssessmentCategory,
   useAssessmentCategories,
   useUpdateAssessmentCategory,
+  useToggleStatusAssessmentCategory,
 } from "@/hooks/useAssessmentCategory";
 import { Column, AssessmentCategory, AssessmentCategoryInput } from "@/types";
 import TableActions from "../BasicTables/TableAction";
@@ -12,10 +13,17 @@ import Badge from "@/components/ui/badge/Badge";
 import { useCrudModalForm } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import AssessmentCategoryModal from "@/pages/AssessmentCategory/Modal";
-import { ClipboardList, User } from "lucide-react";
+import { ClipboardList, User, Power, PowerOff } from "lucide-react";
 
 export default function AssessmentCategoryTable() {
-  const { data: categories = [], isLoading, isError, error } = useAssessmentCategories();
+  const {
+    data: categories = [],
+    isLoading,
+    isError,
+    error,
+  } = useAssessmentCategories();
+  const { mutateAsync: toggleStatusCategory } =
+    useToggleStatusAssessmentCategory();
 
   const { mutateAsync: createCategory } = useCreateAssessmentCategory();
   const { mutateAsync: updateCategory } = useUpdateAssessmentCategory();
@@ -64,6 +72,13 @@ export default function AssessmentCategoryTable() {
     });
 
   const handleCreate = () => crud.openCreate();
+
+  const handleToggleStatus = (uuid: string) =>
+    handleMutation(() => toggleStatusCategory(uuid), {
+      loading: "Toggling status...",
+      success: "Status toggled successfully",
+      error: "Failed to toggle status",
+    });
 
   const columns: Column<AssessmentCategory>[] = [
     {
@@ -118,6 +133,22 @@ export default function AssessmentCategoryTable() {
           dataName={row.name}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          actions={
+            row.can?.update
+              ? [
+                  {
+                    label: row.is_active ? "Deactivate" : "Activate",
+                    variant: row.is_active ? "danger" : "success",
+                    icon: row.is_active ? (
+                      <PowerOff size={16} />
+                    ) : (
+                      <Power size={16} />
+                    ),
+                    onClick: (uuid) => handleToggleStatus(uuid),
+                  },
+                ]
+              : []
+          }
           baseNamePermission={RESOURCES.ASSESSMENT_CATEGORY}
         />
       ),

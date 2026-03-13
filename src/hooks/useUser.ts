@@ -48,10 +48,10 @@ export const useGetManager = () => {
   });
 };
 
-export const useGetEmployeeForInput = (options = {}) => {
+export const useGetEmployeeForInput = (filterByAuth = false, options = {}) => {
   return useQuery({
-    queryKey: ["users", "employee-for-input"],
-    queryFn: getEmployeeForInput,
+    queryKey: ["users", "employee-for-input", { filterByAuth }],
+    queryFn: () => getEmployeeForInput(filterByAuth),
     staleTime: 1000 * 60 * 5,
     ...options
   });

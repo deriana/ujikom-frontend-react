@@ -6,6 +6,9 @@ export interface AssessmentCategory {
     description: string;
     is_active: boolean;
     creator: UserLite;
+    can?: {
+        update?: boolean;
+    }
 }
 
 export interface AssessmentCategoryInput {

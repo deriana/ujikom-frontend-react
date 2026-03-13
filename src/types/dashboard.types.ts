@@ -43,6 +43,15 @@ export interface OfficeLocation {
   radius_meters: number;
 }
 
+export interface PerformanceStat {
+  average: number;
+  year: string;
+  categories: Array<{
+    name: string;
+    score: number;
+  }>;
+}
+
 export interface AdminDashboardData {
   employee_stats: EmployeeStats;
   attendance_today: AttendanceToday;
@@ -51,6 +60,7 @@ export interface AdminDashboardData {
   map_locations: MapLocation[];
   monthly_chart: MonthlyChart;
   office_location: OfficeLocation;
+  performance_stats?: PerformanceStat;
 }
 
 export interface EmployeeProfile {
@@ -129,6 +139,11 @@ export interface SalaryLog {
   status: number;
 }
 
+export interface Performances {
+  period: string;
+  score: number;
+}
+
 export interface TodaySchedule {
   date: string;
   is_workday: boolean;
@@ -150,6 +165,7 @@ export interface EmployeeDashboardData {
     overtime: OvertimeLog[];
     leave: LeaveLog[];
     salary: SalaryLog[];
+    performance: Performances[];
   };
 }
 
@@ -191,11 +207,26 @@ export interface UpcomingHoliday {
   date: string;         
   is_recurring: boolean | number;
 }
+
+export interface MobilePerformanceDetail {
+  category: string;
+  score: number;
+}
+
+export interface MobilePerformance {
+  uuid: string;
+  period: string;
+  score: number;
+  evaluator: string;
+  details: MobilePerformanceDetail[];
+}
+
 export interface MobileStatsData {
   personal_stats: PersonalStats;
   weekly_trend: WeeklyTrend[];
   salary_logs: SalaryLog[];
   upcoming_holidays: UpcomingHoliday[];
+  performances: MobilePerformance[];
 }
 
 export interface MobileDailyTrackerData {

@@ -110,8 +110,9 @@ export const getManager = async () => {
 };
 
 /** Get Data Employee For Input */
-export const getEmployeeForInput = async () => {
-  const res = await api.get<ApiResponse<EmployeeLite[]>>("/users/employees-lite");
+export const getEmployeeForInput = async (filterByAuth?: boolean) => {
+  const params = filterByAuth ? { filterByAuth } : {};
+  const res = await api.get<ApiResponse<EmployeeLite[]>>("/users/employees-lite", { params });
   return res.data.data;
 };
 

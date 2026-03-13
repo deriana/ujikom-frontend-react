@@ -1,6 +1,6 @@
 import ReactApexChart from "react-apexcharts";
 import MonthPicker from "@/components/form/MonthPicker";
-import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, BarChart3, Users } from "lucide-react";
 
 interface HeaderAnalytycSectionProps {
   periodFilter: string;
@@ -8,6 +8,8 @@ interface HeaderAnalytycSectionProps {
   categoryStats: { name: string; average: number }[];
   bestCategory?: { name: string; average: number };
   worstCategory?: { name: string; average: number };
+  totalEmployees?: number;
+  assessedCount?: number;
   isMobile: boolean;
 }
 
@@ -17,9 +19,26 @@ export default function HeaderAnalytycSection({
   categoryStats,
   bestCategory,
   worstCategory,
+  totalEmployees = 0,
+  assessedCount = 0,
   isMobile = false,
 }: HeaderAnalytycSectionProps) {
   const hasData = categoryStats.length > 0;
+  const pendingCount = totalEmployees - assessedCount;
+
+  const donutOptions: ApexCharts.ApexOptions = {
+    chart: { type: 'donut' },
+    labels: ['Assessed', 'Pending'],
+    colors: ['#10b981', '#f59e0b'],
+    legend: { show: false },
+    dataLabels: { enabled: false },
+    plotOptions: {
+      pie: {
+        donut: { size: '75%', labels: { show: false } }
+      }
+    },
+    stroke: { show: false }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -92,6 +111,23 @@ export default function HeaderAnalytycSection({
         </div>
 
         {!isMobile && <div className="space-y-4">
+          <div className="p-5 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex items-center gap-4">
+            <div className="w-20 h-20 shrink-0">
+              <ReactApexChart options={donutOptions} series={[assessedCount, pendingCount]} type="donut" height="100%" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Users size={14} className="text-gray-400" />
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Completion</span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-xl font-black text-gray-900 dark:text-white">{assessedCount}</span>
+                <span className="text-xs text-gray-400 font-bold">/ {totalEmployees}</span>
+              </div>
+              <p className="text-[10px] text-emerald-500 font-bold mt-0.5">{Math.round((assessedCount / (totalEmployees || 1)) * 100)}% Reviewed</p>
+            </div>
+          </div>
+
           <div className="p-5 bg-emerald-50 dark:bg-emerald-900/20 rounded-3xl border border-emerald-100 dark:border-emerald-800/30">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-emerald-500 rounded-xl text-white"><TrendingUp size={20} /></div>

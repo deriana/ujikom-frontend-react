@@ -20,3 +20,8 @@ export const deleteAssessmentCategory = async (uuid: string) => {
   const res = await api.delete<ApiResponse<AssessmentCategory[]>>(`assessment_category/${uuid}`);
   return res.data.data;
 };
+
+export const toggleStatusAssessmentCategory = async (uuid: string) => {
+  const res = await api.put<ApiResponse<AssessmentCategory[]>>(`assessment_category/${uuid}/toggle-status`);
+  return res.data.data;
+};

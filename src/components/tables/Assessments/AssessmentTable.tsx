@@ -13,7 +13,7 @@ import HeaderAnalytycSection from "@/components/Assessments/HeaderAnalytycSectio
 import SearchAndGrid from "@/components/Assessments/SearchAndGrid";
 import Pagination from "@/components/Assessments/Pagination";
 import { Assessment, AssessmentInput, AssessmentScoreDetail, EmployeeLite, User } from "@/types";
-import AssessmentModal from "@/pages/Assessment/modal";
+import AssessmentModal from "@/pages/Assessment/Modal";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useShowModal } from "@/hooks/useShowModal";
 import AssessmentShowModal from "@/pages/Assessment/ShowModal";
@@ -68,11 +68,11 @@ export default function AssessmentsTable() {
       assessment_details: [],
     },
     validate: (form) => {
-      if (!form.evaluatee_nik) return "Employee is required";
-      const hasUnscored = (form.assessment_details as AssessmentScoreDetail[])?.some(
-        (d) => d.score === 0,
-      );
-      if (hasUnscored) return "Please rate all categories";
+      // if (!form.evaluatee_nik) return "Employee is required";
+      // const hasUnscored = (form.assessment_details as AssessmentScoreDetail[])?.some(
+      //   (d) => d.score === 0,
+      // );
+      // if (hasUnscored) return "Please rate all categories";
       return null;
     },
     mapToPayload: (form) => ({
@@ -236,6 +236,8 @@ export default function AssessmentsTable() {
             categoryStats={categoryStats}
             bestCategory={bestCategory}
             worstCategory={worstCategory}
+            totalEmployees={employees.length}
+            assessedCount={assessments.filter(a => a.period.startsWith(periodFilter)).length}
             isMobile={isMobile}
           />
 

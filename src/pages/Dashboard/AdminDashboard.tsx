@@ -9,6 +9,7 @@ import { useAdminDashboard } from "@/hooks/useDashboard";
 import AttendanceMapCard from "@/components/dashboard/AttendanceMapCard";
 import { useMemo, useState } from "react";
 import { useNotificationPermission } from "@/hooks/useNotificationPermission";
+import PerformanceChart from "@/components/dashboard/PerformanceChart";
 
 export default function AdminDashboard() {
   const today = useMemo(() => {
@@ -69,6 +70,9 @@ export default function AdminDashboard() {
         <div className="col-span-12 xl:col-span-6">
           <PendingApprovalCard pendingTasks={data?.pending_tasks} />
         </div>
+
+        {/* Performance Radar Charts */}
+        <PerformanceChart performanceStats={data?.performance_stats} />
 
         {/* Row 4 */}
         <div className="col-span-12">
