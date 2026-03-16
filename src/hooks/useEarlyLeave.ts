@@ -7,13 +7,18 @@ import {
   deleteEarlyLeave,
   earlyLeaveApprovals,
   getEarlyLeaveByUuid,
+  exportEarlyLeaves,
 } from "@/api/earlyLeave.api";
 import { EarlyLeaveInput } from "@/types/earlyLeave.types";
 
-export const useEarlyLeaves = () => {
+export const useEarlyLeaves = (params?: {
+  start_date?: string;
+  end_date?: string;
+}) => {
   return useQuery({
-    queryKey: ["earlyLeaves"],
-    queryFn: getEarlyLeave,
+    queryKey: ["earlyLeaves", params?.start_date, params?.end_date],
+    queryFn: () => getEarlyLeave(params),
+    enabled: !!params?.start_date && !!params?.end_date,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -113,6 +118,32 @@ export const useEarlyLeaveApprovals = () => {
 
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["earlyLeaves"] });
+    },
+  });
+};
+
+export const useExportEarlyLeave = () => {
+  return useMutation({
+    mutationFn: (params: { start_date?: string; end_date?: string }) =>
+      exportEarlyLeaves(params),
+
+    onSuccess: (response) => {
+      const disposition = response.headers["content-disposition"];
+
+      let fileName = "attendances.xlsx";
+
+      if (disposition && disposition.includes("filename=")) {
+        fileName = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     },
   });
 };

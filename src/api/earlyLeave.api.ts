@@ -7,8 +7,13 @@ import api from "./axios";
 import { ApiResponse } from "@/types";
 import { APPROVAL_INPUT } from "@/constants/Approval";
 
-export const getEarlyLeave = async () => {
-  const res = await api.get<ApiResponse<EarlyLeave[]>>("/early_leaves");
+export const getEarlyLeave = async (params?: {
+  start_date?: string;
+  end_date?: string;
+}) => {
+  const res = await api.get<ApiResponse<EarlyLeave[]>>("/early_leaves", {
+    params,
+  });
   return res.data.data;
 };
 
@@ -84,4 +89,15 @@ export const earlyLeaveApprovalsList = async () => {
     "/approvals/early_leaves",
   );
   return response.data.data;
+};
+
+export const exportEarlyLeaves = async (params: {
+  start_date?: string;
+  end_date?: string;
+}) => {
+  const res = await api.get("/early_leaves/export", {
+    params,
+    responseType: "blob",
+  });
+  return res;
 };

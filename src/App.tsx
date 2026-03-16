@@ -84,6 +84,9 @@ import AssessmentPage from "./pages/Assessment/Index";
 import { DivisionWithTeamAndEmployee } from "./pages/Division/DivisionWithTeamAndEmployee";
 import AttendancCorrections from "./pages/AttendanceCorrection.tsx/Index";
 import AttendanceCorrectionApproval from "./pages/Approval/AttendanceCorrectionApproval";
+import AttendancePresence from "./pages/Attendance/AttendanceMenu";
+import ManualAttendance from "./pages/Attendance/ManualAttendance";
+import AttendanceDetailMobile from "./pages/Mobile/AttendanceDetail";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -105,8 +108,16 @@ export default function App() {
     { path: "/profile", element: <Profile /> },
     {
       path: "/divisions/all",
-      element: <DivisionWithTeamAndEmployee />, // Pastikan 'element' dieja dengan benar
+      element: <DivisionWithTeamAndEmployee />,
     },
+    {
+      path: "/attendance/menu",
+      element: <AttendancePresence />,
+    },
+    {
+      path: "/attendance/manual",
+      element: <ManualAttendance />
+    }
   ];
 
   const protectedRoutes = [
@@ -375,6 +386,12 @@ export default function App() {
       path: "/payroll/:uuid",
       element: <PayrollDetailMobile />,
       isMobileOnly: true,
+    },
+    {
+      path: "/attendance/:id",
+      element: <AttendanceDetailMobile />,
+      isMobileOnly: true,
+    
     },
     {
       path: "/activity",

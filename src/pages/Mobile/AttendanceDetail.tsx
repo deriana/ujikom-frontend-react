@@ -1,6 +1,6 @@
-import { Modal } from "@/components/ui/modal";
+import { useNavigate, useParams } from "react-router-dom";
 import Badge from "@/components/ui/badge/Badge";
-import UserProfile from "@/components/UserProfile"; // Sesuaikan path-nya
+import UserProfile from "@/components/UserProfile";
 import {
   Clock,
   User,
@@ -16,18 +16,13 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
+  ChevronLeft,
 } from "lucide-react";
 import { useDetailAttendance } from "@/hooks/useAttendance";
 import { APPROVAL_STATS } from "@/constants/Approval";
 import { downloadAttachment } from "@/api/attendanceCorrection.api";
 import { useState } from "react";
 import toast from "react-hot-toast";
-
-interface AttendanceShowModalProps {
-  id: number | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 const CorrectionStatusBadge = ({ status }: { status: number }) => {
   const config: Record<number, any> = {
@@ -58,7 +53,7 @@ const CorrectionStatusBadge = ({ status }: { status: number }) => {
 };
 
 const AttendanceModalSkeleton = () => (
-  <div className="animate-pulse space-y-8">
+  <div className="animate-pulse space-y-8 p-6">
     <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-gray-100 dark:border-gray-800 pb-8">
       <div className="flex items-center gap-5 w-full md:w-auto">
         <div className="w-18 h-18 rounded-full bg-gray-200 dark:bg-gray-800" />
@@ -98,20 +93,17 @@ const AttendanceModalSkeleton = () => (
   </div>
 );
 
-export default function AttendanceShowModal({
-  id,
-  isOpen,
-  onClose,
-}: AttendanceShowModalProps) {
+export default function AttendanceDetailMobile() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const {
     data: attendance,
     isLoading,
     isError,
     error,
-  } = useDetailAttendance(id as number);
+  } = useDetailAttendance(Number(id));
   
   const [isDownloading, setIsDownloading] = useState(false);
-
   const handleDownload = async (filename: string) => {
     try {
       setIsDownloading(true);
@@ -131,26 +123,38 @@ export default function AttendanceShowModal({
   if (!id) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-4xl w-full m-4">
-      <div className="relative w-full rounded-3xl bg-white p-6 md:p-10 dark:bg-gray-900 shadow-2xl overflow-y-auto max-h-[90vh]">
+    <div className="min-h-screen bg-gray-50 dark:bg-transparent pb-28">
+      {/* STICKY TOP NAVIGATION */}
+      <div className="sticky top-0 z-30 bg-white/80 dark:bg-transparent backdrop-blur-md border-b dark:border-white/5 px-4 h-16 flex items-center justify-between">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
+        >
+          <ChevronLeft size={24} className="text-gray-900 dark:text-white" />
+        </button>
+        <h1 className="font-bold text-gray-900 dark:text-white">Attendance Detail</h1>
+        <div className="w-10" />
+      </div>
+
+      <div className="p-4">
         {isLoading ? (
           <AttendanceModalSkeleton />
         ) : (
-          <>
+          <div className="space-y-6">
             {/* Header with Profile Photo */}
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 border-b border-gray-100 dark:border-gray-800 pb-8">
+            <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-6 shadow-sm border dark:border-white/5 flex flex-col items-center text-center">
               <div className="flex items-center gap-5 w-full md:w-auto">
                 {attendance && (
                   <UserProfile
                     src={attendance.employee.profile_photo ?? undefined}
                     alt={attendance.employee.name ?? "-"}
-                    size={72}
+                    size={80}
                     className="ring-4 ring-gray-50 dark:ring-gray-800 shadow-md"
                   />
                 )}
                 <div>
                   <div className="flex items-center gap-3 flex-wrap">
-                    <h4 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+                    <h4 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
                       {attendance?.employee.name || "-"}
                     </h4>
                     {attendance && (
@@ -172,15 +176,6 @@ export default function AttendanceShowModal({
                     • <Info size={16} /> ID: #{id}
                   </p>
                 </div>
-              </div>
-
-              <div className="text-right hidden md:block text-gray-400">
-                <p className="text-xs font-bold uppercase tracking-widest">
-                  Attendance Status
-                </p>
-                <p className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">
-                  Verified
-                </p>
               </div>
             </div>
 
@@ -441,19 +436,9 @@ export default function AttendanceShowModal({
                 </div>
               )
             )}
-
-            {/* Footer Actions */}
-            <div className="mt-10">
-              <button
-                onClick={onClose}
-                className="w-full py-4 rounded-2xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-lg active:scale-[0.98]"
-              >
-                Done & Close
-              </button>
-            </div>
-          </>
+          </div>
         )}
       </div>
-    </Modal>
+    </div>
   );
 }

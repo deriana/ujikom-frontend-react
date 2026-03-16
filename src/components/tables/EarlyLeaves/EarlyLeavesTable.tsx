@@ -3,6 +3,7 @@ import {
   useDeleteEarlyLeave,
   useEarlyLeaveApprovals,
   useEarlyLeaves,
+  useExportEarlyLeave,
   useUpdateEarlyLeave,
 } from "@/hooks/useEarlyLeave";
 import { Column, EarlyLeave, EarlyLeaveInput } from "@/types";
@@ -22,11 +23,12 @@ import {
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
 import { Clock } from "lucide-react";
-import { AuthContext } from "@/context/AuthContext";
+// import { AuthContext } from "@/context/AuthContext";
 import EarlyLeaveModal from "@/pages/EarlyLeaves/Modal";
 import EarlyLeaveShowModal from "@/pages/EarlyLeaves/ShowModal";
 import { formatDateID } from "@/utils/date";
 import toast from "react-hot-toast";
+import DatePicker from "@/components/form/date-picker";
 interface EarlyLeavesTableProps {
   onDataLoaded?: (data: any[]) => void;
 }
@@ -34,18 +36,23 @@ interface EarlyLeavesTableProps {
 export default function EarlyLeavesTable({
   onDataLoaded,
 }: EarlyLeavesTableProps) {
+  const today = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState<string>(today);
+  const [endDate, setEndDate] = useState<string>(today);
   const {
     data: earlyLeaves = [],
     isLoading,
     isError,
     error,
-  } = useEarlyLeaves();
+    refetch,
+  } = useEarlyLeaves({ start_date: startDate, end_date: endDate });
   const { mutateAsync: createEarlyLeave } = useCreateEarlyLeave();
   const { mutateAsync: updateEarlyLeave } = useUpdateEarlyLeave();
   const { mutateAsync: deleteEarlyLeave } = useDeleteEarlyLeave();
-  const { mutateAsync: approveEarlyLeave } = useEarlyLeaveApprovals();
+  const { mutateAsync: exportEarlyLeave } = useExportEarlyLeave();
+  // const { mutateAsync: approveEarlyLeave } = useEarlyLeaveApprovals();
   const { isRole } = useRoleName();
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
 
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -147,29 +154,81 @@ export default function EarlyLeavesTable({
       error: "Failed to delete",
     });
 
-  const handleApprovalAction = (
-    uuid: string,
-    status: boolean,
-    note?: string,
-  ) => {
-    const isApprove = status === APPROVAL_INPUT.APPROVED;
+  // const handleApprovalAction = (
+  //   uuid: string,
+  //   status: boolean,
+  //   note?: string,
+  // ) => {
+  //   const isApprove = status === APPROVAL_INPUT.APPROVED;
 
-    handleMutation(
-      () =>
-        approveEarlyLeave({
-          uuid,
-          status,
-          note,
-        }),
-      {
-        loading: isApprove
-          ? "Approving Early leave..."
-          : "Rejecting Early leave...",
-        success: `Early Leave ${isApprove ? "approved" : "rejected"} successfully`,
-        error: `Failed to ${isApprove ? "approve" : "reject"} Early leave`,
-      },
+  //   handleMutation(
+  //     () =>
+  //       approveEarlyLeave({
+  //         uuid,
+  //         status,
+  //         note,
+  //       }),
+  //     {
+  //       loading: isApprove
+  //         ? "Approving Early leave..."
+  //         : "Rejecting Early leave...",
+  //       success: `Early Leave ${isApprove ? "approved" : "rejected"} successfully`,
+  //       error: `Failed to ${isApprove ? "approve" : "reject"} Early leave`,
+  //     },
+  //   );
+  // };
+
+   const handleExport = () =>
+      handleMutation(
+        () =>
+          exportEarlyLeave({
+            start_date: startDate,
+            end_date: endDate,
+          }),
+        {
+          loading: "Exporting...",
+          success: "Export successfully",
+          error: "Failed to export",
+        },
+      );
+  
+    const StartDateFilter = (
+      <DatePicker
+        id="attendance-start-date"
+        mode="single"
+        placeholder="Start date"
+        value={startDate}
+        onChange={(dates) => {
+          if (dates.length > 0) {
+            const date = dates[0];
+            const localDate = date.toLocaleDateString("en-CA"); // YYYY-MM-DD
+            setStartDate(localDate);
+          }
+        }}
+      />
     );
-  };
+  
+    const EndDateFilter = (
+      <DatePicker
+        id="attendance-end-date"
+        mode="single"
+        placeholder="End date"
+        value={endDate}
+        onChange={(dates) => {
+          if (dates.length > 0) {
+            const date = dates[0];
+            const localDate = date.toLocaleDateString("en-CA"); // YYYY-MM-DD
+            setEndDate(localDate);
+          }
+        }}
+      />
+    );
+  
+    useEffect(() => {
+      if (startDate && endDate) {
+        refetch();
+      }
+    }, [startDate, endDate]);
 
   const columns: Column<EarlyLeave>[] = [
     {
@@ -314,10 +373,13 @@ export default function EarlyLeavesTable({
         searchableKeys={["employee_name", "employee_nik"]}
         loading={isLoading}
         handleCreate={crud.openCreate}
+        handleExport={handleExport}
         label="Early Leave"
         baseNamePermission={RESOURCES.EARLY_LEAVE}
         newFilterComponent={
           <>
+            {StartDateFilter}
+            {EndDateFilter}
             {employeeOptions.length > 2 && (
               <FilterDropdown
                 value={employeeFilter}

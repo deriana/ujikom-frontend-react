@@ -42,7 +42,7 @@ export default function AttendanceCard({
       toast.error("You have completed your attendance for today.");
       return;
     }
-    navigate("/attendance/single");
+    navigate("/attendance/menu");
   };
 
   return (

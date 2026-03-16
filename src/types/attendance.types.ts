@@ -64,6 +64,18 @@ export interface SingleAttendanceResponse {
   message: string;
 }
 
+export interface ManualAttendanceInput {
+  reason: string;
+  attachment: File | null;
+  latitude: number;
+  longitude: number;
+}
+
+export interface ManualAttendanceResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface BulkAttendanceResponse {
   success_count: number;
   failed_count: number;
@@ -141,4 +153,31 @@ export interface AttendanceCorrectionDetail {
   };
   created_at: string;
   updated_at: string;
+}
+
+export interface AttendanceLogs {
+  id: number;
+  employee_id: number;
+  employee_nik: number;
+
+  status: string;
+  action: string;
+  reason: string;
+
+  similarity_score: any;
+  ip_address: string;
+  user_agent: string;
+
+  location: {
+    latitude: number;
+    longitude: number;
+  }
+
+  employee: {
+    nik: string;
+    name:string
+  }
+
+  created_at: string;
+  time_ago: any;
 }

@@ -8,13 +8,17 @@ import {
   downloadPayroll,
   bulkFinalizePayroll,
   createPayroll,
+  exportPayroll,
 } from "@/api/payroll.api";
 import { PayrollUpdateInput, PayrollCreateInput } from "@/types/payroll.types";
 
-export const usePayrolls = () => {
+export const usePayrolls = (params?: {
+  month: string;
+}) => {
   return useQuery({
-    queryKey: ["payrolls"],
-    queryFn: getPayroll,
+    queryKey: ["payrolls", params?.month],
+    queryFn: () => getPayroll(params),
+    enabled: !!params?.month,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -117,5 +121,31 @@ export const useUpdatePayroll = () => {
       if (context?.previous) qc.setQueryData(["payrolls"], context.previous);
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ["payrolls"] }),
+  });
+};
+
+export const useExportPayrrol = () => {
+  return useMutation({
+    mutationFn: (params: { month?: string }) =>
+      exportPayroll(params),
+
+    onSuccess: (response) => {
+      const disposition = response.headers["content-disposition"];
+
+      let fileName = "attendances.xlsx";
+
+      if (disposition && disposition.includes("filename=")) {
+        fileName = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    },
   });
 };

@@ -1045,4 +1045,16 @@ input[type="number"] {
   .dark .flatpickr-time .numInputWrapper:focus-within {
     background: transparent !important;
   }
+
+  @keyframes scan {
+    0%,
+    100% {
+      top: 30%;
+      opacity: 0.3;
+    }
+    50% {
+      top: 60%;
+      opacity: 0.8;
+    }
+  }
 }

@@ -19,7 +19,6 @@ export default function NotificationDropdown() {
   const { general } = useSettingsContext()
 
   const appLogo = general?.logo || "/placeholder_img.jpg";
-  console.log(appLogo)
 
   const prevCountRef = useRef(unreadNotifications.length);
 

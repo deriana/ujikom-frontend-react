@@ -10,6 +10,7 @@ import Badge from "@/components/ui/badge/Badge";
 import {
   useBulkFinalizePayroll,
   useCreatePayroll,
+  useExportPayrrol,
   useFinalizePayroll,
   usePayrolls,
   useUpdatePayroll,
@@ -65,7 +66,7 @@ export default function PayrollTable({ onDataLoaded }: PayrollProps) {
     isError,
     error,
     refetch,
-  } = usePayrolls();
+  } = usePayrolls({ month: periodFilter });
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -74,6 +75,7 @@ export default function PayrollTable({ onDataLoaded }: PayrollProps) {
   const { mutateAsync: finalizePayroll } = useFinalizePayroll();
   const { mutateAsync: voidPayroll } = useVoidPayroll();
   const { mutateAsync: bulkFinalizePayroll } = useBulkFinalizePayroll();
+  const { mutateAsync: exportPayroll } = useExportPayrrol()
 
   // Employee options
   const employeeOptions = useMemo(() => {
@@ -363,14 +365,12 @@ export default function PayrollTable({ onDataLoaded }: PayrollProps) {
   }, [payrolls, employeeFilter, statusFilter, periodFilter]);
 
   useEffect(() => {
-    if (onDataLoaded) {
-      onDataLoaded(filteredPayrolls);
-    }
-  }, [filteredPayrolls, onDataLoaded]);
+    if (onDataLoaded) onDataLoaded(filteredPayrolls);
+  }, [filteredPayrolls]);
 
   useEffect(() => {
     refetch();
-  }, []);
+  }, [periodFilter]);
 
   if (isError) {
     return (
@@ -396,6 +396,19 @@ export default function PayrollTable({ onDataLoaded }: PayrollProps) {
     />
   );
 
+   const handleExport = () =>
+      handleMutation(
+        () =>
+          exportPayroll({
+            month: periodFilter,
+          }),
+        {
+          loading: "Exporting...",
+          success: "Export successfully",
+          error: "Failed to export",
+        },
+      );
+
   return (
     <>
       <DataTable
@@ -407,6 +420,7 @@ export default function PayrollTable({ onDataLoaded }: PayrollProps) {
         label="Payroll"
         baseNamePermission={RESOURCES.PAYROLL}
         handleCreate={handleCreate}
+        handleExport={handleExport}
         newFilterComponent={
           <>
             {StatusFilter}

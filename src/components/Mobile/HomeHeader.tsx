@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export default function HomeHeader() {
   const { user } = useContext(AuthContext);
-  const currentDate = new Date().toLocaleDateString("en-US", {
+  const currentDate = new Date().toLocaleDateString("en-Ca", {
     weekday: "long",
     year: "numeric",
     month: "long",

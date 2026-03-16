@@ -11,6 +11,9 @@ interface DataTableCardProps<T> {
   page?: number;
   limit?: number;
   hideCheckbox?: boolean;
+  isEmpty?: boolean;
+  isFilteredEmpty?: boolean;
+  label?: string;
 }
 
 export function DataTableCard<T>({
@@ -23,8 +26,28 @@ export function DataTableCard<T>({
   page = 1,
   limit = 10,
   hideCheckbox = false,
+  isEmpty = false,
+  isFilteredEmpty = false,
+  label = "Data",
 }: DataTableCardProps<T>) {
-  // 1. Cari kolom aksi (biasanya header berisi 'Action' atau 'Aksi')
+  // 0. Handle Empty States
+  if (isEmpty) {
+    return (
+      <div className="col-span-full px-5 py-10 text-center text-sm text-gray-500 bg-white dark:bg-white/5 border border-dashed border-gray-200 dark:border-white/10 rounded-2xl">
+        No {label.toLowerCase()} available.
+      </div>
+    );
+  }
+
+  if (isFilteredEmpty) {
+    return (
+      <div className="col-span-full px-5 py-10 text-center text-sm text-gray-500 bg-white dark:bg-white/5 border border-dashed border-gray-200 dark:border-white/10 rounded-2xl">
+        No matching {label.toLowerCase()} found.
+      </div>
+    );
+  }
+
+  // 1. Cari kolom aksi
   const actionColumn = columns.find(
     (col) =>
       col.header?.toString().toLowerCase().includes("action") ||
@@ -35,7 +58,7 @@ export function DataTableCard<T>({
   const bodyColumns = columns.filter((col) => col !== actionColumn);
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-gray-50/50 dark:bg-transparent">
+    <>
       {data.map((row, index) => {
         const id = getRowId(row, index);
         const isSelected = selectedIds.includes(id);
@@ -97,6 +120,6 @@ export function DataTableCard<T>({
           </div>
         );
       })}
-    </div>
+    </>
   );
 }

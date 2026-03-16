@@ -1,7 +1,8 @@
 import { TableCardSkeleton } from "@/components/skeleton/TableCardSkeleton";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Column } from "@/types";
-import React, { useEffect, useMemo, useState } from "react";
+import { LayoutGrid, List } from "lucide-react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { DataTableCard } from "./DataTableCard";
 import { DataTablePagination } from "./DataTablePagination";
 import { FilterBar } from "./FilterBar";
@@ -35,6 +36,7 @@ interface DataTableProps<T> {
   onSelectionChange?: (selectedIds: (string | number)[]) => void;
   selectionActions?: (selectedIds: (string | number)[]) => React.ReactNode;
   hideChecbox?: boolean;
+  gridCols?: 1 | 2 | 3 | 4;
 }
 
 export function DataTable<T extends object>({
@@ -56,8 +58,10 @@ export function DataTable<T extends object>({
   selectionActions,
   selectedIds: controlledSelectedIds,
   hideChecbox = false,
+  gridCols = 3,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(defaultPageSize);
@@ -172,9 +176,9 @@ export function DataTable<T extends object>({
   }, [page, totalPages]);
 
   // SELECTION
-  const getRowId = (row: any, index: number) => {
+  const getRowId = useCallback((row: any, index: number) => {
     return "id" in row ? row.id : "uuid" in row ? row.uuid : index;
-  };
+  }, []);
 
   const handleSelectAll = (checked: boolean) => {
     const currentIds = paginatedData.map((row, index) =>
@@ -210,9 +214,43 @@ export function DataTable<T extends object>({
   const isFilteredEmpty =
     !loading && data.length > 0 && filteredData.length === 0;
 
+  // View Switcher Component
+  const ViewSwitcher = (
+    <div className="flex items-center p-1 bg-gray-100 dark:bg-white/5 rounded-lg">
+      <button
+        onClick={() => setViewMode("table")}
+        className={`p-1.5 rounded-md transition-all ${
+          viewMode === "table"
+            ? "bg-white dark:bg-white/10 shadow-sm text-blue-600"
+            : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+        }`}
+        title="Table View"
+      >
+        <List size={18} />
+      </button>
+      <button
+        onClick={() => setViewMode("grid")}
+        className={`p-1.5 rounded-md transition-all ${
+          viewMode === "grid"
+            ? "bg-white dark:bg-white/10 shadow-sm text-blue-600"
+            : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+        }`}
+        title="Grid View"
+      >
+        <LayoutGrid size={18} />
+      </button>
+    </div>
+  );
+
+  const gridColsClass = {
+    1: "grid-cols-1",
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+  }[gridCols];
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5">
-      {/* FILTER BAR */}
+    <div className="space-y-4">
       <FilterBar
         tableTitle={tableTitle}
         handleCreate={handleCreate}
@@ -225,6 +263,7 @@ export function DataTable<T extends object>({
         setSearch={setSearch}
         setPage={setPage}
         newFilterComponent={newFilterComponent}
+        viewSwitcher={ViewSwitcher}
         statusConfig={statusConfig}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
@@ -234,61 +273,74 @@ export function DataTable<T extends object>({
         label={label}
       />
 
-      {/* TABLE */}
-      <TableList
-        loading={loading}
-        columns={columns}
-        enableSelection={enableSelection}
-        hideCheckbox={hideChecbox}
-        isAllSelected={isAllSelected}
-        handleSelectAll={handleSelectAll}
-        sortConfig={sortConfig}
-        toggleSort={toggleSort}
-        isEmpty={isEmpty}
-        isFilteredEmpty={isFilteredEmpty}
-        paginatedData={paginatedData}
-        page={page}
-        limit={limit}
-        getRowId={getRowId}
-        currentSelectedIds={currentSelectedIds}
-        handleSelectRow={handleSelectRow}
-        label={label}
-      />
+      <div className="rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-white/5 overflow-hidden">
+        {/* DESKTOP VIEW */}
+        <div className="hidden lg:block">
+          {viewMode === "table" ? (
+            <TableList
+              loading={loading}
+              columns={columns}
+              enableSelection={enableSelection}
+              hideCheckbox={hideChecbox}
+              isAllSelected={isAllSelected}
+              handleSelectAll={handleSelectAll}
+              sortConfig={sortConfig}
+              toggleSort={toggleSort}
+              isEmpty={isEmpty}
+              isFilteredEmpty={isFilteredEmpty}
+              paginatedData={paginatedData}
+              page={page}
+              limit={limit}
+              getRowId={getRowId}
+              currentSelectedIds={currentSelectedIds}
+              handleSelectRow={handleSelectRow}
+              label={label}
+            />
+          ) : (
+            <div className={`grid gap-4 p-5 ${gridColsClass}`}>
+              <DataTableCard
+                data={paginatedData}
+                columns={columns}
+                getRowId={(row, index) => getRowId(row, (page - 1) * limit + index)}
+                enableSelection={enableSelection}
+                selectedIds={currentSelectedIds}
+                onSelectRow={handleSelectRow}
+                hideCheckbox={hideChecbox}
+                isEmpty={isEmpty}
+                isFilteredEmpty={isFilteredEmpty}
+                label={label}
+              />
+            </div>
+          )}
+        </div>
 
-      {isMobile && loading && (
+        {/* MOBILE VIEW (Always Card) */}
         <div className="lg:hidden">
-          <TableCardSkeleton rows={5} />
+          {loading ? (
+            <TableCardSkeleton rows={5} />
+          ) : isEmpty || isFilteredEmpty ? (
+            <div className="px-5 py-10 text-center text-sm text-gray-500">
+              No {label.toLowerCase()} found.
+            </div>
+          ) : (
+            <DataTableCard
+              data={paginatedData}
+              columns={columns}
+              getRowId={(row, index) => getRowId(row, (page - 1) * limit + index)}
+              enableSelection={enableSelection}
+              selectedIds={currentSelectedIds}
+              onSelectRow={handleSelectRow}
+              hideCheckbox={hideChecbox}
+            />
+          )}
         </div>
-      )}
 
-      {isMobile && !loading && (isEmpty || isFilteredEmpty) && (
-        <div className="lg:hidden px-5 py-10 text-center text-sm text-gray-500 border-t dark:border-white/10">
-          {isEmpty
-            ? `No ${label.toLowerCase()} available.`
-            : `No matching ${label.toLowerCase()} found.`}
-        </div>
-      )}
-
-      {isMobile && !loading && !isEmpty && !isFilteredEmpty && (
-        <div className="lg:hidden border-t dark:border-white/10">
-          <DataTableCard
-            data={paginatedData}
-            columns={columns}
-            getRowId={(row, index) => getRowId(row, (page - 1) * limit + index)}
-            enableSelection={enableSelection}
-            selectedIds={currentSelectedIds}
-            onSelectRow={handleSelectRow}
-            hideCheckbox={hideChecbox}
-          />
-        </div>
-      )}
-
-      {/* PAGINATION */}
-      <DataTablePagination
-        page={page}
-        totalPages={totalPages}
-        onPageChange={(newPage) => setPage(newPage)}
-      />
+        <DataTablePagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      </div>
     </div>
   );
 }

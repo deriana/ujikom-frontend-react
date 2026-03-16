@@ -89,7 +89,7 @@ export const navItems: NavItem[] = [
         ),
       },
       {
-        name: "Attendance Correction",
+        name: "Attendance Adjustments",
         path: "/attendances/correction",
         icon: <FileCheck2 size={18} />,
         permission: buildPermission(
@@ -199,7 +199,7 @@ export const navItems: NavItem[] = [
         ),
       },
       {
-        name: "Attendance Correction Approval",
+        name: "Attendance Adjustments Approval",
         path: "/approval/attendance-correction",
         icon: <FileCheck2 size={18} />,
         permission: buildPermission(
@@ -363,7 +363,7 @@ export const othersItems: NavItem[] = [
   {
     icon: <Clock size={20} />,
     name: "Single Attendance",
-    path: "/attendance/single",
+    path: "/attendance/menu",
     hideForAdmin: true,
   },
   {

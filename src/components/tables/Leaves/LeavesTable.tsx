@@ -1,6 +1,7 @@
 import {
   useCreateLeave,
   useDeleteLeave,
+  useExportLeave,
   // useLeaveApprovals,
   useLeaves,
   useUpdateLeave,
@@ -25,22 +26,31 @@ import {
 import FilterDropdown from "@/components/FilterDropdown";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { formatDateID } from "@/utils/date";
+import DatePicker from "@/components/form/date-picker";
 
 interface LeavesTableProps {
   onDataLoaded?: (data: any[]) => void;
 }
 
 export default function LeavesTable({ onDataLoaded }: LeavesTableProps) {
-  const { data: leaves = [], isLoading, isError, error } = useLeaves();
+  const today = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState<string>(today);
+  const [endDate, setEndDate] = useState<string>(today);
+  const {
+    data: leaves = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useLeaves({ start_date: startDate, end_date: endDate });
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
   const { mutateAsync: deleteLeave } = useDeleteLeave();
+  const { mutateAsync: exportLeave } = useExportLeave();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  // const [startDateFilter, setStartDateFilter] = useState<string>("");
-  // const [endDateFilter, setEndDateFilter] = useState<string>("");
 
   // Gunakan JSON.stringify atau salinan array agar useEffect mendeteksi perubahan referensi
   useEffect(() => {
@@ -167,6 +177,58 @@ export default function LeavesTable({ onDataLoaded }: LeavesTableProps) {
       success: "Leave deleted successfully",
       error: "Failed to delete leave",
     });
+
+  const handleExport = () =>
+    handleMutation(
+      () =>
+        exportLeave({
+          start_date: startDate,
+          end_date: endDate,
+        }),
+      {
+        loading: "Exporting...",
+        success: "Export successfully",
+        error: "Failed to export",
+      },
+    );
+
+  const StartDateFilter = (
+    <DatePicker
+      id="attendance-start-date"
+      mode="single"
+      placeholder="Start date"
+      value={startDate}
+      onChange={(dates) => {
+        if (dates.length > 0) {
+          const date = dates[0];
+          const localDate = date.toLocaleDateString("en-CA"); // YYYY-MM-DD
+          setStartDate(localDate);
+        }
+      }}
+    />
+  );
+
+  const EndDateFilter = (
+    <DatePicker
+      id="attendance-end-date"
+      mode="single"
+      placeholder="End date"
+      value={endDate}
+      onChange={(dates) => {
+        if (dates.length > 0) {
+          const date = dates[0];
+          const localDate = date.toLocaleDateString("en-CA"); // YYYY-MM-DD
+          setEndDate(localDate);
+        }
+      }}
+    />
+  );
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      refetch();
+    }
+  }, [startDate, endDate]);
 
   const columns: Column<Leave>[] = [
     {
@@ -344,10 +406,13 @@ export default function LeavesTable({ onDataLoaded }: LeavesTableProps) {
         searchableKeys={["reason", "employee_name", "leave_type"]}
         loading={isLoading}
         handleCreate={handleCreate}
+        handleExport={handleExport}
         label="Leave Request"
         baseNamePermission={RESOURCES.LEAVE}
         newFilterComponent={
           <>
+            {StartDateFilter}
+            {EndDateFilter}
             {employeeOptions.length > 2 && (
               <FilterDropdown
                 value={employeeFilter}

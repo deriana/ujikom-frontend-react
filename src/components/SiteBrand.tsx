@@ -26,7 +26,7 @@ export const SiteBrand = ({
 
   if (isLoading) {
     return (
-      <div className={`flex items-center gap-3 ${className}`}>
+      <div className={`flex items-center gap-3 relative z-999999 ${className}`}>
         <div className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg ${isCollapsed ? 'w-8 h-8' : 'w-10 h-10'}`} />
         {!isCollapsed && showName && (
           <div className="animate-pulse h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -36,7 +36,7 @@ export const SiteBrand = ({
   }
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-3 relative z-999999 ${className}`}>
       {showLogo && logoUrl && (
         <div className="relative">
           {!imageLoaded && (

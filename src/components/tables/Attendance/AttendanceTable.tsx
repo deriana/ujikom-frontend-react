@@ -16,13 +16,14 @@ import {
   ATTENDANCE_STATUS,
   ATTENDANCE_STATUS_LABEL,
 } from "@/constants/Attendance";
-import { Edit3 } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 import { handleMutation } from "@/utils/handleMutation";
 import { useCreateAttendanceCorrection } from "@/hooks/useAttendanceCorrection";
 import { useCrudModalForm } from "@/hooks/useCrudModalForm";
 import AttendanceCorrectionModal from "@/pages/AttendanceReport/Modal";
 import FilterDropdown from "@/components/FilterDropdown";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
 interface AttendanceTableProps {
   onDataLoaded?: (data: Attendance[]) => void;
@@ -41,6 +42,8 @@ export default function AttendanceTable({
   const [employeeFilter, setEmployeeFilter] = useState<string>("all");
 
   const show = useShowModal<number>();
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const { mutateAsync: createAttendanceCorrection } =
     useCreateAttendanceCorrection();
@@ -69,6 +72,10 @@ export default function AttendanceTable({
   const { mutateAsync: exportAttendance } = useExportAttendance();
 
   const handleShow = (id: number) => {
+    if (isMobile) {
+      navigate(`/attendance/${id}`)
+      return;
+    }
     show.open(id);
   };
 

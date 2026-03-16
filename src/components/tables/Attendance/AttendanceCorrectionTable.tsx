@@ -26,6 +26,7 @@ import FilterDropdown from "@/components/FilterDropdown";
 import { Clock, Info } from "lucide-react";
 import AttendanceCorrectionModal from "@/pages/AttendanceReport/Modal";
 import { formatDateID } from "@/utils/date";
+import DatePicker from "@/components/form/date-picker";
 import { useNavigate } from "react-router-dom";
 import AttendanceShowModal from "@/pages/AttendanceReport/ShowModal";
 
@@ -36,6 +37,8 @@ interface AttendanceCorrectionTableProps {
 export default function AttendanceCorrectionTable({
   onDataLoaded,
 }: AttendanceCorrectionTableProps) {
+  const today = new Date().toISOString().split("T")[0];
+
   const {
     data: corrections = [],
     isLoading,
@@ -51,6 +54,7 @@ export default function AttendanceCorrectionTable({
 
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState<string>(today);
 
   const filteredData = useMemo(() => {
     return corrections.filter((item) => {
@@ -58,7 +62,9 @@ export default function AttendanceCorrectionTable({
         employeeFilter === "all" || item.employee_name === employeeFilter;
       const matchStatus =
         statusFilter === "all" || item.status.toString() === statusFilter;
-      return matchEmployee && matchStatus;
+      const matchDate =
+        !dateFilter || item.attendance_date === dateFilter;
+      return matchEmployee && matchStatus && matchDate;
     });
   }, [corrections, employeeFilter, statusFilter]);
 
@@ -299,11 +305,27 @@ export default function AttendanceCorrectionTable({
               options={statusOptions}
               onChange={setStatusFilter}
             />
-          </>
+            <DatePicker
+              id="correction-date-filter"
+              mode="single"
+              placeholder="Filter by date"
+              value={dateFilter}
+              onChange={(dates) => {
+                if (dates.length > 0) {
+                  const date = dates[0];
+                  const localDate = date.toLocaleDateString("en-CA");
+                  setDateFilter(localDate);
+                } else {
+                  setDateFilter("");
+                }
+              }}
+            />
+            </>
         }
         extraFilters={{
           employee_name: employeeFilter,
           status: statusFilter,
+          attendance_date: dateFilter,
         }}
       />
 
