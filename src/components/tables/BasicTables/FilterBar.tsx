@@ -79,11 +79,6 @@ export function FilterBar({
                 {currentSelectedIds.length} {isMobile ? "" : "Selected"}
               </span>
             )}
-            {!isMobile && (
-              <div className="flex items-center gap-2">
-                {viewSwitcher}
-              </div>
-            )}
 
           </div>
 
@@ -188,6 +183,12 @@ export function FilterBar({
                 </button>
               </Tooltip>
             </Can>
+          )}
+
+          {!isMobile && viewSwitcher && (
+            <div className="flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
+              {viewSwitcher}
+            </div>
           )}
         </div>
       </div>
