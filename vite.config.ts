@@ -25,8 +25,8 @@ export default defineConfig({
         name: "HRIS Hideri App",
         short_name: "HRIS",
         description: "Human Resource Information System Ujikom",
-        theme_color: "#ffffff",
-        background_color: "#ffffff",
+        theme_color: "#4f46e5",
+        background_color: "#312e81",
         display: "standalone",
         icons: [
           {
