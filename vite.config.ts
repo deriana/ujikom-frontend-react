@@ -17,6 +17,9 @@ export default defineConfig({
     // 2. Tambahkan konfigurasi PWA di sini
     VitePWA({
       registerType: "autoUpdate",
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5000000, // Kita set jadi 5MB
+      },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
         name: "HRIS Hideri App",
