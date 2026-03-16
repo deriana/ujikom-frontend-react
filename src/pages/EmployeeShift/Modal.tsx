@@ -6,8 +6,9 @@ import { User, CalendarDays, Clock, Info, Briefcase } from "lucide-react";
 import Select from "@/components/form/Select";
 import DatePicker from "@/components/form/date-picker";
 import { useShiftTemplates } from "@/hooks/useShiftTemplate";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
+// import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
+import { useEmployeeOptions } from "@/hooks/useEmployeeInput";
 
 interface EmployeeShiftModalProps {
   isOpen: boolean;
@@ -27,10 +28,11 @@ export default function EmployeeShiftModal({
   isLoading = false,
 }: EmployeeShiftModalProps) {
   const isEdit = Boolean(data.uuid);
+  const { employees, isLoading: loadingEmployees } = useEmployeeOptions()
 
-  const { data: employees = [], isLoading: loadingEmployees } = (useGetEmployeeForInput as any)({
-    enabled: isOpen,
-  })
+  // const { data: employees = [], isLoading: loadingEmployees } = (useGetEmployeeForInput as any)({
+  //   enabled: isOpen,
+  // })
 
   const { data: shifts = [], isLoading: loadingShifts } = (useShiftTemplates as any)({
     enabled: isOpen,
@@ -116,7 +118,13 @@ export default function EmployeeShiftModal({
                         value: s.uuid,
                       }))}
                       placeholder="Select shift..."
+                      disabled={isEdit}
                     />
+                    {isEdit && (
+                      <p className="text-[10px] text-gray-400 italic">
+                        Shift cannot be changed during update
+                      </p>
+                    )}
                   </div>
 
                   {/* Shift Date */}
@@ -144,7 +152,10 @@ export default function EmployeeShiftModal({
                 <div className="flex gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50">
                   <Info size={16} className="text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
-                    Ensure the employee is available on the selected date to avoid scheduling conflicts.
+                    <strong>Note:</strong> Shift assignments are linked to
+                    existing templates. You cannot manually override specific
+                    hours here; please update the template if needed. HR cannot
+                    manually assign shifts outside of the defined templates.
                   </p>
                 </div>
 

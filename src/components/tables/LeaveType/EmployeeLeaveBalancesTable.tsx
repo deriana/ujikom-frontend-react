@@ -173,12 +173,12 @@ export default function EmployeeLeaveBalancesCard() {
                             </div>
                           )}
 
-                          <div className="flex justify-between mt-2 text-[9px] font-semibold text-gray-400 uppercase">
-                            <span>Used: <span className="text-gray-700 dark:text-gray-300">{balance.used_days}</span></span>
-                            {!isUnlimited && (
+                          {!isUnlimited && (
+                            <div className="flex justify-between mt-2 text-[9px] font-semibold text-gray-400 uppercase">
+                              <span>Used: <span className="text-gray-700 dark:text-gray-300">{balance.used_days}</span></span>
                               <span>Total: <span className="text-gray-700 dark:text-gray-300">{balance.total_days}</span></span>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       );
                     })}

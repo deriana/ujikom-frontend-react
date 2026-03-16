@@ -63,13 +63,36 @@ import SingleAttendance from "./pages/Attendance/SingleFaceRecognition";
 import FinalizeActivationPage from "./pages/AuthPages/FinalizeActivation";
 import { LandingPageWrapper } from "./pages/Landing/Index";
 import CareerPage from "./pages/Careers/CareerPage";
-import JobListPage from "./components/landing/JobListPage";
+// import JobListPage from "./components/landing/JobListPage";
 import ResetPasswordPage from "./pages/AuthPages/ResetPassword";
 import ForgotPasswordPage from "./pages/AuthPages/ForgotPassword";
 import EmployeeLeaveBalances from "./pages/LeaveType/EmployeeLeaveBalance";
+import MobileLayout from "./layout/MobileLayout";
+import MobileHome from "./pages/Mobile/Home";
+import { useRoleName } from "./hooks/useRoleName";
+import { ROLES } from "./constants/Roles";
+import MobileStats from "./pages/Mobile/Stats";
+import PayrollDetailMobile from "./pages/Mobile/PayrollDetail";
+import Activity from "./pages/Mobile/Activity";
+import ApprovalMenu from "./pages/Mobile/ApprovalMenu";
+import MobileGuard from "./routes/MobileGuard";
+import LeaveBalances from "./pages/Mobile/LeaveBalance";
+import RouteServiceProvider from "./providers/RouteServiceProvider";
+import { useIsMobile } from "./hooks/useIsMobile";
+import AssessmentCategory from "./pages/AssessmentCategory/Index";
+import AssessmentPage from "./pages/Assessment/Index";
+import { DivisionWithTeamAndEmployee } from "./pages/Division/DivisionWithTeamAndEmployee";
+import AttendancCorrections from "./pages/AttendanceCorrection.tsx/Index";
+import AttendanceCorrectionApproval from "./pages/Approval/AttendanceCorrectionApproval";
+import AttendancePresence from "./pages/Attendance/AttendanceMenu";
+import ManualAttendance from "./pages/Attendance/ManualAttendance";
+import AttendanceDetailMobile from "./pages/Mobile/AttendanceDetail";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
+
+  const { isRole } = useRoleName();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -83,7 +106,18 @@ export default function App() {
     { path: "/calendar", element: <Calendar /> },
     { path: "/blank", element: <Blank /> },
     { path: "/profile", element: <Profile /> },
-    { path: "/attendance/single", element: <SingleAttendance /> },
+    {
+      path: "/divisions/all",
+      element: <DivisionWithTeamAndEmployee />,
+    },
+    {
+      path: "/attendance/menu",
+      element: <AttendancePresence />,
+    },
+    {
+      path: "/attendance/manual",
+      element: <ManualAttendance />
+    }
   ];
 
   const protectedRoutes = [
@@ -103,6 +137,12 @@ export default function App() {
       path: "/attendances/report",
       element: <AttendancesReport />,
       resource: RESOURCES.ATTENDANCE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path: "/attendances/correction",
+      element: <AttendancCorrections />,
+      resource: RESOURCES.ATTENDANCE_CORRECTION,
       permission: PERMISSIONS.BASE.INDEX,
     },
     {
@@ -248,6 +288,20 @@ export default function App() {
       element: <Notification />,
     },
 
+    {
+      path: "/assessment_category",
+      element: <AssessmentCategory />,
+      resource: RESOURCES.ASSESSMENT_CATEGORY,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/assessments",
+      element: <AssessmentPage />,
+      resource: RESOURCES.ASSESSMENT,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
     /** Approval Route */
     {
       path: "/approval/leave",
@@ -271,6 +325,12 @@ export default function App() {
       path: "/approval/overtime",
       element: <OvertimeApproval />,
       resource: RESOURCES.OVERTIME,
+      permission: PERMISSIONS.BASE.APPROVE,
+    },
+    {
+      path: "/approval/attendance-correction",
+      element: <AttendanceCorrectionApproval />,
+      resource: RESOURCES.ATTENDANCE_CORRECTION,
       permission: PERMISSIONS.BASE.APPROVE,
     },
 
@@ -311,7 +371,83 @@ export default function App() {
       resource: RESOURCES.WORK_SCHEDULE,
       permission: PERMISSIONS.BASE.RESTORE,
     },
+    // Mobile View
+    {
+      path: "/home",
+      element: <MobileHome />,
+      isMobileOnly: true,
+    },
+    {
+      path: "/stats",
+      element: <MobileStats />,
+      isMobileOnly: true,
+    },
+    {
+      path: "/payroll/:uuid",
+      element: <PayrollDetailMobile />,
+      isMobileOnly: true,
+    },
+    {
+      path: "/attendance/:id",
+      element: <AttendanceDetailMobile />,
+      isMobileOnly: true,
+    
+    },
+    {
+      path: "/activity",
+      element: <Activity />,
+      isMobileOnly: true,
+    },
+    {
+      path: "/approval",
+      element: <ApprovalMenu />,
+      permission: "has-any-approval",
+      isMobileOnly: true,
+    },
+    {
+      path: "/leave-balances",
+      element: <LeaveBalances />,
+      isMobileOnly: true,
+    },
   ];
+
+  const renderRoutes = (
+    <>
+      {publicRoutes.map(({ path, element }) => (
+        <Route key={path} path={path} element={element} />
+      ))}
+
+      {protectedRoutes.map(
+        ({ path, element, resource, permission, isMobileOnly }) => {
+          const routeContent = (
+            <Route
+              key={path}
+              path={path}
+              element={isMobileOnly ? <MobileGuard /> : element}
+            >
+              {isMobileOnly && <Route index element={element} />}
+            </Route>
+          );
+
+          // Gabungkan dengan PermissionRoute jika ada
+          return resource && permission ? (
+            <Route
+              key={`perm-${path}`}
+              element={
+                <PermissionRoute
+                  permission={buildPermission(resource, permission)}
+                />
+              }
+            >
+              {routeContent}
+            </Route>
+          ) : (
+            routeContent
+          );
+        },
+      )}
+    </>
+  );
 
   return (
     <>
@@ -320,43 +456,54 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <Toaster position="top-right" containerStyle={{ zIndex: 999999 }} />
-        <Routes>
-          {/* 🔒 Protected Area */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              {publicRoutes.map(({ path, element }) => (
-                <Route key={path} path={path} element={element} />
-              ))}
 
-              {protectedRoutes.map(({ path, element, resource, permission }) =>
-                resource && permission ? (
-                  <Route
-                    key={path}
-                    element={
-                      <PermissionRoute
-                        permission={buildPermission(resource, permission)}
-                      />
-                    }
-                  >
-                    <Route path={path} element={element} />
-                  </Route>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <RouteServiceProvider>
+                <LandingPageWrapper />
+              </RouteServiceProvider>
+            }
+          />
+          {/* 🔓 1. Public Routes (Taruh di paling atas) */}
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/set-password" element={<FinalizeActivationPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/careers/:jobId" element={<CareerPage />} />
+          <Route path="/attendance" element={<FaceScanner />} />
+
+          {/* 🔒 2. Protected Area */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/attendance/single" element={<SingleAttendance />} />
+            <Route
+              element={
+                isRole(ROLES.ADMIN) || isRole(ROLES.OWNER) ? (
+                  <AppLayout />
+                ) : isMobile ? (
+                  <MobileLayout />
                 ) : (
-                  <Route key={path} path={path} element={element} />
-                ),
+                  <AppLayout />
+                )
+              }
+            >
+              {isMobile && !isRole(ROLES.ADMIN) && !isRole(ROLES.OWNER) && (
+                <>
+                  <Route path="/home" element={<MobileHome />} />
+
+                  <Route
+                    path="/dashboard/employee"
+                    element={<Navigate to="/home" replace />}
+                  />
+                </>
               )}
+
+              {renderRoutes}
             </Route>
           </Route>
 
-          <Route path="/attendance" element={<FaceScanner />} />
-
-          {/* 🔓 Public Routes */}
-          <Route path="/login" element={<SignIn />} />
-          <Route path="/set-password" element={<FinalizeActivationPage />} /> 
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/" element={<LandingPageWrapper />} />
-          {/* <Route path="/careers" element={<JobListPage />} /> */}
-          <Route path="/careers/:jobId" element={<CareerPage />} />
+          {/* 🚫 3. Error Pages & Fallback */}
           <Route path="/403" element={<Forbidden />} />
           <Route path="/404" element={<NotFound />} />
           <Route path="/500" element={<ServerError />} />

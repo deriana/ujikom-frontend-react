@@ -2,7 +2,7 @@ import { Column } from "@/types";
 import { User } from "@/types/user.types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import TableActions from "@/components/tables/BasicTables/TableAction";
-import { useAdminChangePassword, useDeleteUser, useTerminateEmployment, useUsers } from "@/hooks/useUser";
+import { useDeleteUser, useTerminateEmployment, useUsers } from "@/hooks/useUser";
 import { useNavigate } from "react-router-dom";
 import { RESOURCES } from "@/constants/Resource";
 import { handleMutation } from "@/utils/handleMutation";
@@ -16,7 +16,7 @@ export default function UsersTable() {
   const { data: users = [], isLoading, isError, error } = useUsers();
   const { mutateAsync: deleteUser } = useDeleteUser();
   const { mutateAsync: terminatedUser } = useTerminateEmployment();
-  const { mutateAsync: adminChangePassword } = useAdminChangePassword();
+  // const { mutateAsync: adminChangePassword } = useAdminChangePassword();
   const [roleFilter, setRoleFilter] = useState("all");
   const [teamFilter, setTeamFilter] = useState("all");
   const [divisionFilter, setDivisionFilter] = useState("all");
@@ -94,12 +94,12 @@ export default function UsersTable() {
       error: "Failed to resign user",
     });
 
-  const handleAdminChangePassword = (uuid: string, newPassword: string) =>
-    handleMutation(() => adminChangePassword({ uuid, newPassword }), {
-      loading: "Changing password...",
-      success: "Password changed successfully",
-      error: "Failed to change password",
-    });
+  // const handleAdminChangePassword = (uuid: string, newPassword: string) =>
+  //   handleMutation(() => adminChangePassword({ uuid, newPassword }), {
+  //     loading: "Changing password...",
+  //     success: "Password changed successfully",
+  //     error: "Failed to change password",
+  //   });
 
   const handleCreate = () => {
     navigate("/users/create");
@@ -247,6 +247,21 @@ export default function UsersTable() {
           onDelete={handleDelete}
           baseNamePermission={RESOURCES.USER}
           isSystemReserve={row.system_reserve}
+          // actions={[
+          //   {
+          //     label: "Change Password",
+          //     variant: "warning",
+          //     icon: <KeyRound size={16} />,
+          //     onClick: (uuid) => {
+          //       const newPassword = prompt("Enter new password for " + row.name);
+          //       if (newPassword && newPassword.length >= 8) {
+          //         handleAdminChangePassword(uuid, newPassword);
+          //       } else if (newPassword) {
+          //         alert("Password must be at least 8 characters");
+          //       }
+          //     },
+          //   },
+          // ]}
         />
       ),
     },

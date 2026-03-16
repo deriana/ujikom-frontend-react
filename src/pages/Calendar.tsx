@@ -13,6 +13,8 @@ import { useHolidays } from "@/hooks/useHoliday";
 import { Holiday } from "@/types";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { CalendarDays, Clock, User, Info } from "lucide-react";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CalendarEvent extends EventInput {
   extendedProps: {
@@ -21,10 +23,26 @@ interface CalendarEvent extends EventInput {
   };
 }
 
+// --- Skeleton Component (Local) ---
+const CalendarMobileSkeleton = () => (
+  <div className="animate-pulse space-y-4">
+    <div className="flex justify-between items-center mb-6">
+      <div className="h-6 w-32 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+      <div className="h-4 w-20 bg-gray-200 dark:bg-gray-800 rounded-lg" />
+    </div>
+    {[1, 2, 3, 4].map((i) => (
+      <div key={i} className="h-24 bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+    ))}
+  </div>
+);
+
 const Calendar: React.FC = () => {
   const calendarRef = useRef<FullCalendar>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  const { data: holidays = [] } = useHolidays();
+  const { data: holidays = [], isLoading } = useHolidays();
+  const isMobile = useIsMobile()
 
   const { isOpen, openModal, closeModal } = useModal();
 
@@ -65,7 +83,32 @@ const Calendar: React.FC = () => {
     return result;
   })();
 
-  const allEvents = [...events, ...paydayEvents];
+  /** Generate Assessment events for the 1st of every month (±12 months) */
+  const assessmentEvents: CalendarEvent[] = (() => {
+    const result: CalendarEvent[] = [];
+    const today = new Date();
+    for (let offset = -12; offset <= 12; offset++) {
+      const d = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+      result.push({
+        id: `assessment-${dateStr}`,
+        title: "Assessment Time",
+        start: dateStr,
+        allDay: true,
+        extendedProps: { calendar: "Assessment" },
+      });
+    }
+    return result;
+  })();
+
+  const allEvents = [...events, ...paydayEvents, ...assessmentEvents];
+
+  const upcomingEvents = allEvents
+    .sort((a, b) => new Date(a.start as string).getTime() - new Date(b.start as string).getTime())
+    .filter(e => new Date(e.start as string) >= new Date());
+
+  const totalPages = Math.ceil(upcomingEvents.length / itemsPerPage);
+  const paginatedEvents = upcomingEvents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   /**
    * Click Event → Open Detail Modal
@@ -92,39 +135,106 @@ const Calendar: React.FC = () => {
       <PageBreadcrumb pageTitle="Calendar" />
 
       <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3">
-        <div className="custom-calendar">
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            headerToolbar={{
-              left: "prev,next",
-              center: "title",
-              right: "",
-            }}
-            events={allEvents}
-            eventClick={handleEventClick}
-            eventContent={renderEventContent}
-            dayCellContent={(args) => {
-              const isPayday = args.date.getDate() === 26;
-              return (
-                <div className="flex justify-center w-full pt-1.5 h-full">
-                  <span
-                    className={`
-                      inline-flex items-center justify-center w-7 h-7 text-xs font-bold transition-all duration-300
-                      ${isPayday 
-                        ? "rounded-full bg-yellow-400 text-yellow-950 shadow-lg shadow-yellow-400/40 ring-4 ring-yellow-200 dark:bg-yellow-500 dark:text-yellow-950 dark:ring-yellow-900/40 scale-110 z-10" 
-                        : "text-gray-700 dark:text-gray-300"}
-                    `}
-                  >
-                    {args.dayNumberText}
-                  </span>
+        {isLoading && isMobile ? (
+          <CalendarMobileSkeleton />
+        ) : isMobile ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-white">Upcoming Events</h3>
+              <span className="text-xs text-gray-500">Mobile View</span>
+            </div>
+            <div className="space-y-3">
+              {paginatedEvents.map((event) => (
+                <div 
+                  key={event.id}
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    openModal();
+                  }}
+                  className="relative overflow-hidden rounded-xl border border-gray-100 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-800/50 active:scale-95 transition-transform"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-center justify-center min-w-15 rounded-lg bg-white py-2 shadow-sm dark:bg-gray-900">
+                      <span className="text-[10px] font-bold uppercase text-gray-400">
+                        {new Date(event.start as string).toLocaleString('default', { month: 'short' })}
+                      </span>
+                      <span className="text-xl font-black text-brand-600 dark:text-brand-400">
+                        {new Date(event.start as string).getDate()}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-gray-900 dark:text-white">{event.title}</h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {event.extendedProps.calendar === "Payday" 
+                          ? "Monthly Disbursement" 
+                          : event.extendedProps.calendar === "Assessment"
+                          ? "Performance Review"
+                          : "Holiday Event"}
+                      </p>
+                    </div>
+                    <div className={`h-2 w-2 rounded-full ${event.extendedProps.calendar === "Payday" ? "bg-emerald-500" : "bg-amber-500"}`} />
+                  </div>
                 </div>
-              );
-            }}
-            height="auto"
-          />
-        </div>
+              ))}
+            </div>
+            
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+              <p className="text-xs text-gray-500">
+                Page {currentPage} of {totalPages}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => prev - 1)}
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 disabled:opacity-30 text-gray-600 dark:text-gray-400"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 disabled:opacity-30 text-gray-600 dark:text-gray-400"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="custom-calendar">
+            <FullCalendar
+              ref={calendarRef}
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              headerToolbar={{
+                left: "prev,next",
+                center: "title",
+                right: "",
+              }}
+              events={allEvents}
+              eventClick={handleEventClick}
+              eventContent={renderEventContent}
+              dayCellContent={(args) => {
+                const isPayday = args.date.getDate() === 26;
+                return (
+                  <div className="flex justify-center w-full pt-1.5 h-full">
+                    <span
+                      className={`
+                        inline-flex items-center justify-center w-7 h-7 text-xs font-bold transition-all duration-300
+                        ${isPayday 
+                          ? "rounded-full bg-yellow-400 text-yellow-950 shadow-lg shadow-yellow-400/40 ring-4 ring-yellow-200 dark:bg-yellow-500 dark:text-yellow-950 dark:ring-yellow-900/40 scale-110 z-10" 
+                          : "text-gray-700 dark:text-gray-300"}
+                      `}
+                    >
+                      {args.dayNumberText}
+                    </span>
+                  </div>
+                );
+              }}
+              height="auto"
+            />
+          </div>
+        )}
 
         {/* EVENT DETAIL MODAL */}
         <Modal
@@ -218,9 +328,21 @@ const renderEventContent = (eventInfo: any) => {
 
   if (calendarType === "Payday") {
     return (
-      <div className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 dark:from-emerald-600 dark:via-emerald-700 dark:to-teal-700 shadow-sm border border-emerald-400/50 dark:border-emerald-500/30 text-white font-bold text-[10px] ring-1 ring-emerald-400/20 dark:ring-emerald-500/20 animate-in fade-in slide-in-from-top-1 duration-500 hover:scale-[1.02] transition-transform overflow-hidden cursor-pointer">
+      <div className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-linear-to-br from-emerald-500 via-emerald-600 to-teal-600 dark:from-emerald-600 dark:via-emerald-700 dark:to-teal-700 shadow-sm border border-emerald-400/50 dark:border-emerald-500/30 text-white font-bold text-[10px] ring-1 ring-emerald-400/20 dark:ring-emerald-500/20 animate-in fade-in slide-in-from-top-1 duration-500 hover:scale-[1.02] transition-transform overflow-hidden cursor-pointer">
         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
         <span className="shrink-0 text-xs drop-shadow-sm">💰</span>
+        <span className="truncate uppercase tracking-widest drop-shadow-sm font-black">
+          {eventInfo.event.title}
+        </span>
+      </div>
+    );
+  }
+
+  if (calendarType === "Assessment") {
+    return (
+      <div className="group relative flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-linear-to-br from-blue-500 via-blue-600 to-indigo-600 dark:from-blue-600 dark:via-blue-700 dark:to-indigo-700 shadow-sm border border-blue-400/50 dark:border-blue-500/30 text-white font-bold text-[10px] ring-1 ring-blue-400/20 dark:ring-blue-500/20 animate-in fade-in slide-in-from-top-1 duration-500 hover:scale-[1.02] transition-transform overflow-hidden cursor-pointer">
+        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <span className="shrink-0 text-xs drop-shadow-sm">📝</span>
         <span className="truncate uppercase tracking-widest drop-shadow-sm font-black">
           {eventInfo.event.title}
         </span>

@@ -8,12 +8,41 @@ import {
   useMarkAsRead,
   useMarkAllAsRead,
 } from "@/hooks/useNotification";
-import { Download, Plus, Bell } from "lucide-react"; 
+import { Bell } from "lucide-react";
+import { useSettingsContext } from "@/context/SettingsContext";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { data: unreadNotifications = [], isLoading } =
     useUnreadNotifications();
+  const { general } = useSettingsContext()
+
+  const appLogo = general?.logo || "/placeholder_img.jpg";
+
+
+
+  // useEffect(() => {
+  //   if ("Notification" in window && Notification.permission === "default") {
+  //     Notification.requestPermission();
+  //   }
+  // }, []);
+  
+  // useEffect(() => {
+  //   if (unreadNotifications.length > prevCountRef.current) {
+  //     const newestNotif = unreadNotifications[0]; 
+
+  //     if (Notification.permission === "granted" || isMobile) {
+  //       new Notification(newestNotif.data.title, {
+  //         body: newestNotif.data.message,
+  //         icon: appLogo, 
+  //       });
+  //     }
+  //   }
+
+  //   // Update nilai ref untuk pengecekan berikutnya
+  //   prevCountRef.current = unreadNotifications.length;
+  // }, [unreadNotifications]);
+
   const markAsReadMutation = useMarkAsRead();
   const markAllAsReadMutation = useMarkAllAsRead();
 
@@ -107,7 +136,7 @@ export default function NotificationDropdown() {
                   >
                     <div className="flex-shrink-0">
                       <img
-                        src="/placeholder_img.jpg"
+                        src={appLogo}
                         alt="User"
                         className="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-gray-700"
                       />

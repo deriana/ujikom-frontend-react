@@ -12,9 +12,11 @@ import {
 } from "lucide-react";
 import Select from "@/components/form/Select";
 import DatePicker from "@/components/form/date-picker";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
+// import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { useWorkSchedules } from "@/hooks/useWorkSchedules";
 import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
+import Checkbox from "@/components/form/input/Checkbox";
+import { useEmployeeOptions } from "@/hooks/useEmployeeInput";
 
 interface EmployeeWorkScheduleModalProps {
   isOpen: boolean;
@@ -35,16 +37,15 @@ export default function EmployeeWorkScheduleModal({
 }: EmployeeWorkScheduleModalProps) {
   const isEdit = Boolean(data.uuid);
 
-  const { data: employees = [], isLoading: loadingEmployees } = useGetEmployeeForInput({
-    enabled: isOpen,
-  }) as { data: { name: string; nik: string }[]; isLoading: boolean };
+  const { employees, isLoading: loadingEmployees } = useEmployeeOptions();
 
-  const { data: schedules = [], isLoading: loadingSchedules } = useWorkSchedules({
-    enabled: isOpen,
-  }) as {
-    data: { name: string; uuid: string }[];
-    isLoading: boolean;
-  };
+  const { data: schedules = [], isLoading: loadingSchedules } =
+    useWorkSchedules({
+      enabled: isOpen,
+    }) as {
+      data: { name: string; uuid: string }[];
+      isLoading: boolean;
+    };
 
   const isInitialLoading = loadingEmployees || loadingSchedules;
 
@@ -92,14 +93,21 @@ export default function EmployeeWorkScheduleModal({
                       onChange={(val) =>
                         setData((prev) => ({ ...prev, employee_nik: val }))
                       }
-                      options={employees.map((e) => ({
-                        label: e.name,
-                        value: e.nik,
-                      }))}
+                      options={employees.map(
+                        (e: { name: string; nik: string }) => ({
+                          label: e.name,
+                          value: e.nik,
+                        }),
+                      )}
                       placeholder="Select employee profile..."
                       disabled={isEdit}
                       className="w-full"
                     />
+                      {isEdit && (
+                      <p className="text-[10px] text-gray-400 italic">
+                      Employee cannot be changed during update
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -120,12 +128,28 @@ export default function EmployeeWorkScheduleModal({
                       }))}
                       placeholder="Choose policy..."
                       className="w-full"
+                      disabled={isEdit}
                     />
+                      {isEdit && (
+                      <p className="text-[10px] text-gray-400 italic">
+                        Workschedule cannot be changed during update
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 {/* --- Validity Period Section --- */}
                 <div className="space-y-4">
+                  <div className="flex gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50">
+                    <Info size={16} className="text-blue-500 shrink-0 mt-0.5" />
+                    <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+                      <strong>Note:</strong> Shift assignments are linked to
+                      existing templates. You cannot manually override specific
+                      hours here; please update the template if needed. HR
+                      cannot manually assign shifts outside of the defined
+                      templates.
+                    </p>
+                  </div>
                   <h5 className="px-1 text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                     <Calendar size={16} className="text-blue-500" />
                     Validity Period
@@ -150,25 +174,52 @@ export default function EmployeeWorkScheduleModal({
                       <ArrowRight size={20} />
                     </div>
 
-                    <div className="w-full space-y-1.5">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">
-                        Ends On (Optional)
+                    <div
+                      className={`w-full space-y-1.5 transition-all duration-300 ${data.end_date === null ? "opacity-50 grayscale pointer-events-none" : ""}`}
+                    >
+                      <label className="text-[10px] font-bold text-gray-400 uppercase ml-1 flex justify-between items-center">
+                        Ends On
                       </label>
-                      <DatePicker
-                        id="end-date-picker"
-                        value={data.end_date || ""}
-                        onChange={(_, dateStr) =>
-                          setData((p) => ({ ...p, end_date: dateStr || null }))
-                        }
-                        placeholder="No end date"
-                      />
+                      {data.end_date !== null ? (
+                        <DatePicker
+                          id="end-date-picker"
+                          value={data.end_date || ""}
+                          onChange={(_, dateStr) =>
+                            setData((p) => ({
+                              ...p,
+                              end_date: dateStr || null,
+                            }))
+                          }
+                          placeholder="YYYY-MM-DD"
+                        />
+                      ) : (
+                        <div className="h-11 flex items-center px-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-gray-400 text-sm italic">
+                          No expiration date
+                        </div>
+                      )}
                     </div>
                   </div>
+
+                  <label className="flex items-center gap-3 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <Checkbox
+                      checked={data.end_date === null}
+                      onChange={(checked) =>
+                        setData((prev) => ({
+                          ...prev,
+                          end_date: checked ? null : "",
+                        }))
+                      }
+                      className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+                    />
+                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                      Set as Permanent Schedule
+                    </span>
+                  </label>
                 </div>
 
                 {/* --- UX Context Box --- */}
                 <div
-                  className={`transition-all duration-300 overflow-hidden ${!data.end_date ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}
+                  className={`transition-all duration-300 overflow-hidden ${data.end_date === null ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}`}
                 >
                   <div className="flex items-center gap-3 p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/20">
                     <div className="bg-blue-500 rounded-full p-1 shadow-lg shadow-blue-200 dark:shadow-none">

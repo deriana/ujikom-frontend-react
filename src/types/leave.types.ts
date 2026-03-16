@@ -22,7 +22,7 @@ export interface Leave {
   uuid: UUID;
   current_approval_uuid?: string;
   employee_name: string;
-  employee_nik: number;
+  employee_nik: string;
   leave_type: string;
   leave_type_uuid: string;
   date_start: string;
@@ -31,6 +31,15 @@ export interface Leave {
   attachment?: LeaveAttachment | null;
   approval_status: 0 | 1 | 2;
   is_half_day: boolean;
+  duration: number;
+  duration_label: string;
+  current_level: number;
+  next_approver: string | null;
+  approval_levels?: {
+    level: number;
+    status: number;
+    nama_approver: string;
+  }[];
 
   can: LeavePermissions;
 }

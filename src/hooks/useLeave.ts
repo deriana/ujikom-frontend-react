@@ -7,13 +7,18 @@ import {
   leaveApprovals,
   getLeaveByUuid,
   getLeaveApprovals,
+  exportLeaves,
 } from "@/api/leave.api";
 import { LeaveInput } from "@/types/leave.types";
 
-export const useLeaves = () => {
+export const useLeaves = (params?: {
+  start_date?: string;
+  end_date?: string;
+}) => {
   return useQuery({
-    queryKey: ["leaves"],
-    queryFn: getLeave,
+    queryKey: ["leaves", params?.start_date, params?.end_date],
+    queryFn: () => getLeave(params),
+    enabled: !!params?.start_date && !!params?.end_date,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -113,6 +118,32 @@ export const useLeaveApprovals = () => {
 
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["leaves"] });
+    },
+  });
+};
+
+export const useExportLeave = () => {
+  return useMutation({
+    mutationFn: (params: { start_date?: string; end_date?: string }) =>
+      exportLeaves(params),
+
+    onSuccess: (response) => {
+      const disposition = response.headers["content-disposition"];
+
+      let fileName = "attendances.xlsx";
+
+      if (disposition && disposition.includes("filename=")) {
+        fileName = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     },
   });
 };

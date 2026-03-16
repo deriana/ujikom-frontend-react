@@ -1,4 +1,3 @@
-import React from 'react';
 import { Github, Facebook, Instagram, Twitter } from 'lucide-react';
 
 const SOCIAL_LINKS = [

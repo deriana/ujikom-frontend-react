@@ -21,7 +21,7 @@ export default function UserDropdown() {
       await logout();
       toast.success("Logged out successfully.");
       queryClient.clear();
-      navigate("login");
+      navigate("/login");
     } catch (err) {
       toast.error("Logout failed. Please try again.");
     } finally {

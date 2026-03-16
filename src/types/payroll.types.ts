@@ -92,7 +92,7 @@ export interface PayrollEarnings {
   base_salary: number;
 
   allowances: PayrollAllowance[];
-
+  assessment_bonus: number;
   allowance_total: number;
   overtime_pay: number;
   manual_adjustment: number;

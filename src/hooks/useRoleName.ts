@@ -14,6 +14,8 @@ export const useRoleName = () => {
   [role]);
 
   const isAdmin = useMemo(() => role === ROLES.ADMIN, [role]);
+  const isOwner = useMemo(() => role === ROLES.OWNER, [role]);
+  const isDirecture = useMemo(() => role === ROLES.DIRECTUR, [role]);
 
-  return { role, isRole, isAdminOrHR, isAdmin };
+  return { role, isRole, isAdminOrHR, isAdmin, isOwner, isDirecture };
 };

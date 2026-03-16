@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { OvertimeInput } from "@/types";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button/Button";
-import { FileText, ClipboardCheck, UserCircle } from "lucide-react";
+import { FileText, ClipboardCheck, UserCircle, ChevronUp, ChevronDown } from "lucide-react";
 import Select from "@/components/form/Select";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
 import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
+import { useEmployeeOptions } from "@/hooks/useEmployeeInput";
 
 interface OvertimeModalProps {
   isOpen: boolean;
@@ -26,14 +27,14 @@ export default function OvertimeModal({
   isUserAdminOrHR = false,
 }: OvertimeModalProps) {
   const isEdit = !!overtimeData.uuid;
+  const [showEmployeeSelect, setShowEmployeeSelect] = useState(false);
 
   const updateData = (payload: Partial<OvertimeInput>) => {
     setOvertimeData({ ...overtimeData, ...payload });
   };
 
-    const { data: employees = [], isLoading: loadingEmployees } = (useGetEmployeeForInput as any)({
-      enabled: isOpen,
-    })
+  const { employees, isLoading: loadingEmployees } = useEmployeeOptions()
+
     
     const isInitialLoading = loadingEmployees;
 
@@ -69,28 +70,52 @@ export default function OvertimeModal({
           }}
         >
           <div className="custom-scrollbar max-h-[65vh] overflow-y-auto px-1 space-y-6">
-            {isUserAdminOrHR && (
-              <div className="space-y-2 bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-800">
-                <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                  <UserCircle size={14} /> Select Employee
-                  {isEdit && (
-                    <span className="text-[10px] lowercase font-normal opacity-70">
-                      (cannot be changed)
-                    </span>
-                  )}
-                </label>
-                <Select
-                  options={employees.map((emp: { nik: string; name: string; }) => ({
-                    value: emp.nik,
-                    label: `${emp.nik} - ${emp.name}`,
-                  }))}
-                  placeholder="Choose an employee..."
-                  value={overtimeData.employee_nik || ""} 
-                  onChange={(val) => updateData({ employee_nik: val })}
-                  disabled={isEdit}
-                />
-              </div>
-            )}
+                {isUserAdminOrHR && (
+                  <div className="bg-gray-50 dark:bg-gray-800/40 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmployeeSelect(!showEmployeeSelect)}
+                      className="w-full flex items-center justify-between p-5 text-left transition-colors hover:bg-gray-100/50 dark:hover:bg-gray-800/60"
+                    >
+                      <div className="flex items-center gap-2">
+                        <UserCircle size={18} className="text-gray-500" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                          {overtimeData.employee_nik 
+                            ? `Employee: ${overtimeData.employee_nik}` 
+                            : "Select Employee (Admin/HR Only)"}
+                        </span>
+                      </div>
+                      {showEmployeeSelect ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+
+                    {showEmployeeSelect && (
+                      <div className="px-5 pb-5 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <label className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">
+                          Choose Target Employee
+                          {isEdit && (
+                            <span className="ml-1 lowercase font-normal opacity-70 italic">
+                              (cannot be changed)
+                            </span>
+                          )}
+                        </label>
+                        <Select
+                          options={employees.map((emp) => ({
+                            value: emp.nik,
+                            label: `${emp.nik} - ${emp.name}`,
+                          }))}
+                          placeholder="Choose an employee..."
+                          value={overtimeData.employee_nik || ""}
+                          onChange={(val) =>
+                            updateData({
+                              employee_nik: val,
+                            })
+                          }
+                          disabled={isEdit}
+                        />
+                      </div>
+                    )}
+                   </div>
+                )}
 
             {/* Reason */}
             <div className="space-y-2">

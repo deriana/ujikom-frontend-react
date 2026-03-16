@@ -18,11 +18,13 @@ import WorkScheduleModal from "@/pages/WorkSchedules/Modal";
 
 export default function WorkScheduleTable() {
   const {
-    data: workSchedules = [],
+    data: workSchedulesData,
     isLoading,
     isError,
     error,
   } = useWorkSchedules();
+
+  const workSchedules = (workSchedulesData as WorkSchedule[]) || [];
 
   const { mutateAsync: createWorkSchedule } = useCreateWorkSchedule();
   const { mutateAsync: updateWorkSchedule } = useUpdateWorkSchedule();

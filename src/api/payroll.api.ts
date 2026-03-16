@@ -7,8 +7,10 @@ import {
 import api from "./axios";
 import { ApiResponse } from "@/types";
 
-export const getPayroll = async () => {
-  const res = await api.get<ApiResponse<Payroll[]>>("/payrolls");
+export const getPayroll = async (params?: {
+  month: string;
+}) => {
+  const res = await api.get<ApiResponse<Payroll[]>>("/payrolls", { params });
   return res.data.data;
 };
 
@@ -73,4 +75,14 @@ export const voidPayroll = async (uuid: string, note: string) => {
     note,
   });
   return res.data.data;
+};
+
+export const exportPayroll = async (params: {
+  month?: string;
+}) => {
+  const res = await api.get("/payrolls/export", {
+    params,
+    responseType: "blob",
+  });
+  return res;
 };

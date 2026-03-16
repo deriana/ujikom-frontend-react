@@ -9,7 +9,9 @@ import { UserInfo } from "@/components/dashboard/UserInfo";
 import { WorkHourTarget } from "@/components/dashboard/WorkHourTarget";
 import EmployeeDashboardSkeleton from "@/components/skeleton/EmployeeDashboardSkeleton";
 import { useEmployeeDashboard } from "@/hooks/useDashboard";
+import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 import { Calendar, Clock, Coffee, Timer, LayoutDashboard } from "lucide-react";
+import { GetStarted } from "../GetStarted/Index";
 
 export default function EmployeeDashboard() {
   const currentMonth = new Intl.DateTimeFormat("en-US", {
@@ -25,12 +27,12 @@ export default function EmployeeDashboard() {
 
   const { data, isLoading, error } = useEmployeeDashboard();
   const stats = data?.personal_stats;
-  console.log(data?.logs?.leave);
+  // console.log(data?.logs?.leave);
+  useNotificationPermission();
 
   if (isLoading) {
     return (
       <>
-        <PageMeta title="Loading Dashboard..." />
         <EmployeeDashboardSkeleton />
       </>
     );
@@ -47,6 +49,8 @@ export default function EmployeeDashboard() {
   return (
     <>
       <PageMeta title="Employee Dashboard" />
+
+      <GetStarted />
 
       {/* Header section biar gak sepi */}
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

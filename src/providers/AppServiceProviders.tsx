@@ -4,6 +4,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AppWrapper } from "@/components/common/PageMeta";
 import { SettingsProvider } from "@/context/SettingsContext";
+import NotificationWatcher from "@/components/NotificationWatcher";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,10 @@ export default function AppProviders({
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <ThemeProvider>
-            <SettingsProvider>{children}</SettingsProvider>
+            <SettingsProvider>
+              <NotificationWatcher />
+              {children}
+              </SettingsProvider>
           </ThemeProvider>
         </AuthProvider>
 

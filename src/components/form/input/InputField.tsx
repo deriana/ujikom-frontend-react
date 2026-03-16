@@ -17,6 +17,8 @@ interface InputProps {
   error?: boolean;
   hint?: string;
   onClick?: (e: React.MouseEvent<HTMLInputElement>) => void; // Tambahkan ini
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   trailingIcon?: React.ReactNode;
 }
 
@@ -36,7 +38,9 @@ const Input: FC<InputProps> = ({
   error = false,
   hint,
   trailingIcon,
-  onClick
+  onClick,
+  onKeyDown,
+  onKeyUp
 }) => {
   let inputClasses = ` h-11 w-full rounded-lg border px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
 
@@ -65,6 +69,8 @@ const Input: FC<InputProps> = ({
         disabled={disabled}
         className={inputClasses}
         onClick={onClick}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
       />
 
       {trailingIcon && (

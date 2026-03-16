@@ -8,12 +8,13 @@ import { SettingsData } from "@/types";
 import { Clock, Globe, MapPin } from "lucide-react";
 import { useState } from "react";
 
-
 export default function Setting() {
   const [activeTab, setActiveTab] = useState("general");
-  const { data: settings } = useSettings() as {
+  const { data: settings, isLoading } = useSettings() as {
     data: SettingsData | undefined;
+    isLoading: boolean;
   };
+
   const general = settings?.general.values;
   const attendance = settings?.attendance.values;
   const geo_fencing = settings?.geo_fencing.values;
@@ -23,6 +24,17 @@ export default function Setting() {
     { id: "attendance", label: "Attendance", icon: Clock },
     { id: "geo_fencing", label: "Geo Fencing", icon: MapPin },
   ];
+
+  const SkeletonLoader = () => (
+    <div className="animate-pulse space-y-6">
+      <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded-xl w-1/4 mb-8"></div>
+      <div className="space-y-4">
+        <div className="h-32 bg-gray-200 dark:bg-gray-800 rounded-3xl w-full"></div>
+        <div className="h-64 bg-gray-200 dark:bg-gray-800 rounded-3xl w-full"></div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <PageMeta title="Settings" />
@@ -36,13 +48,14 @@ export default function Setting() {
               return (
                 <button
                   key={tab.id}
+                  disabled={isLoading} // Nonaktifkan klik saat loading
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all shrink-0 lg:shrink
                   ${
                     activeTab === tab.id
                       ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none"
                       : "bg-white dark:bg-gray-900 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
+                  } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <Icon size={18} />
                   {tab.label}
@@ -53,17 +66,24 @@ export default function Setting() {
 
           {/* Content Area */}
           <div className="flex-1">
-            {activeTab === "general" && general && (
-              <GeneralSetting data={general} />
-            )}
-            {activeTab === "attendance" && attendance && (
-              <AttendanceSetting data={attendance} />
-            )}
-            {activeTab === "geo_fencing" && geo_fencing && (
-              <GeoSetting data={geo_fencing} />
+            {/* Tampilkan Skeleton jika sedang loading */}
+            {isLoading ? (
+              <SkeletonLoader />
+            ) : (
+              <>
+                {activeTab === "general" && general && (
+                  <GeneralSetting data={general} />
+                )}
+                {activeTab === "attendance" && attendance && (
+                  <AttendanceSetting data={attendance} />
+                )}
+                {activeTab === "geo_fencing" && geo_fencing && (
+                  <GeoSetting data={geo_fencing} />
+                )}
+              </>
             )}
           </div>
-        </div>{" "}
+        </div>
       </div>
     </>
   );

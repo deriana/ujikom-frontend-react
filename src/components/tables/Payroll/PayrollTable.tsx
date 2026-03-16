@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { Column, PayrollCreateInput, PayrollFormState, PayrollUpdateInput } from "@/types";
+import {
+  Column,
+  PayrollCreateInput,
+  PayrollFormState,
+  PayrollUpdateInput,
+} from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import {
   useBulkFinalizePayroll,
   useCreatePayroll,
+  useExportPayrrol,
   useFinalizePayroll,
   usePayrolls,
   useUpdatePayroll,
@@ -24,6 +30,8 @@ import Button from "@/components/ui/button/Button";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import MonthPicker from "@/components/form/MonthPicker";
 import PayrollModal from "@/pages/Payroll/Modal";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_DRAFT = 0;
 const STATUS_FINALIZED = 1;
@@ -35,7 +43,11 @@ const STATUS_LABELS: Record<number, string> = {
   [STATUS_VOIDED]: "Voided",
 };
 
-export default function PayrollTable() {
+interface PayrollProps {
+  onDataLoaded?: (data: any[]) => void;
+}
+
+export default function PayrollTable({ onDataLoaded }: PayrollProps) {
   const [statusFilter, setStatusFilter] = useState<number | "all">("all");
   const [employeeFilter, setEmployeeFilter] = useState<string>("all");
   const now = new Date();
@@ -54,14 +66,16 @@ export default function PayrollTable() {
     isError,
     error,
     refetch,
-  } = usePayrolls();
+  } = usePayrolls({ month: periodFilter });
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const { mutateAsync: updatePayroll } = useUpdatePayroll();
   const { mutateAsync: createPayroll } = useCreatePayroll();
   const { mutateAsync: finalizePayroll } = useFinalizePayroll();
   const { mutateAsync: voidPayroll } = useVoidPayroll();
   const { mutateAsync: bulkFinalizePayroll } = useBulkFinalizePayroll();
-
+  const { mutateAsync: exportPayroll } = useExportPayrrol()
 
   // Employee options
   const employeeOptions = useMemo(() => {
@@ -86,7 +100,7 @@ export default function PayrollTable() {
       {
         label: STATUS_LABELS[STATUS_VOIDED],
         value: STATUS_VOIDED.toString(),
-      }
+      },
     ],
     [],
   );
@@ -138,6 +152,10 @@ export default function PayrollTable() {
   const show = useShowModal<string>();
 
   const handleShow = (uuid: string) => {
+    if (isMobile) {
+      navigate(`/payroll/${uuid}`);
+      return;
+    }
     show.open(uuid);
   };
 
@@ -158,15 +176,18 @@ export default function PayrollTable() {
   };
 
   const handleBulkFinalize = (ids: (string | number)[]) => {
-    handleMutation(() => bulkFinalizePayroll({ payroll_uuids: ids as string[] }), {
-      loading: "Finalizing payrolls...",
-      success: "Payrolls finalized successfully",
-      error: "Failed to finalize payrolls",
-      onSuccess: () => {
-        setSelectedIds([]);
-        setConfirmBulk({ isOpen: false, ids: [] });
+    handleMutation(
+      () => bulkFinalizePayroll({ payroll_uuids: ids as string[] }),
+      {
+        loading: "Finalizing payrolls...",
+        success: "Payrolls finalized successfully",
+        error: "Failed to finalize payrolls",
+        onSuccess: () => {
+          setSelectedIds([]);
+          setConfirmBulk({ isOpen: false, ids: [] });
+        },
       },
-    });
+    );
   };
 
   // Columns
@@ -208,12 +229,13 @@ export default function PayrollTable() {
             </span>
             <Currency
               value={row.manual_adjustment ?? 0}
-              className={`text-sm font-medium ${row.manual_adjustment < 0
-                ? "text-red-500"
-                : row.manual_adjustment > 0
-                  ? "text-emerald-500"
-                  : "text-gray-400"
-                }`}
+              className={`text-sm font-medium ${
+                row.manual_adjustment < 0
+                  ? "text-red-500"
+                  : row.manual_adjustment > 0
+                    ? "text-emerald-500"
+                    : "text-gray-400"
+              }`}
             />
           </div>
           {row.adjustment_note && (
@@ -265,11 +287,7 @@ export default function PayrollTable() {
             : { color: "warning", label: "Draft", dot: "bg-yellow-500" };
 
         return (
-          <Badge
-            size="sm"
-            variant="light"
-            color={badgeConfig.color as any}
-          >
+          <Badge size="sm" variant="light" color={badgeConfig.color as any}>
             <div className="flex items-center gap-1.5">
               <span className={`w-1.5 h-1.5 rounded-full ${badgeConfig.dot}`} />
               <span className="capitalize">
@@ -291,24 +309,21 @@ export default function PayrollTable() {
             actions={
               row.can?.pay
                 ? [
-                  {
-                    label: "Finalize",
-                    variant: "success",
-                    icon: <CheckCircle size={16} />,
-                    onClick: (uuid) => handleFinalizeAction(uuid),
-                  },
-                  {
-                    label: "Void",
-                    variant: "danger",
-                    icon: <X size={16} />,
-                    showNote: true,
-                    onClick: (uuid, note) =>
-                      handleVoidAction(
-                        uuid,
-                        note || "",
-                      ),
-                  }
-                ]
+                    {
+                      label: "Finalize",
+                      variant: "success",
+                      icon: <CheckCircle size={16} />,
+                      onClick: (uuid) => handleFinalizeAction(uuid),
+                    },
+                    {
+                      label: "Void",
+                      variant: "danger",
+                      icon: <X size={16} />,
+                      showNote: true,
+                      onClick: (uuid, note) =>
+                        handleVoidAction(uuid, note || ""),
+                    },
+                  ]
                 : []
             }
           />
@@ -330,29 +345,12 @@ export default function PayrollTable() {
     },
   ];
 
-  const StatusFilter = (
-    <FilterDropdown
-      value={statusFilter.toString()}
-      options={statusOptions}
-      onChange={(val) => setStatusFilter(val === "all" ? "all" : Number(val))}
-    />
-  );
-
-  const EmployeeFilter = (
-    <FilterDropdown
-      value={employeeFilter}
-      options={employeeOptions}
-      onChange={setEmployeeFilter}
-    />
-  );
-
   // Filtered data
   const filteredPayrolls = useMemo(() => {
     return payrolls.filter((p) => {
       const matchesEmployee =
         employeeFilter === "all" || p.employee_name === employeeFilter;
-      const matchesStatus =
-        statusFilter === "all" || p.status === statusFilter;
+      const matchesStatus = statusFilter === "all" || p.status === statusFilter;
       const matchesPeriod = (() => {
         if (!periodFilter) return true;
         const [y, m] = periodFilter.split("-").map(Number);
@@ -367,8 +365,12 @@ export default function PayrollTable() {
   }, [payrolls, employeeFilter, statusFilter, periodFilter]);
 
   useEffect(() => {
+    if (onDataLoaded) onDataLoaded(filteredPayrolls);
+  }, [filteredPayrolls]);
+
+  useEffect(() => {
     refetch();
-  }, []);
+  }, [periodFilter]);
 
   if (isError) {
     return (
@@ -377,6 +379,35 @@ export default function PayrollTable() {
       </div>
     );
   }
+
+  const StatusFilter = filteredPayrolls.length > 1 && (
+    <FilterDropdown
+      value={statusFilter.toString()}
+      options={statusOptions}
+      onChange={(val) => setStatusFilter(val === "all" ? "all" : Number(val))}
+    />
+  );
+
+  const EmployeeFilter = employeeOptions.length > 2 && (
+    <FilterDropdown
+      value={employeeFilter}
+      options={employeeOptions}
+      onChange={setEmployeeFilter}
+    />
+  );
+
+   const handleExport = () =>
+      handleMutation(
+        () =>
+          exportPayroll({
+            month: periodFilter,
+          }),
+        {
+          loading: "Exporting...",
+          success: "Export successfully",
+          error: "Failed to export",
+        },
+      );
 
   return (
     <>
@@ -389,6 +420,7 @@ export default function PayrollTable() {
         label="Payroll"
         baseNamePermission={RESOURCES.PAYROLL}
         handleCreate={handleCreate}
+        handleExport={handleExport}
         newFilterComponent={
           <>
             {StatusFilter}
@@ -409,6 +441,7 @@ export default function PayrollTable() {
         enableSelection
         selectedIds={selectedIds}
         onSelectionChange={setSelectedIds}
+        hideChecbox={!filteredPayrolls.some((p) => p.can?.pay)}
         selectionActions={(selectedIds) =>
           selectedIds.length > 0 && (
             <Button
