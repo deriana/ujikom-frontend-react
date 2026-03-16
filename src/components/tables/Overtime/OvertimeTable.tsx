@@ -2,6 +2,7 @@ import {
   useCreateOvertime,
   useDeleteOvertime,
   useOvertimes,
+  useExportOvertime,
   useUpdateOvertime,
 } from "@/hooks/useOvertime";
 import { Column, Overtime, OvertimeInput } from "@/types";
@@ -12,7 +13,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import { useRoleName } from "@/hooks/useRoleName";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { APPROVAL_STATS } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
 import { Calendar, Clock } from "lucide-react";
@@ -20,9 +21,23 @@ import { formatDateID } from "@/utils/date";
 import OvertimeModal from "@/pages/Overtime/Modal";
 import { ROLES } from "@/constants/Roles";
 import OvertimeShowModal from "@/pages/Overtime/ShowModal";
+import DatePicker from "@/components/form/date-picker";
 
-export default function OvertimesTable() {
-  const { data: overtimes = [], isLoading, isError, error } = useOvertimes();
+interface OvertimeTableProps {
+  onDataLoaded?: (data: any[]) => void;
+}
+
+export default function OvertimesTable({ onDataLoaded }: OvertimeTableProps) {
+  const today = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState<string>(today);
+  const [endDate, setEndDate] = useState<string>(today);
+  const {
+    data: overtimes = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useOvertimes({ start_date: startDate, end_date: endDate });
   const { mutateAsync: createOvertime } = useCreateOvertime();
   const { mutateAsync: updateOvertime } = useUpdateOvertime();
   const { mutateAsync: deleteOvertime } = useDeleteOvertime();
@@ -31,6 +46,21 @@ export default function OvertimesTable() {
 
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const { mutateAsync: exportOvertime } = useExportOvertime();
+
+  const filteredData = useMemo(() => {
+    return overtimes.filter((item) => {
+      const matchEmployee = employeeFilter === "all" || item.employee_name === employeeFilter;
+      const matchStatus = statusFilter === "all" || item.status.toString() === statusFilter;
+      return matchEmployee && matchStatus;
+    });
+  }, [overtimes, employeeFilter, statusFilter]);
+
+  useEffect(() => {
+    if (onDataLoaded) {
+      onDataLoaded(filteredData);
+    }
+  }, [filteredData, onDataLoaded]);
 
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
@@ -95,6 +125,56 @@ export default function OvertimesTable() {
       success: "Deleted successfully",
       error: "Failed to delete",
     });
+
+  const handleExport = () =>
+    handleMutation(
+      () =>
+        exportOvertime({
+          start_date: startDate,
+          end_date: endDate,
+        }),
+      {
+        loading: "Exporting...",
+        success: "Export successfully",
+        error: "Failed to export",
+      },
+    );
+
+  const StartDateFilter = (
+    <DatePicker
+      id="overtime-start-date"
+      mode="single"
+      placeholder="Start date"
+      value={startDate}
+      onChange={(dates) => {
+        if (dates.length > 0) {
+          const date = dates[0];
+          const localDate = date.toLocaleDateString("en-CA");
+          setStartDate(localDate);
+        }
+      }}
+    />
+  );
+
+  const EndDateFilter = (
+    <DatePicker
+      id="overtime-end-date"
+      mode="single"
+      placeholder="End date"
+      value={endDate}
+      onChange={(dates) => {
+        if (dates.length > 0) {
+          const date = dates[0];
+          const localDate = date.toLocaleDateString("en-CA");
+          setEndDate(localDate);
+        }
+      }}
+    />
+  );
+
+  useEffect(() => {
+    refetch();
+  }, [startDate, endDate]);
 
   const columns: Column<Overtime>[] = [
     {
@@ -228,15 +308,20 @@ export default function OvertimesTable() {
         searchableKeys={["employee_name", "employee_nik"]}
         loading={isLoading}
         handleCreate={crud.openCreate}
+        handleExport={handleExport}
         label="Overtime"
         baseNamePermission={RESOURCES.OVERTIME}
         newFilterComponent={
           <>
-            <FilterDropdown
-              value={employeeFilter}
-              options={employeeOptions}
-              onChange={setEmployeeFilter}
-            />
+            {StartDateFilter}
+            {EndDateFilter}
+            {employeeOptions.length > 2 && (
+              <FilterDropdown
+                value={employeeFilter}
+                options={employeeOptions}
+                onChange={setEmployeeFilter}
+              />
+            )}
             <FilterDropdown
               value={statusFilter}
               options={statusOptions}
@@ -260,7 +345,11 @@ export default function OvertimesTable() {
         isUserAdminOrHR={isRole(ROLES.ADMIN) || isRole(ROLES.HR)}
       />
 
-      <OvertimeShowModal uuid={show.showId} isOpen={show.isOpen} onClose={show.close} />
+      <OvertimeShowModal
+        uuid={show.showId}
+        isOpen={show.isOpen}
+        onClose={show.close}
+      />
     </>
   );
 }

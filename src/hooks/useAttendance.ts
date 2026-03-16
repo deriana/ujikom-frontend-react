@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   sendBulkAttendance,
   getAttendance,
@@ -6,8 +6,10 @@ import {
   exportAttendances,
   sendSingleAttendance,
   attendanceStatusToday,
+  sendManualAttendance,
+  getAttendenceLogs,
 } from "@/api/attendance.api";
-import { BulkAttendanceInput, SingleAttendanceInput } from "@/types";
+import { BulkAttendanceInput, ManualAttendanceInput, SingleAttendanceInput } from "@/types";
 
 export const useSendBulkAttendance = () => {
   return useMutation({
@@ -22,13 +24,37 @@ export const useSendBulkAttendance = () => {
 };
 
 export const useSendSingleAttendance = () => {
+  const qc = useQueryClient();
+
   return useMutation({
     mutationFn: (data: SingleAttendanceInput) => sendSingleAttendance(data),
     onSuccess: (data) => {
       console.log("Attendance processed successfully", data);
+
+      qc.invalidateQueries({
+        queryKey: ["dashboard", "mobile-home"],
+      });
     },
     onError: (error) => {
       console.error("Failed to process single attendance", error);
+    },
+  });
+};
+
+export const useSendManualAttendance = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: ManualAttendanceInput) => sendManualAttendance(data),
+    onSuccess: (data) => {
+      console.log("Manual attendance processed successfully", data);
+
+      qc.invalidateQueries({
+        queryKey: ["dashboard", "mobile-home"],
+      });
+    },
+    onError: (error) => {
+      console.error("Failed to process manual attendance", error);
     },
   });
 };
@@ -55,6 +81,19 @@ export const useAttendances = (params?: {
     refetchOnMount: false,
   });
 };
+
+export const useAttendanceLogs = (params?: {
+  date: string;
+}) => {
+  return useQuery({
+    queryKey: ["attendanceLogs", params?.date],
+    queryFn: () => getAttendenceLogs(params),
+    enabled: !!params?.date,
+    staleTime: 1000 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
+}
 
 export const useDetailAttendance = (id: number) => {
   return useQuery({

@@ -8,6 +8,7 @@ import {
   forceDeleteDivision,
   getTrashedDivision,
   getDivisionByUuid,
+  getDivisionWithTeamAndEmployees,
 } from "@/api/division.api";
 import { DivisionInput } from "@/types/division.types";
 
@@ -25,6 +26,15 @@ export const useDivisionByUuid = (uuid: string) => {
     queryFn: () => getDivisionByUuid(uuid),
     staleTime: 1000 * 60 * 5,
     enabled: !!uuid
+  });
+}
+
+export const useDivisionWithTeamAndEmployees = () => {
+  return useQuery({
+    queryKey: ["divisions", "with-team-and-employees"],
+    queryFn: getDivisionWithTeamAndEmployees,
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60,    // 1 hour
   });
 }
 

@@ -1,5 +1,5 @@
 {
-  "name": "tailadmin-react",
+  "name": "hris-hideri-frontend",
   "private": true,
   "version": "2.1.0",
   "type": "module",
@@ -7,9 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
@@ -17,6 +20,8 @@
     "@fullcalendar/react": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
     "@headlessui/react": "^2.2.9",
+    "@mui/material": "^7.3.9",
+    "@mui/x-date-pickers": "^8.27.2",
     "@react-jvectormap/core": "^1.0.4",
     "@react-jvectormap/world": "^1.1.2",
     "@tanstack/react-query": "^5.90.20",
@@ -25,7 +30,9 @@
     "apexcharts": "^4.1.0",
     "axios": "^1.13.4",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.19",
     "flatpickr": "^4.6.13",
+    "framer-motion": "^12.35.1",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.2.2",
     "lucide-react": "^0.563.0",
@@ -48,6 +55,8 @@
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@tailwindcss/postcss": "^4.0.8",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.0.10",
     "@types/react": "^19.0.12",
@@ -57,12 +66,14 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
+    "jsdom": "^28.1.0",
     "postcss": "^8.5.2",
     "tailwindcss": "^4.0.8",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
     "vite": "^6.1.0",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "vitest": "^4.0.18"
   },
   "overrides": {
     "react-helmet-async": {

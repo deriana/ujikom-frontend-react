@@ -7,9 +7,13 @@ import api from "./axios";
 import { ApiResponse } from "@/types";
 import { APPROVAL_INPUT } from "@/constants/Approval";
 
-export const getOvertime = async () => {
+export const getOvertime = async (params?: {
+  start_date: string;
+  end_date: string;
+}) => {
   const res = await api.get<ApiResponse<Overtime[]>>(
     "/overtime",
+  {params}
   );
   return res.data.data;
 };
@@ -71,4 +75,16 @@ export const overtimeApprovalsList = async () => {
     "/approvals/overtime",
   );
   return response.data.data;
+};
+
+
+export const exportOvertime = async (params: {
+  start_date?: string;
+  end_date?: string;
+}) => {
+  const res = await api.get("/overtime/export", {
+    params,
+    responseType: "blob",
+  });
+  return res;
 };

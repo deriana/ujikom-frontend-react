@@ -7,13 +7,18 @@ import {
   overtimeApprovals,
   getOvertimeByUuid,
   overtimeApprovalsList,
+  exportOvertime,
 } from "@/api/overtime.api";
 import { OvertimeInput } from "@/types/overtime.types";
 
-export const useOvertimes = () => {
+export const useOvertimes = (params?: {
+  start_date: string;
+  end_date: string;
+}) => {
   return useQuery({
-    queryKey: ["overtimes"],
-    queryFn: getOvertime,
+    queryKey: ["overtimes", params?.start_date, params?.end_date],
+    queryFn: () => getOvertime(params),
+    enabled: !!params?.start_date && !!params?.end_date,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -113,6 +118,32 @@ export const useOvertimeApprovals = () => {
 
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["overtimes"] });
+    },
+  });
+};
+
+export const useExportOvertime = () => {
+  return useMutation({
+    mutationFn: (params: { start_date?: string; end_date?: string }) =>
+      exportOvertime(params),
+
+    onSuccess: (response) => {
+      const disposition = response.headers["content-disposition"];
+
+      let fileName = "attendances.xlsx";
+
+      if (disposition && disposition.includes("filename=")) {
+        fileName = disposition.split("filename=")[1].replace(/"/g, "").trim();
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     },
   });
 };

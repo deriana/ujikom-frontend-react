@@ -3,8 +3,11 @@ import api from "./axios";
 import { ApiResponse } from "@/types";
 import { APPROVAL_INPUT } from "@/constants/Approval";
 
-export const getLeave = async () => {
-  const res = await api.get<ApiResponse<Leave[]>>("/leaves");
+export const getLeave = async (params?: {
+  start_date?: string;
+  end_date?: string;
+}) => {
+  const res = await api.get<ApiResponse<Leave[]>>("/leaves", { params });
   return res.data.data;
 };
 
@@ -66,4 +69,15 @@ export const downloadAttachment = async (filename: string) => {
   link.click();
   link.remove();
   window.URL.revokeObjectURL(url);
+};
+
+export const exportLeaves = async (params: {
+  start_date?: string;
+  end_date?: string;
+}) => {
+  const res = await api.get("/leaves/export", {
+    params,
+    responseType: "blob",
+  });
+  return res;
 };

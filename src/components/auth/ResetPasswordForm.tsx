@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { usePasswordValidation } from "@/hooks/usePasswordValidation"; // Import hook
 import toast from "react-hot-toast";
-import { EyeClosedIcon, EyeIcon, KeyRound, ArrowLeft } from "lucide-react";
+import { EyeClosedIcon, EyeIcon, KeyRound, ArrowLeft, CheckCircle2, Circle } from "lucide-react";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
@@ -21,7 +22,10 @@ export default function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
 
-  // 1. Verify token validity on mount
+  // Integrasi Hook Validasi
+  const { hasMinLength, hasUppercase, hasNumber, strength, isValid } = usePasswordValidation(password);
+  const isMatching = password.length > 0 && password === passwordConfirmation;
+
   useEffect(() => {
     const verifyToken = async () => {
       if (!token) {
@@ -29,7 +33,6 @@ export default function ResetPasswordForm() {
         navigate("/login");
         return;
       }
-
       try {
         await checkResetToken(token);
         setIsVerifying(false);
@@ -38,19 +41,18 @@ export default function ResetPasswordForm() {
         navigate("/forgot-password");
       }
     };
-
     verifyToken();
   }, [token, navigate, checkResetToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!password || !passwordConfirmation) {
-      toast.error("Please fill in all fields");
+    if (!isValid) {
+      toast.error("Password does not meet security requirements.");
       return;
     }
 
-    if (password !== passwordConfirmation) {
+    if (!isMatching) {
       toast.error("Passwords do not match!");
       return;
     }
@@ -97,7 +99,7 @@ export default function ResetPasswordForm() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* New Password */}
             <div>
               <Label>New Password *</Label>
@@ -108,21 +110,41 @@ export default function ResetPasswordForm() {
                   value={password}
                   onChange={(e: any) => setPassword(e.target.value)}
                 />
-                <span
+                <button
+                  type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2"
+                  className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-500"
                 >
-                  {showPassword ? (
-                    <EyeIcon className="size-5 dark:text-white/90" />
-                  ) : (
-                    <EyeClosedIcon className="size-5 dark:text-white/90" />
-                  )}
-                </span>
+                  {showPassword ? <EyeIcon size={20} /> : <EyeClosedIcon size={20} />}
+                </button>
+              </div>
+
+              {/* Strength Bar & Checklist */}
+              <div className="mt-4 px-1">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Strength</span>
+                  <span className={`text-[10px] font-black uppercase ${strength < 50 ? 'text-red-500' : strength < 100 ? 'text-yellow-500' : 'text-green-500'}`}>
+                    {strength < 50 ? 'Weak' : strength < 100 ? 'Medium' : 'Strong'}
+                  </span>
+                </div>
+                <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-500 ${strength < 50 ? 'bg-red-500' : strength < 100 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                    style={{ width: `${strength}%` }}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mt-3">
+                  <RuleItem label="8+ Characters" active={hasMinLength} />
+                  <RuleItem label="Uppercase" active={hasUppercase} />
+                  <RuleItem label="Includes Number" active={hasNumber} />
+                  <RuleItem label="Confirm Match" active={isMatching} />
+                </div>
               </div>
             </div>
 
             {/* Confirm Password */}
-            <div>
+            <div className="pt-2">
               <Label>Confirm New Password *</Label>
               <Input
                 type={showPassword ? "text" : "password"}
@@ -132,7 +154,7 @@ export default function ResetPasswordForm() {
               />
             </div>
 
-            <Button type="submit" className="w-full" size="sm" disabled={loading}>
+            <Button type="submit" className="w-full mt-2" size="sm" disabled={loading || !isValid || !isMatching}>
               {loading ? "Updating..." : "Reset Password"}
             </Button>
 
@@ -152,3 +174,11 @@ export default function ResetPasswordForm() {
     </div>
   );
 }
+
+// Helper RuleItem agar desain konsisten
+const RuleItem = ({ label, active }: { label: string; active: boolean }) => (
+  <div className={`flex items-center gap-1.5 transition-colors ${active ? 'text-green-600' : 'text-gray-400'}`}>
+    {active ? <CheckCircle2 size={12} strokeWidth={3} /> : <Circle size={12} strokeWidth={3} />}
+    <span className="text-[10px] font-bold uppercase tracking-tight">{label}</span>
+  </div>
+);

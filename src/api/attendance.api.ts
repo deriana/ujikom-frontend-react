@@ -5,6 +5,9 @@ import {
   SingleAttendanceInput,
   BulkAttendanceResponse,
   SingleAttendanceResponse,
+  ManualAttendanceInput,
+  ManualAttendanceResponse,
+  AttendanceLogs,
 } from "@/types/attendance.types";
 import api from "./axios";
 
@@ -54,6 +57,22 @@ export const sendSingleAttendance = async (payload: SingleAttendanceInput) => {
   return res.data.data;
 };
 
+export const sendManualAttendance = async (payload: ManualAttendanceInput) => {
+  const formData = new FormData();
+  formData.append("reason", payload.reason);
+  formData.append("latitude", payload.latitude.toString());
+  formData.append("longitude", payload.longitude.toString());
+  if (payload.attachment) {
+    formData.append("attachment", payload.attachment);
+  }
+
+  const res = await api.post<ApiResponse<ManualAttendanceResponse>>(
+    "/attendance/manual-send",
+    formData,
+  );
+  return res.data.data;
+};
+
 export const getAttendance = async (params?: {
   start_date?: string;
   end_date?: string;
@@ -84,5 +103,12 @@ export const attendanceStatusToday = async () => {
   const res = await api.get<
     ApiResponse<{ status: "absent" | "clocked_in" | "completed" }>
   >("/attendances/today");
+  return res.data.data;
+};
+
+export const getAttendenceLogs = async (params?: {
+  date: string;
+}) => {
+  const res = await api.get<ApiResponse<AttendanceLogs[]>>("/attendances/logs" , {params});
   return res.data.data;
 };

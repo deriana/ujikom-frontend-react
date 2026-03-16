@@ -10,7 +10,6 @@ import {
   FileClock,
   Clock,
   DollarSign,
-  FileCheck2,
   Database,
   ShieldCheck,
   Users,
@@ -23,6 +22,10 @@ import {
   UserCircle,
   Trash2,
   LayoutDashboard,
+  FileCheck2,
+  ClipboardList,
+  ChartBar,
+  Activity,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -44,6 +47,14 @@ export type NavItem = {
   hideForAdmin?: boolean;
 };
 
+export type NavMobileItem = {
+  name: string;
+  icon: React.ReactNode;
+  path: string;
+  permission?: string;
+  primary?: boolean;
+}
+
 export const navItems: NavItem[] = [
   {
     icon: <LayoutGrid size={20} />,
@@ -59,10 +70,34 @@ export const navItems: NavItem[] = [
     hideForAdmin: true,
   },
   {
-    name: "Attendances Report",
+    name: "Attendances",
     icon: <ClipboardCheck size={20} />,
-    path: "/attendances/report",
-    permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+    subItems: [
+      {
+        name: "Attendance Report",
+        path: "/attendances/report",
+        icon: <FileSpreadsheet size={18} />,
+        permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+      },
+      {
+        name: "Attendance Requests",
+        path: "/attendance-requests",
+        icon: <FileText size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE_REQUEST,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Attendance Adjustments",
+        path: "/attendances/correction",
+        icon: <FileCheck2 size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE_REQUEST,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+    ],
   },
   {
     name: "Employee Shifts",
@@ -81,6 +116,11 @@ export const navItems: NavItem[] = [
       RESOURCES.WORK_SCHEDULE,
       PERMISSIONS.BASE.INDEX,
     ),
+  },
+  {
+    name: "Division Employees",
+    path: "/divisions/all",
+    icon: <Network size={20} />,
   },
   {
     name: "Leave Balances",
@@ -104,15 +144,6 @@ export const navItems: NavItem[] = [
     permission: buildPermission(RESOURCES.EARLY_LEAVE, PERMISSIONS.BASE.INDEX),
   },
   {
-    name: "Attendance Requests",
-    path: "/attendance-requests",
-    icon: <FileSpreadsheet size={20} />,
-    permission: buildPermission(
-      RESOURCES.ATTENDANCE_REQUEST,
-      PERMISSIONS.BASE.INDEX,
-    ),
-  },
-  {
     name: "Overtimes",
     path: "/overtimes",
     icon: <Clock size={20} />,
@@ -123,6 +154,12 @@ export const navItems: NavItem[] = [
     path: "/payroll",
     icon: <DollarSign size={20} />,
     permission: buildPermission(RESOURCES.PAYROLL, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Assessments",
+    path: "/assessments",
+    icon: <ClipboardList size={20} />,
+    permission: buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Approval",
@@ -161,6 +198,15 @@ export const navItems: NavItem[] = [
           PERMISSIONS.BASE.APPROVE,
         ),
       },
+      {
+        name: "Attendance Adjustments Approval",
+        path: "/approval/attendance-correction",
+        icon: <FileCheck2 size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE_CORRECTION,
+          PERMISSIONS.BASE.APPROVE,
+        ),
+      }
     ],
   },
   {
@@ -230,6 +276,15 @@ export const navItems: NavItem[] = [
         icon: <FileText size={18} />,
         permission: buildPermission(
           RESOURCES.LEAVE_TYPES,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Assessment Category",
+        path: "/assessment_category",
+        icon: <ClipboardList size={18} />,
+        permission: buildPermission(
+          RESOURCES.ASSESSMENT_CATEGORY,
           PERMISSIONS.BASE.INDEX,
         ),
       },
@@ -308,7 +363,7 @@ export const othersItems: NavItem[] = [
   {
     icon: <Clock size={20} />,
     name: "Single Attendance",
-    path: "/attendance/single",
+    path: "/attendance/menu",
     hideForAdmin: true,
   },
   {
@@ -316,5 +371,39 @@ export const othersItems: NavItem[] = [
     name: "Settings",
     path: "/settings",
     permission: buildPermission(RESOURCES.SETTING, PERMISSIONS.BASE.INDEX),
+  },
+];
+
+export const mobileItems: NavMobileItem[] = [
+  {
+    name: "Home",
+    path: "/home",
+    icon: <LayoutDashboard size={22} />,
+  },
+  {
+    name: "Stats",
+    icon: <ChartBar size={22} />,
+    path: "/stats",
+  },
+  {
+    name: "Approval",
+    icon: <FileCheck2 size={22} />,
+    path: "/approval",
+    permission: "has-any-approval",
+  },
+  // {
+  //   name: "Payroll",
+  //   icon: <Wallet size={22} />,
+  //   path: "/payroll",
+  // },
+  {
+    name: "Activity",
+    icon: <Activity size={22} />,
+    path: "/activity",
+  },
+  {
+    name: "Profile",
+    icon: <UserCircle size={22} />,
+    path: "/profile",
   },
 ];

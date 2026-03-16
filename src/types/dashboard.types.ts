@@ -37,6 +37,21 @@ export interface MonthlyChart {
   absent: number[];
 }
 
+export interface OfficeLocation {
+  lat: number;
+  lng: number;
+  radius_meters: number;
+}
+
+export interface PerformanceStat {
+  average: number;
+  year: string;
+  categories: Array<{
+    name: string;
+    score: number;
+  }>;
+}
+
 export interface AdminDashboardData {
   employee_stats: EmployeeStats;
   attendance_today: AttendanceToday;
@@ -44,6 +59,8 @@ export interface AdminDashboardData {
   pending_tasks: PendingTasks;
   map_locations: MapLocation[];
   monthly_chart: MonthlyChart;
+  office_location: OfficeLocation;
+  performance_stats?: PerformanceStat;
 }
 
 export interface EmployeeProfile {
@@ -103,7 +120,7 @@ export interface PendingApprovalItem {
   id: string;
   title: string;
   subtitle: string;
-  type: 'leave' | 'overtime' | 'attendance';
+  type: "leave" | "overtime" | "attendance";
   status: string;
 }
 
@@ -120,6 +137,11 @@ export interface SalaryLog {
   net_salary: number;
   formatted_net_salary: string;
   status: number;
+}
+
+export interface Performances {
+  period: string;
+  score: number;
 }
 
 export interface TodaySchedule {
@@ -143,5 +165,151 @@ export interface EmployeeDashboardData {
     overtime: OvertimeLog[];
     leave: LeaveLog[];
     salary: SalaryLog[];
+    performance: Performances[];
   };
+}
+
+export interface MobileHomeData {
+  attendance_status: {
+    is_checked_in: boolean;
+    is_checked_out: boolean;
+    clock_in_time: string;
+    clock_out_time: string;
+    attendance_id: number | null;
+  };
+  today_schedule: TodaySchedule;
+  office: {
+    lat: number;
+    lng: number;
+    radius: number;
+  };
+  activities: Array<{
+    type: string;
+    time: string;
+    label: string;
+    status: string;
+  }>;
+}
+
+export interface WeeklyTrend {
+  day: string;
+  work_minutes: number;
+  status: 'present' | 'absent' | 'leave' | 'late' | string; 
+}
+export interface SalaryLog {
+  period: string;       
+  net_salary: number;
+  status: number;      
+}
+export interface UpcomingHoliday {
+  uuid: string;
+  name: string;
+  date: string;         
+  is_recurring: boolean | number;
+}
+
+export interface MobilePerformanceDetail {
+  category: string;
+  score: number;
+}
+
+export interface MobilePerformance {
+  uuid: string;
+  period: string;
+  score: number;
+  evaluator: string;
+  details: MobilePerformanceDetail[];
+}
+
+export interface MobileStatsData {
+  personal_stats: PersonalStats;
+  weekly_trend: WeeklyTrend[];
+  salary_logs: SalaryLog[];
+  upcoming_holidays: UpcomingHoliday[];
+  performances: MobilePerformance[];
+}
+
+export interface MobileDailyTrackerData {
+  tracker: {
+    date: string;
+    clock_in: {
+      time: string;
+      is_done: boolean;
+      late_minutes: number;
+      status: string;
+    };
+    clock_out: {
+      time: string;
+      is_done: boolean;
+      status: string;
+      early_leave_minutes: number;
+      is_early_leave_approved: boolean;
+    };
+    overtime: {
+      is_requested: boolean;
+      minutes: number;
+      reason: string;
+      status: string;
+    };
+    early_leave: {
+      is_requested: boolean;
+      minutes: number;
+      reason: string;
+      status: string;
+    };
+    leave: {
+      is_on_leave: boolean;
+      type: string;
+      reason: string;
+      status: string;
+    };
+    work_duration: {
+      work_minutes: number;
+      formatted_work: string;
+      overtime_minutes?: number;
+      formatted_overtime?: string;
+    };
+    payday_info: {
+      next_payday: string;
+      days_remaining: number;
+    };
+    holiday_info: {
+      is_holiday: boolean;
+      holiday_name: string | null;
+    };
+    annual_leave_summary: Array<{
+      type: string;
+      start: string;
+      end: string;
+      status: string;
+      is_upcoming: boolean;
+    }>;
+  };
+  timeline: Array<{
+    time: string | null;
+    event: string;
+    desc: string;
+  }>;
+  schedule: {
+    start: string;
+    end: string;
+    label: string;
+  };
+  yearly_holidays: Array<{
+    full_date: string;
+    name: string;
+    date: string;
+  }>;
+  my_approved_leaves: Array<{
+    type: string;
+    start: string;
+    end: string;
+    status: string;
+    is_upcoming: boolean;
+  }>;
+  upcoming_holidays: Array<{
+    name: string;
+    date: string;
+    days_away: number;
+  }>;
 }

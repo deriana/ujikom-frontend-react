@@ -14,18 +14,23 @@ export const useNotifications = () => {
   return useQuery({
     queryKey: ["notifications"],
     queryFn: getNotifications,
-    staleTime: 1000 * 60, // 1 minute (adjust as needed)
+    // Matikan polling otomatis atau buat sangat lama (misal 5 menit)
+    refetchInterval: 60000 * 5,
+    // Data dianggap basi setelah 1 menit, tapi tidak narik data terus menerus
+    staleTime: 60000,
+    refetchOnWindowFocus: true,
   });
 };
 
 // 2. Fetch Unread Notifications
-export const useUnreadNotifications = () => {
+export const useUnreadNotifications = (enabled: boolean = true) => {
   return useQuery({
     queryKey: ["notifications", "unread"],
     queryFn: getUnreadNotifications,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchInterval: 15000, // 15 detik sudah cukup cepat untuk notif push
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    enabled: enabled && !!localStorage.getItem("token"),
   });
 };
 

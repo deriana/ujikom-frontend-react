@@ -10,6 +10,7 @@ export interface EarlyLeave {
   status: number;
   approved_at: string;
   can: EarlyLeavePermissions;
+  attachment?: EarlyLeaveAttachment | null;
 }
 
 export interface EarlyLeavePermissions {
@@ -17,7 +18,6 @@ export interface EarlyLeavePermissions {
   delete: boolean;
   approve: boolean;
 }
-
 
 export interface EarlyLeaveInput {
   uuid?: UUID;

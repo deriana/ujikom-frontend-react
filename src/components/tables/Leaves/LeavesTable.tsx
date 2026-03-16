@@ -1,6 +1,7 @@
 import {
   useCreateLeave,
   useDeleteLeave,
+  useExportLeave,
   // useLeaveApprovals,
   useLeaves,
   useUpdateLeave,
@@ -16,25 +17,45 @@ import LeaveModal from "@/pages/Leave/Modal";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import LeaveShowModal from "@/pages/Leave/ShowModal";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   // APPROVAL_INPUT,
   APPROVAL_LABEL,
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-// import { Check, X } from "lucide-react";
+import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { formatDateID } from "@/utils/date";
+import DatePicker from "@/components/form/date-picker";
 
-export default function LeavesTable() {
-  const { data: leaves = [], isLoading, isError, error } = useLeaves();
+interface LeavesTableProps {
+  onDataLoaded?: (data: any[]) => void;
+}
+
+export default function LeavesTable({ onDataLoaded }: LeavesTableProps) {
+  const today = new Date().toISOString().split("T")[0];
+  const [startDate, setStartDate] = useState<string>(today);
+  const [endDate, setEndDate] = useState<string>(today);
+  const {
+    data: leaves = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useLeaves({ start_date: startDate, end_date: endDate });
   const { mutateAsync: createLeave } = useCreateLeave();
   const { mutateAsync: updateLeave } = useUpdateLeave();
   const { mutateAsync: deleteLeave } = useDeleteLeave();
+  const { mutateAsync: exportLeave } = useExportLeave();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [leaveTypeFilter, setLeaveTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  // Gunakan JSON.stringify atau salinan array agar useEffect mendeteksi perubahan referensi
+  useEffect(() => {
+    onDataLoaded?.([...leaves]); // Mengirim salinan array baru
+  }, [leaves, onDataLoaded]);
 
   const employeeOptions = useMemo(() => {
     const employees = Array.from(
@@ -157,27 +178,57 @@ export default function LeavesTable() {
       error: "Failed to delete leave",
     });
 
-  // const handleApprovalAction = (
-  //   uuid: string,
-  //   status: boolean,
-  //   note?: string,
-  // ) => {
-  //   const isApprove = status === APPROVAL_INPUT.APPROVED;
+  const handleExport = () =>
+    handleMutation(
+      () =>
+        exportLeave({
+          start_date: startDate,
+          end_date: endDate,
+        }),
+      {
+        loading: "Exporting...",
+        success: "Export successfully",
+        error: "Failed to export",
+      },
+    );
 
-  //   handleMutation(
-  //     () =>
-  //       approveLeave({
-  //         uuid,
-  //         status,
-  //         note,
-  //       }),
-  //     {
-  //       loading: isApprove ? "Approving leave..." : "Rejecting leave...",
-  //       success: `Leave ${isApprove ? "approved" : "rejected"} successfully`,
-  //       error: `Failed to ${isApprove ? "approve" : "reject"} leave`,
-  //     },
-  //   );
-  // };
+  const StartDateFilter = (
+    <DatePicker
+      id="attendance-start-date"
+      mode="single"
+      placeholder="Start date"
+      value={startDate}
+      onChange={(dates) => {
+        if (dates.length > 0) {
+          const date = dates[0];
+          const localDate = date.toLocaleDateString("en-CA"); // YYYY-MM-DD
+          setStartDate(localDate);
+        }
+      }}
+    />
+  );
+
+  const EndDateFilter = (
+    <DatePicker
+      id="attendance-end-date"
+      mode="single"
+      placeholder="End date"
+      value={endDate}
+      onChange={(dates) => {
+        if (dates.length > 0) {
+          const date = dates[0];
+          const localDate = date.toLocaleDateString("en-CA"); // YYYY-MM-DD
+          setEndDate(localDate);
+        }
+      }}
+    />
+  );
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      refetch();
+    }
+  }, [startDate, endDate]);
 
   const columns: Column<Leave>[] = [
     {
@@ -202,14 +253,19 @@ export default function LeavesTable() {
     {
       header: "Duration",
       render: (row) => (
-        <div className="text-sm">
-          <div className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-            {formatDateID(row.date_start)}
+        <div className="flex flex-col gap-1">
+          <div className="text-sm">
+            <div className="font-medium text-gray-700 dark:text-gray-200 flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              {formatDateID(row.date_start)}
+            </div>
+            <div className="text-xs text-gray-400 dark:text-gray-500 ml-3">
+              Until {formatDateID(row.date_end)}
+            </div>
           </div>
-          <div className="text-xs text-gray-400 dark:text-gray-500 ml-3">
-            Until {formatDateID(row.date_end)}
-          </div>
+          <span className="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider ml-3">
+            {row.duration_label} Total
+          </span>
         </div>
       ),
     },
@@ -241,7 +297,52 @@ export default function LeavesTable() {
         </div>
       ),
     },
+    {
+      header: "Progress",
+      render: (row) => (
+        <div className="flex flex-col gap-1.5 min-w-30">
+          <div className="flex -space-x-2 overflow-hidden">
+            {row.approval_levels?.map((lvl, i) => (
+              <div
+                key={i}
+                title={`${lvl.nama_approver} (Level ${lvl.level})`}
+                className={`inline-flex items-center justify-center w-7 h-7 rounded-full border-2 border-white dark:border-gray-800 text-white shadow-sm transition-transform hover:scale-110 ${
+                  lvl.status === 1
+                    ? "bg-emerald-500"
+                    : lvl.status === 2
+                      ? "bg-rose-500"
+                      : "bg-gray-300 dark:bg-gray-600"
+                }`}
+              >
+                {lvl.status === 1 ? (
+                  <CheckCircle2 size={12} />
+                ) : lvl.status === 2 ? (
+                  <XCircle size={12} />
+                ) : (
+                  <Clock size={12} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-0.5 mt-1">
+            <span className="text-[9px] text-gray-400 uppercase font-semibold leading-none">
+              Lvl 1: Manager • Lvl 2: HR/Dir
+            </span>
+          </div>
 
+          {row.approval_status === 0 && row.next_approver && (
+            <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium animate-pulse">
+              Waiting: {row.next_approver}
+            </p>
+          )}
+          {row.approval_status !== 0 && (
+            <p className="text-[10px] text-gray-400 font-medium">
+              Process Completed
+            </p>
+          )}
+        </div>
+      ),
+    },
     {
       header: "Status",
       render: (row) => {
@@ -273,48 +374,6 @@ export default function LeavesTable() {
         );
       },
     },
-    // {
-    //   header: "Approval",
-    //   render: (row) => {
-    //     return (
-    //       <TableActions
-    //         id={row.current_approval_uuid || ""}
-    //         dataName={`Leave - ${row.employee_name}`}
-    //         baseNamePermission={RESOURCES.LEAVE}
-    //         actions={
-    //           row.can?.approve
-    //             ? [
-    //                 {
-    //                   label: "Approve",
-    //                   variant: "success",
-    //                   icon: <Check size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.APPROVED,
-    //                       note,
-    //                     ),
-    //                 },
-    //                 {
-    //                   label: "Reject",
-    //                   variant: "danger",
-    //                   icon: <X size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.REJECTED,
-    //                       note,
-    //                     ),
-    //                 },
-    //               ]
-    //             : []
-    //         }
-    //       />
-    //     );
-    //   },
-    // },
     {
       header: "Action",
       render: (row) => (
@@ -347,15 +406,20 @@ export default function LeavesTable() {
         searchableKeys={["reason", "employee_name", "leave_type"]}
         loading={isLoading}
         handleCreate={handleCreate}
+        handleExport={handleExport}
         label="Leave Request"
         baseNamePermission={RESOURCES.LEAVE}
         newFilterComponent={
           <>
-            <FilterDropdown
-              value={employeeFilter}
-              options={employeeOptions}
-              onChange={setEmployeeFilter}
-            />
+            {StartDateFilter}
+            {EndDateFilter}
+            {employeeOptions.length > 2 && (
+              <FilterDropdown
+                value={employeeFilter}
+                options={employeeOptions}
+                onChange={setEmployeeFilter}
+              />
+            )}
             <FilterDropdown
               value={leaveTypeFilter}
               options={leaveTypeOptions}

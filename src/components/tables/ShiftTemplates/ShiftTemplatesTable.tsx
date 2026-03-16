@@ -17,11 +17,13 @@ import FilterDropdown from "@/components/FilterDropdown";
 
 export default function ShiftTemplatesTable() {
   const {
-    data: shiftTemplates = [],
+    data: shiftTemplatesData,
     isLoading,
     isError,
     error,
   } = useShiftTemplates();
+
+  const shiftTemplates = (shiftTemplatesData as ShiftTemplate[]) || [];
 
   const { mutateAsync: createShiftTemplate } = useCreateShiftTemplate();
   const { mutateAsync: updateShiftTemplate } = useUpdateShiftTemplate();

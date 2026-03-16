@@ -6,6 +6,7 @@ export const RESOURCES = {
   POSITION: "position",
   ALLOWANCE: "allowance",
   ATTENDANCE: "attendance",
+  ATTENDANCE_CORRECTION: "attendance-correction",
   HOLIDAY: "holiday",
   WORK_SCHEDULE: "work-schedule",
   EMPLOYEE_WORK_SCHEDULE: "employee-work-schedule",
@@ -18,4 +19,6 @@ export const RESOURCES = {
   OVERTIME: "overtime",
   PAYROLL: "payroll",
   DASHBOARD: "dashboard",
+  ASSESSMENT_CATEGORY: "assessment-category",
+  ASSESSMENT: "assessment",
 } as const;

@@ -22,7 +22,7 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const { isAdmin } = useRoleName();
+  const { isAdmin, isOwner } = useRoleName();
 
   // const isActive = (path: string) => location.pathname === path;
   const isActive = useCallback(
@@ -82,7 +82,7 @@ const AppSidebar: React.FC = () => {
   const filterNavByPermission = (items: NavItem[]): NavItem[] => {
     return items
       .map((item) => {
-        if (item.hideForAdmin && isAdmin) return null;
+        if (item.hideForAdmin && isAdmin || item.hideForAdmin && isOwner) return null;
 
         if (item.subItems) {
           const allowedSub = item.subItems.filter(

@@ -1,4 +1,4 @@
-import { Division, DivisionInput } from "@/types/division.types";
+import { Division, DivisionInput, DivisionTeamEmployee } from "@/types/division.types";
 import api from "./axios";
 import { ApiResponse } from "@/types";
 
@@ -40,4 +40,9 @@ export const forceDeleteDivision = async (uuid: string) => {
 export const getTrashedDivision = async () => {
   const res = await api.get<ApiResponse<Division[]>>("/divisions/trashed");
   return res.data.data;
+}
+
+export const getDivisionWithTeamAndEmployees = async () => {
+  const res = await api.get<ApiResponse<DivisionTeamEmployee[]>>("/divisions/with-teams-and-employees");
+  return res.data.data
 }

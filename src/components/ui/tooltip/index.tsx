@@ -1,5 +1,6 @@
 import React, { ReactNode, useState, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface TooltipProps {
   content: ReactNode;
@@ -17,6 +18,11 @@ const Tooltip: React.FC<TooltipProps> = ({
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return <>{children}</>;
+  }
 
   const updatePosition = () => {
     if (triggerRef.current) {

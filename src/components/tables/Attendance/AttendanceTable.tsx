@@ -3,7 +3,10 @@ import { Column } from "@/types";
 import { DataTable } from "@/components/tables/BasicTables/DataTable";
 import Badge from "@/components/ui/badge/Badge";
 import { useAttendances, useExportAttendance } from "@/hooks/useAttendance";
-import { Attendance } from "@/types/attendance.types";
+import {
+  Attendance,
+  AttendanceCorrectionInput,
+} from "@/types/attendance.types";
 import DatePicker from "@/components/form/date-picker";
 import TableActions from "../BasicTables/TableAction";
 import { useShowModal } from "@/hooks/useShowModal";
@@ -13,11 +16,24 @@ import {
   ATTENDANCE_STATUS,
   ATTENDANCE_STATUS_LABEL,
 } from "@/constants/Attendance";
-import FilterDropdown from "@/components/FilterDropdown";
 import { formatDateID } from "@/utils/date";
 import { handleMutation } from "@/utils/handleMutation";
+import { useCreateAttendanceCorrection } from "@/hooks/useAttendanceCorrection";
+import { useCrudModalForm } from "@/hooks/useCrudModalForm";
+import AttendanceCorrectionModal from "@/pages/AttendanceReport/Modal";
+import FilterDropdown from "@/components/FilterDropdown";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { useNavigate } from "react-router-dom";
 
-export default function AttendanceTable() {
+interface AttendanceTableProps {
+  onDataLoaded?: (data: Attendance[]) => void;
+  onLoading?: (isLoading: boolean) => void;
+}
+
+export default function AttendanceTable({
+  onDataLoaded,
+  onLoading,
+}: AttendanceTableProps) {
   const today = new Date().toISOString().split("T")[0];
 
   const [startDate, setStartDate] = useState<string>(today);
@@ -26,6 +42,11 @@ export default function AttendanceTable() {
   const [employeeFilter, setEmployeeFilter] = useState<string>("all");
 
   const show = useShowModal<number>();
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
+
+  const { mutateAsync: createAttendanceCorrection } =
+    useCreateAttendanceCorrection();
 
   const {
     data: attendances = [],
@@ -38,9 +59,23 @@ export default function AttendanceTable() {
     end_date: endDate,
   });
 
+  useEffect(() => {
+    onLoading?.(isLoading);
+  }, [isLoading, onLoading]);
+
+  useEffect(() => {
+    if (!isLoading && attendances && onDataLoaded) {
+      onDataLoaded(attendances);
+    }
+  }, [attendances, isLoading, onDataLoaded]);
+
   const { mutateAsync: exportAttendance } = useExportAttendance();
 
   const handleShow = (id: number) => {
+    if (isMobile) {
+      navigate(`/attendance/${id}`)
+      return;
+    }
     show.open(id);
   };
 
@@ -52,10 +87,75 @@ export default function AttendanceTable() {
           end_date: endDate,
         }),
       {
-      loading: "Exporting...",
-      success: "Export successfully",
-      error: "Failed to export",
+        loading: "Exporting...",
+        success: "Export successfully",
+        error: "Failed to export",
+      },
+    );
+
+  const ensureHiFormat = (timeString: string | null | undefined) => {
+    if (!timeString) return "";
+    const time = timeString.includes(" ")
+      ? timeString.split(" ")[1]
+      : timeString;
+    return time.substring(0, 5);
+  };
+
+  const crud = useCrudModalForm<AttendanceCorrectionInput, FormData>({
+    label: "Attendance Correction Request",
+    emptyForm: {
+      reason: "",
+      attachment: null,
+      attendance_id: undefined,
+      clock_in_requested: "",
+      clock_out_requested: "",
+    },
+    validate: (form) => {
+      if (!form.reason || form.reason.trim().length < 3)
+        return "Reason must be at least 3 characters";
+      if (!form.attendance_id) return "Attendance ID is required";
+      return null;
+    },
+    mapToPayload: (form) => {
+      console.log("Submitting Correction Form:", form);
+      const formData = new FormData();
+      formData.append("reason", form.reason.trim());
+      if (form.attendance_id)
+        formData.append("attendance_id", form.attendance_id.toString());
+      if (form.clock_in_requested) {
+        formData.append(
+          "clock_in_requested",
+          ensureHiFormat(form.clock_in_requested),
+        );
+      }
+
+      if (form.clock_out_requested) {
+        formData.append(
+          "clock_out_requested",
+          ensureHiFormat(form.clock_out_requested),
+        );
+      }
+
+      if (form.attachment instanceof File)
+        formData.append("attachment", form.attachment);
+      return formData;
+    },
+    createFn: (payload) => createAttendanceCorrection(payload as any),
+  });
+
+  const handleRequestCorrection = (id: number) => {
+    const row = attendances.find((a) => a.id === id);
+    if (!row) return;
+
+    crud.openCreate();
+    crud.setForm({
+      reason: "",
+      attachment: null,
+      attendance_id: row.id,
+      clock_in_requested: row.clock_in || "",
+      clock_out_requested: row.clock_out || "",
     });
+  };
 
   // Generate options for employee filter dynamically
   const employeeOptions = useMemo(() => {
@@ -178,7 +278,9 @@ export default function AttendanceTable() {
           id={row.id}
           dataName="Attendance"
           onShow={handleShow}
-          baseNamePermission={RESOURCES.ATTENDANCE}
+          baseNamePermission={RESOURCES.ATTENDANCE_CORRECTION}
+          onEdit={handleRequestCorrection}
+          can={row.can}
         />
       ),
     },
@@ -268,6 +370,18 @@ export default function AttendanceTable() {
           status: statusFilter,
           "employee.name": employeeFilter,
         }}
+      />
+
+      <AttendanceCorrectionModal
+        isOpen={crud.isOpen}
+        onClose={crud.close}
+        attendanceData={crud.form}
+        setAttendanceData={crud.setForm}
+        onSubmit={crud.submit}
+        isLoading={crud.loading}
+        originalDate={
+          attendances.find((a) => a.id === crud.form.attendance_id)?.date
+        }
       />
 
       <AttendanceShowModal
