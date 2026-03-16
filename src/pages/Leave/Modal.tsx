@@ -102,7 +102,7 @@ export default function LeaveModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
               {/* Dropdown Employee - Hanya untuk Admin/HR */}
                 {isUserAdminOrHR && (
-                  <div className="md:col-span-2 bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                  <div className="md:col-span-2 bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-100 dark:border-gray-800">
                     <button
                       type="button"
                       onClick={() => setShowEmployeeSelect(!showEmployeeSelect)}

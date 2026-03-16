@@ -71,7 +71,7 @@ export default function OvertimeModal({
         >
           <div className="custom-scrollbar max-h-[65vh] overflow-y-auto px-1 space-y-6">
                 {isUserAdminOrHR && (
-                  <div className="bg-gray-50 dark:bg-gray-800/40 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                  <div className="bg-gray-50 dark:bg-gray-800/40 rounded-2xl border border-gray-100 dark:border-gray-800">
                     <button
                       type="button"
                       onClick={() => setShowEmployeeSelect(!showEmployeeSelect)}
