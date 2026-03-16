@@ -67,7 +67,7 @@ export default function AssessmentsTable() {
       note: "",
       assessment_details: [],
     },
-    validate: (form) => {
+    validate: (_form) => {
       // if (!form.evaluatee_nik) return "Employee is required";
       // const hasUnscored = (form.assessment_details as AssessmentScoreDetail[])?.some(
       //   (d) => d.score === 0,

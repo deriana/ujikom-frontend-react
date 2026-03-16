@@ -1,5 +1,4 @@
 import { TableCardSkeleton } from "@/components/skeleton/TableCardSkeleton";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { Column } from "@/types";
 import { LayoutGrid, List } from "lucide-react";
 import React, { useEffect, useMemo, useState, useCallback } from "react";
@@ -86,8 +85,6 @@ export function DataTable<T extends object>({
   const getNestedValue = (obj: any, path: string) => {
     return path.split(".").reduce((acc, key) => acc?.[key], obj);
   };
-
-  const isMobile = useIsMobile();
 
   // FILTERING
   const filteredData = useMemo(() => {

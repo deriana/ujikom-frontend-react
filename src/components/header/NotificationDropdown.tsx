@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Link } from "react-router-dom";
@@ -8,9 +8,8 @@ import {
   useMarkAsRead,
   useMarkAllAsRead,
 } from "@/hooks/useNotification";
-import { Download, Plus, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useSettingsContext } from "@/context/SettingsContext";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,9 +19,7 @@ export default function NotificationDropdown() {
 
   const appLogo = general?.logo || "/placeholder_img.jpg";
 
-  const prevCountRef = useRef(unreadNotifications.length);
 
-  const isMobile = useIsMobile()
 
   // useEffect(() => {
   //   if ("Notification" in window && Notification.permission === "default") {

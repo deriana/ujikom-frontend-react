@@ -1,7 +1,6 @@
 import {
   useCreateEarlyLeave,
   useDeleteEarlyLeave,
-  useEarlyLeaveApprovals,
   useEarlyLeaves,
   useExportEarlyLeave,
   useUpdateEarlyLeave,
@@ -15,9 +14,8 @@ import { useCrudModalForm, useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  APPROVAL_INPUT,
   APPROVAL_LABEL,
   APPROVAL_STATS,
 } from "@/constants/Approval";
@@ -154,30 +152,6 @@ export default function EarlyLeavesTable({
       error: "Failed to delete",
     });
 
-  // const handleApprovalAction = (
-  //   uuid: string,
-  //   status: boolean,
-  //   note?: string,
-  // ) => {
-  //   const isApprove = status === APPROVAL_INPUT.APPROVED;
-
-  //   handleMutation(
-  //     () =>
-  //       approveEarlyLeave({
-  //         uuid,
-  //         status,
-  //         note,
-  //       }),
-  //     {
-  //       loading: isApprove
-  //         ? "Approving Early leave..."
-  //         : "Rejecting Early leave...",
-  //       success: `Early Leave ${isApprove ? "approved" : "rejected"} successfully`,
-  //       error: `Failed to ${isApprove ? "approve" : "reject"} Early leave`,
-  //     },
-  //   );
-  // };
-
    const handleExport = () =>
       handleMutation(
         () =>
@@ -298,48 +272,6 @@ export default function EarlyLeavesTable({
         );
       },
     },
-    // {
-    //   header: "Approval",
-    //   render: (row) => {
-    //     return (
-    //       <TableActions
-    //         id={row.uuid || ""}
-    //         dataName={`Early Leave - ${row.employee_name}`}
-    //         baseNamePermission={RESOURCES.EARLY_LEAVE}
-    //         actions={
-    //           row.can?.approve
-    //             ? [
-    //                 {
-    //                   label: "Approve",
-    //                   variant: "success",
-    //                   icon: <Check size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.APPROVED,
-    //                       note,
-    //                     ),
-    //                 },
-    //                 {
-    //                   label: "Reject",
-    //                   variant: "danger",
-    //                   icon: <X size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.REJECTED,
-    //                       note,
-    //                     ),
-    //                 },
-    //               ]
-    //             : []
-    //         }
-    //       />
-    //     );
-    //   },
-    // },
     {
       header: "Action",
       render: (row) => (

@@ -84,6 +84,7 @@ export default function UsersShow() {
               onClose={() => setPhotoModalOpen(false)}
               currentPhoto={userFromApi?.employee?.profile_photo}
               onUpload={handleUploadPhoto}
+              isLoading={loadingPhoto}
             />
           </div>
         )}

@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Send, Github, Twitter, Instagram, Facebook } from "lucide-react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
 import Button from "../ui/button/Button";
 import SocialIcons from "./SocialIcons";
 

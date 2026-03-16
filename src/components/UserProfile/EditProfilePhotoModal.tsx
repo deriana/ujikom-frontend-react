@@ -10,6 +10,7 @@ interface EditProfilePhotoModalProps {
   onClose: () => void;
   currentPhoto?: string;
   onUpload: (file: File | null) => Promise<void>;
+  isLoading?: boolean;
 }
 
 export default function EditProfilePhotoModal({
@@ -17,12 +18,12 @@ export default function EditProfilePhotoModal({
   onClose,
   currentPhoto,
   onUpload,
+  isLoading = false,
 }: EditProfilePhotoModalProps) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [croppedArea, setCroppedArea] = useState<any>(null);
   const [zoom, setZoom] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,19 +37,15 @@ export default function EditProfilePhotoModal({
   };
 
   const handleRemove = async () => {
-    setLoading(true);
     await onUpload(null); // null = reset to default
     setImageSrc(null);
-    setLoading(false);
     onClose();
   };
 
   const handleUpload = async () => {
     if (!imageSrc || !croppedArea) return;
-    setLoading(true);
     const croppedFile = await getCroppedImg(imageSrc, croppedArea);
     await onUpload(croppedFile);
-    setLoading(false);
     setImageSrc(null);
     onClose();
   };
@@ -111,16 +108,18 @@ export default function EditProfilePhotoModal({
             onClick={handleRemove}
             variant="destructive"
             className="flex-1"
-            disabled={loading}
+            disabled={isLoading}
           >
-            Remove <Trash2 size={16} className="ml-1" />
+            {isLoading ? "Removing..." : (
+              <>Remove <Trash2 size={16} className="ml-1" /></>
+            )}
           </Button>
           <Button
             onClick={handleUpload}
             className="flex-1"
-            disabled={!imageSrc || loading}
+            disabled={!imageSrc || isLoading}
           >
-            Save
+            {isLoading ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>

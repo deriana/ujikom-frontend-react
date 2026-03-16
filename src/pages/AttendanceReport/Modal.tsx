@@ -8,7 +8,6 @@ import {
   ClipboardCheck,
   UploadCloud,
   X,
-  FileText as FileTextIcon,
 } from "lucide-react";
 import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
 import TimePicker from "@/components/form/time-picker";

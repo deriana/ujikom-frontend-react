@@ -62,7 +62,7 @@ export default function CareerPage() {
                         </Button>
                     </div>
                 </main>
-                <Footer />
+                <Footer footer={""} />
             </div>
         );
     }
@@ -216,7 +216,7 @@ export default function CareerPage() {
                     </div>
                 </div>
             </main>
-            <Footer />
+            <Footer footer={""} />
         </div>
     );
 }

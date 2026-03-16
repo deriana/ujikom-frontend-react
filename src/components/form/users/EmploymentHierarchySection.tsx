@@ -2,7 +2,7 @@ import Select from "@/components/form/Select";
 import SelectDivisionTeam from "@/components/form/users/SelectDivisionsTeam";
 import DatePicker from "@/components/form/date-picker";
 import { UserInput, Division, Position, Manager } from "@/types";
-import { Briefcase, ShieldCheck, Calendar, Clock, Info } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { useEffect } from "react";
 
 interface Props {
