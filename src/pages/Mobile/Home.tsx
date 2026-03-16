@@ -6,6 +6,7 @@ import QuickActionGrid from "@/components/Mobile/QuickActionGrid";
 import { MobileHomeData } from "@/types";
 import DynamicActivity from "@/components/Mobile/DynamicActivity";
 import { useNotificationPermission } from "@/hooks/useNotificationPermission";
+import { GetStarted } from "../GetStarted/Index";
 
 export default function MobileHome() {
   const { data: attendanceData, isLoading } = useMobileHomeData();
@@ -18,6 +19,7 @@ export default function MobileHome() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24 animate-in fade-in duration-500">
+      <GetStarted />
       <HomeHeader />
       <div className="px-5 mt-6 space-y-8">
         <AttendanceCard attendanceData={attendanceData as MobileHomeData} />
