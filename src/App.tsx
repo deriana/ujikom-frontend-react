@@ -10,7 +10,7 @@ import Calendar from "./pages/Calendar";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import { useState, useEffect } from "react";
+// import { useEffect } from "react";
 import Spinner from "./components/ui/loading/Spinner";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -77,7 +77,7 @@ import Activity from "./pages/Mobile/Activity";
 import ApprovalMenu from "./pages/Mobile/ApprovalMenu";
 import MobileGuard from "./routes/MobileGuard";
 import LeaveBalances from "./pages/Mobile/LeaveBalance";
-import RouteServiceProvider from "./providers/RouteServiceProvider";
+// import RouteServiceProvider from "./providers/RouteServiceProvider";
 import { useIsMobile } from "./hooks/useIsMobile";
 import AssessmentCategory from "./pages/AssessmentCategory/Index";
 import AssessmentPage from "./pages/Assessment/Index";
@@ -87,20 +87,14 @@ import AttendanceCorrectionApproval from "./pages/Approval/AttendanceCorrectionA
 import AttendancePresence from "./pages/Attendance/AttendanceMenu";
 import ManualAttendance from "./pages/Attendance/ManualAttendance";
 import AttendanceDetailMobile from "./pages/Mobile/AttendanceDetail";
+import { useAuth } from "./hooks/useAuth";
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
   const isMobile = useIsMobile();
-
   const { isRole } = useRoleName();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
+  if (loading) return <Spinner />
 
   const publicRoutes = [
     { path: "/calendar", element: <Calendar /> },
@@ -451,8 +445,6 @@ export default function App() {
 
   return (
     <>
-      {loading && <Spinner />}
-
       <Router>
         <ScrollToTop />
         <Toaster position="top-right" containerStyle={{ zIndex: 999999 }} />
@@ -461,9 +453,17 @@ export default function App() {
           <Route
             path="/"
             element={
-              <RouteServiceProvider>
-                <LandingPageWrapper />
-              </RouteServiceProvider>
+              user ? (
+                isRole(ROLES.ADMIN) || isRole(ROLES.OWNER) ? (
+                  <Navigate to="/dashboard/admin" replace />
+                ) : isMobile ? (
+                  <Navigate to="/home" replace /> 
+                ) : (
+                  <Navigate to="/dashboard/employee" replace /> 
+                )
+              ) : (
+                <LandingPageWrapper /> 
+              )
             }
           />
           {/* 🔓 1. Public Routes (Taruh di paling atas) */}

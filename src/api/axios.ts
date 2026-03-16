@@ -2,6 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 10000,
 });
 
 api.interceptors.request.use((config) => {
@@ -10,7 +11,7 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  
+
   config.headers['ngrok-skip-browser-warning'] = '69420';
 
   return config;
@@ -19,10 +20,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.log(error.response);
-    const status = error.response?.status;
+    if (!error.response) {
+      console.error("Server tidak merespons atau masalah CORS");
+      window.dispatchEvent(new Event("server-down"));
+      return Promise.reject(error);
+    }
+
+    const status = error.response.status;
 
     if (status === 401) {
+      console.warn("Sesi berakhir (401). Menghapus token...");
       localStorage.removeItem("token");
     }
 
@@ -40,7 +47,6 @@ api.interceptors.response.use(
 
     return Promise.reject(error);
   }
-
 );
 
 export default api;

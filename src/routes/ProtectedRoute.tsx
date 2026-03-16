@@ -4,8 +4,10 @@ import Spinner from "@/components/ui/loading/Spinner";
 
 export default function ProtectedRoute() {
   const { user, loading } = useAuth();
+  
+  const hasToken = !!localStorage.getItem("token");
 
   if (loading) return <Spinner />;
 
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  return (user || hasToken) ? <Outlet /> : <Navigate to="/login" replace />;
 }

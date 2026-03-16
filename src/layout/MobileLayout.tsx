@@ -4,10 +4,29 @@ import MobileNavBar from "./MobileNavBar";
 import { SiteBrand } from "@/components/SiteBrand";
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { useNotifications } from "@/hooks/useNotification";
+import { useEffect, useState } from "react";
+import { ConnectionAlert } from "@/components/ConnectionAlert";
 
 const MobileLayout = () => {
-  const { data: notifications = [] } = useNotifications();
+  const { data: notifications = [], isError: apiError } = useNotifications();
   const unreadCount = notifications.filter((n) => !n.read_at).length;
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [serverDown, setServerDown] = useState(false);
+
+  useEffect(() => {
+    const handleStatusChange = () => setIsOnline(navigator.onLine);
+    const handleServerDown = () => setServerDown(true);
+
+    window.addEventListener("online", handleStatusChange);
+    window.addEventListener("offline", handleStatusChange);
+    window.addEventListener("server-down", handleServerDown);
+
+    return () => {
+      window.removeEventListener("online", handleStatusChange);
+      window.removeEventListener("offline", handleStatusChange);
+      window.removeEventListener("server-down", handleServerDown);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -25,6 +44,11 @@ const MobileLayout = () => {
           </Link>
         </div>
       </header>
+
+      <ConnectionAlert 
+        isOnline={isOnline} 
+        isServerError={apiError || serverDown} 
+      />
 
       <main className="flex-1 pb-24 p-4">
         <Outlet />

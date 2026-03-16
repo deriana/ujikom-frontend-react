@@ -36,8 +36,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!token) return null;
       try {
         return await authApi.getMe();
-      } catch {
-        localStorage.removeItem("token");
+      } catch (err: any) {
+        if (err.response) {
+          const status = err.response.status;
+
+          if (status === 401 || status === 403) {
+            console.warn("Sesi tidak valid, menghapus token...");
+            localStorage.removeItem("token");
+          }
+        }
         return null;
       }
     },

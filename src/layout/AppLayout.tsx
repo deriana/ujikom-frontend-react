@@ -1,12 +1,33 @@
 import { SidebarProvider, useSidebar } from "../context/SidebarContext";
 import { Outlet, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
+import { ConnectionAlert } from "@/components/ConnectionAlert";
 
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-  const location = useLocation(); 
+  const location = useLocation();
+
+  // 2. Logic state koneksi
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [serverDown, setServerDown] = useState(false);
+
+  useEffect(() => {
+    const handleStatusChange = () => setIsOnline(navigator.onLine);
+    const handleServerDown = () => setServerDown(true);
+
+    window.addEventListener("online", handleStatusChange);
+    window.addEventListener("offline", handleStatusChange);
+    window.addEventListener("server-down", handleServerDown);
+
+    return () => {
+      window.removeEventListener("online", handleStatusChange);
+      window.removeEventListener("offline", handleStatusChange);
+      window.removeEventListener("server-down", handleServerDown);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen xl:flex">
@@ -20,6 +41,12 @@ const LayoutContent: React.FC = () => {
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
         <AppHeader />
+        
+        <ConnectionAlert 
+          isOnline={isOnline} 
+          isServerError={serverDown} 
+        />
+
         <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
           <Outlet key={location.pathname} />
         </div>
@@ -27,7 +54,6 @@ const LayoutContent: React.FC = () => {
     </div>
   );
 };
-
 
 const AppLayout: React.FC = () => {
   return (
