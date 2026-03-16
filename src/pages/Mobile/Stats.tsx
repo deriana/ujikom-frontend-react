@@ -5,7 +5,6 @@ import LastSalary from "@/components/Mobile/LastSalary";
 import WeeklyTrendChart from "@/components/Mobile/WeeklyTrendChart";
 import UpcomingHoliday from "./UpcomingHoliday";
 import PersonalStatsHeader from "@/components/Mobile/PersonalStatsHeader";
-import ReactApexChart from "react-apexcharts";
 import PerformanceChart from "@/components/Mobile/PerformanceChart";
 
 // Komponen Skeleton (Dummy)

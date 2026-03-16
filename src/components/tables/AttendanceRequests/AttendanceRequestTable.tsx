@@ -1,7 +1,6 @@
 import {
   useCreateAttendanceRequest,
   useDeleteAttendanceRequest,
-  useAttendanceRequestApprovals,
   useAttendanceRequests,
   useUpdateAttendanceRequest,
 } from "@/hooks/useAttendanceRequest";
@@ -16,12 +15,11 @@ import { useRoleName } from "@/hooks/useRoleName";
 import { ROLES } from "@/constants/Roles";
 import { useMemo, useState } from "react";
 import {
-  APPROVAL_INPUT,
   APPROVAL_LABEL,
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-import { Check, X, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 import AttendanceRequestModal from "@/pages/AttendanceRequest/Modal";
 import AttendanceRequestShowModal from "@/pages/AttendanceRequest/ShowModal";
@@ -36,8 +34,6 @@ export default function AttendanceRequestsTable() {
   const { mutateAsync: createAttendanceRequest } = useCreateAttendanceRequest();
   const { mutateAsync: updateAttendanceRequest } = useUpdateAttendanceRequest();
   const { mutateAsync: deleteAttendanceRequest } = useDeleteAttendanceRequest();
-  const { mutateAsync: approveAttendanceRequest } =
-    useAttendanceRequestApprovals();
   const { isRole } = useRoleName();
   const [employeeFilter, setEmployeeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -121,29 +117,6 @@ export default function AttendanceRequestsTable() {
       error: "Failed to delete",
     });
 
-  const handleApprovalAction = (
-    uuid: string,
-    status: boolean,
-    note?: string,
-  ) => {
-    const isApprove = status === APPROVAL_INPUT.APPROVED;
-
-    handleMutation(
-      () =>
-        approveAttendanceRequest({
-          uuid,
-          status,
-          note,
-        }),
-      {
-        loading: isApprove
-          ? "Approving Attendance Request..."
-          : "Rejecting Attendance Request...",
-        success: `Attendance Request ${isApprove ? "approved" : "rejected"} successfully`,
-        error: `Failed to ${isApprove ? "approve" : "reject"} Attendance Request`,
-      },
-    );
-  };
 
   const columns: Column<AttendanceRequest>[] = [
     {
@@ -219,48 +192,6 @@ export default function AttendanceRequestsTable() {
         );
       },
     },
-    // {
-    //   header: "Approval",
-    //   render: (row) => {
-    //     return (
-    //       <TableActions
-    //         id={row.uuid}
-    //         dataName={`Request - ${row.employee.name}`}
-    //         baseNamePermission={RESOURCES.ATTENDANCE_REQUEST}
-    //         actions={
-    //           row.can?.approve
-    //             ? [
-    //                 {
-    //                   label: "Approve",
-    //                   variant: "success",
-    //                   icon: <Check size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.APPROVED,
-    //                       note,
-    //                     ),
-    //                 },
-    //                 {
-    //                   label: "Reject",
-    //                   variant: "danger",
-    //                   icon: <X size={16} />,
-    //                   showNote: true,
-    //                   onClick: (uuid, note) =>
-    //                     handleApprovalAction(
-    //                       uuid,
-    //                       APPROVAL_INPUT.REJECTED,
-    //                       note,
-    //                     ),
-    //                 },
-    //               ]
-    //             : []
-    //         }
-    //       />
-    //     );
-    //   },
-    // },
     {
       header: "Action",
       render: (row) => (

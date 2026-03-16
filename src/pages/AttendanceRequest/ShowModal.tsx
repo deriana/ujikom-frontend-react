@@ -2,13 +2,11 @@ import { Modal } from "@/components/ui/modal";
 import {
   Calendar,
   User,
-  Info,
   Clock,
   CheckCircle2,
   XCircle,
   Timer,
   FileText,
-  Loader2,
   UserCheck,
   Briefcase,
   MapPin,

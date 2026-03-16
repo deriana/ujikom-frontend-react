@@ -83,6 +83,7 @@ export default function Profile() {
               onClose={() => setPhotoModalOpen(false)}
               currentPhoto={profileData?.employee?.profile_photo}
               onUpload={handleUploadPhoto}
+              isLoading={loadingPhoto}
             />
           </div>
         )}

@@ -4,7 +4,6 @@ import Button from "@/components/ui/button/Button";
 import {
   FileText,
   ClipboardCheck,
-  UserCircle,
   Calendar,
   Layers,
   Settings,
@@ -33,7 +32,6 @@ export default function AttendanceRequestModal({
   setAttendanceRequestData,
   onSubmit,
   isLoading = false,
-  isUserAdminOrHR = false,
 }: AttendanceRequestModalProps) {
   const isEdit = !!attendanceRequestData.uuid;
   const isShift = attendanceRequestData.request_type === 'SHIFT';

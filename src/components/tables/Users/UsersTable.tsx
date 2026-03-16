@@ -94,12 +94,12 @@ export default function UsersTable() {
       error: "Failed to resign user",
     });
 
-  const handleAdminChangePassword = (uuid: string, newPassword: string) =>
-    handleMutation(() => adminChangePassword({ uuid, newPassword }), {
-      loading: "Changing password...",
-      success: "Password changed successfully",
-      error: "Failed to change password",
-    });
+  // const handleAdminChangePassword = (uuid: string, newPassword: string) =>
+  //   handleMutation(() => adminChangePassword({ uuid, newPassword }), {
+  //     loading: "Changing password...",
+  //     success: "Password changed successfully",
+  //     error: "Failed to change password",
+  //   });
 
   const handleCreate = () => {
     navigate("/users/create");

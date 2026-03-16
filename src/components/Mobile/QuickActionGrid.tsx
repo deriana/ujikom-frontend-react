@@ -1,6 +1,6 @@
 import { Calendar, ClipboardList, Clock, FileClock, LayoutGrid, Palmtree, Timer, Wallet, Scale, ClipboardCheck, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function QuickActionGrid() {
       const navigate = useNavigate();

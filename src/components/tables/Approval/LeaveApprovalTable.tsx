@@ -14,7 +14,7 @@ import {
   APPROVAL_STATS,
 } from "@/constants/Approval";
 import FilterDropdown from "@/components/FilterDropdown";
-import { Check, CheckCircle2, Clock, X, XCircle } from "lucide-react";
+import { Check, CheckCircle2, X, XCircle } from "lucide-react";
 import { formatDateID } from "@/utils/date";
 import { useShowModal } from "@/hooks/useShowModal";
 import { Column, Leave } from "@/types";
@@ -186,15 +186,15 @@ export default function LeavesApprovalTable() {
   header: "Approval Progress",
   render: (row) => {
     // Menghitung jumlah yang sudah approve
-    const approvedCount = row.approval_levels.filter(lvl => lvl.status === 1).length;
-    const totalLevels = row.approval_levels.length;
+    const approvedCount = row.approval_levels?.filter(lvl => lvl.status === 1).length || 0;
+    const totalLevels = row.approval_levels?.length || 0;
     const isFullyApproved = approvedCount === totalLevels;
 
     return (
       <div className="flex flex-col gap-2 min-w-32">
         {/* Lingkaran Status (Avatar Stack) */}
         <div className="flex -space-x-2 overflow-hidden">
-          {row.approval_levels.map((lvl, i) => (
+          {row.approval_levels?.map((lvl, i) => (
             <div
               key={i}
               title={`${lvl.nama_approver} (Level ${lvl.level})`}
