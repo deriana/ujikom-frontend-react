@@ -22,10 +22,16 @@ export default function NotificationWatcher() {
     if (user && unreadNotifications.length > prevCountRef.current) {
       const newestNotif = unreadNotifications[0];
 
-      if (Notification.permission === "granted") {
-        new Notification(newestNotif.data.title, {
-          body: newestNotif.data.message,
-          icon: appLogo,
+      if (Notification.permission === "granted" && "serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.showNotification(newestNotif.data.title, {
+            body: newestNotif.data.message,
+            icon: appLogo,
+            badge: appLogo,
+            data: {
+              url: window.location.origin + "/notifications",
+            },
+          } as NotificationOptions & { vibrate?: number[] });
         });
       }
     }
