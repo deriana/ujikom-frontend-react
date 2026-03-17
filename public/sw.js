@@ -1,7 +1,7 @@
 self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
+  event.notification.close(); 
 
-  const urlToOpen = new URL(event.notification.data?.url || '/', self.location.origin).href;
+  const urlToOpen = event.notification.data.url || '/';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
@@ -10,7 +10,6 @@ self.addEventListener('notificationclick', (event) => {
           return client.focus();
         }
       }
-
       if (clients.openWindow) {
         return clients.openWindow(urlToOpen);
       }
