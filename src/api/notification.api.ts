@@ -30,3 +30,8 @@ export const deleteAllNotifications = async () => {
   const res = await api.delete<LaravelNotification[]>("/notifications/delete-all");
   return res.data;
 };
+
+export const subscribeWebPush = async (subscription: any) => {
+  const res = await api.post("/notifications/subscribe", subscription);
+  return res.data;
+};

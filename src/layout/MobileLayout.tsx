@@ -6,9 +6,11 @@ import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { useNotifications } from "@/hooks/useNotification";
 import { useEffect, useState } from "react";
 import { ConnectionAlert } from "@/components/ConnectionAlert";
+import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 
 const MobileLayout = () => {
   const { data: notifications = [], isError: apiError } = useNotifications();
+  useNotificationPermission();
   const unreadCount = notifications.filter((n) => !n.read_at).length;
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [serverDown, setServerDown] = useState(false);

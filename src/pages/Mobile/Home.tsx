@@ -5,13 +5,10 @@ import AttendanceCard from "@/components/Mobile/AttendanceCard";
 import QuickActionGrid from "@/components/Mobile/QuickActionGrid";
 import { MobileHomeData } from "@/types";
 import DynamicActivity from "@/components/Mobile/DynamicActivity";
-import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 import { GetStarted } from "../GetStarted/Index";
 
 export default function MobileHome() {
   const { data: attendanceData, isLoading } = useMobileHomeData();
-
-  useNotificationPermission();
 
   if (isLoading) {
     return <MobileHomeSkeleton />;
