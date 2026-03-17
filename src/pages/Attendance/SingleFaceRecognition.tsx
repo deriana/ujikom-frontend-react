@@ -8,7 +8,7 @@ import {
   useSendSingleAttendance,
 } from "@/hooks/useAttendance";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import GrantedPermission from "@/components/Attendance/Single/GrantedPermisson";
 import AttendanceMobileComponent from "@/components/Attendance/Single/MobileComponent";
 import AttendanceWebComponent from "@/components/Attendance/Single/WebComponent";
@@ -23,6 +23,8 @@ interface PermissionState {
 const SingleAttendance: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const passedCoords = location.state?.coords;
   const queryClient = useQueryClient();
   const [isModelsLoaded, setIsModelsLoaded] = useState(false);
   const [imgSrc, setImgSrc] = useState<string | null>(null);
@@ -46,7 +48,6 @@ const SingleAttendance: React.FC = () => {
     navigate(path as any);
   };
   
-  // 1. Initial Setup (Models & Geolocation)
   useEffect(() => {
     const loadModels = async () => {
       try {
@@ -58,13 +59,36 @@ const SingleAttendance: React.FC = () => {
         ]);
         setIsModelsLoaded(true);
       } catch (err) {
-        console.error("Failed to load face-api models:", err);
+        console.error("Failed to load models:", err);
       }
     };
 
-    checkInitialPermissions();
+    if (passedCoords) {
+      setCoords({ lat: passedCoords[0], lng: passedCoords[1] });
+      setPermissions(prev => ({ ...prev, location: "granted" }));
+    }
+
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setPermissions(prev => ({ ...prev, location: "granted" }));
+      },
+      (err) => {
+        console.error("GPS Error:", err);
+      },
+      { 
+        enableHighAccuracy: true, 
+        timeout: 10000, 
+        maximumAge: 0 
+      }
+    );
+
     loadModels();
+    checkInitialPermissions();
+
+    return () => navigator.geolocation.clearWatch(watchId); 
   }, []);
+
 
   const checkInitialPermissions = async () => {
     try {

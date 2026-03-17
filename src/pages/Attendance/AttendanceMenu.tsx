@@ -174,7 +174,7 @@ export default function AttendancePresence() {
         {/* Action Cards with Clearer Hover */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button
-            onClick={() => navigate("/attendance/single")}
+            onClick={() => navigate("/attendance/single", { state: { coords: userCoords } })}
             className="group relative overflow-hidden bg-white dark:bg-white/3 p-8 rounded-4xl shadow-sm border border-gray-100 dark:border-white/10 hover:border-indigo-500 dark:hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 text-left"
           >
             <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-10 group-hover:scale-110 transition-all duration-500">
