@@ -58,7 +58,7 @@ export const SiteBrand = ({
       )}
 
       {showName && !isCollapsed && (
-        <span className={`text-2xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400 whitespace-nowrap ${nameClassName}`}>
+        <span className={`text-2xl font-bold tracking-tight text-indigo-600 dark:text-indigo-400 truncate max-w-45 ${nameClassName}`}>
           {siteName}
         </span>
       )}
