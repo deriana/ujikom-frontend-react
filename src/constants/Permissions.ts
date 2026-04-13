@@ -19,6 +19,9 @@ export const PERMISSIONS = {
   DASHBOARD: {
     admin: "admin",
     employee: "employee"
+  },
+  POINT: {
+    addPoint: "addPoint",
   }
 } as const;
 

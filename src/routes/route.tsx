@@ -26,6 +26,7 @@ import {
   ClipboardList,
   ChartBar,
   Activity,
+  Coins,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -53,20 +54,26 @@ export type NavMobileItem = {
   path: string;
   permission?: string;
   primary?: boolean;
-}
+};
 
 export const navItems: NavItem[] = [
   {
     icon: <LayoutGrid size={20} />,
     name: "Admin Dashboard",
     path: "/dashboard/admin",
-    permission: buildPermission(RESOURCES.DASHBOARD, PERMISSIONS.DASHBOARD.admin),
+    permission: buildPermission(
+      RESOURCES.DASHBOARD,
+      PERMISSIONS.DASHBOARD.admin,
+    ),
   },
   {
     icon: <LayoutDashboard size={20} />,
     name: "Employee Dashboard",
     path: "/dashboard/employee",
-    permission: buildPermission(RESOURCES.DASHBOARD, PERMISSIONS.DASHBOARD.employee),
+    permission: buildPermission(
+      RESOURCES.DASHBOARD,
+      PERMISSIONS.DASHBOARD.employee,
+    ),
     hideForAdmin: true,
   },
   {
@@ -77,7 +84,10 @@ export const navItems: NavItem[] = [
         name: "Attendance Report",
         path: "/attendances/report",
         icon: <FileSpreadsheet size={18} />,
-        permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE,
+          PERMISSIONS.BASE.INDEX,
+        ),
       },
       {
         name: "Attendance Requests",
@@ -126,10 +136,7 @@ export const navItems: NavItem[] = [
     name: "Leave Balances",
     path: "/employee-leave-balances",
     icon: <Wallet size={20} />,
-    permission: buildPermission(
-      RESOURCES.LEAVE_TYPES,
-      PERMISSIONS.BASE.INDEX,
-    ),
+    permission: buildPermission(RESOURCES.LEAVE_TYPES, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Leaves",
@@ -206,7 +213,7 @@ export const navItems: NavItem[] = [
           RESOURCES.ATTENDANCE_CORRECTION,
           PERMISSIONS.BASE.APPROVE,
         ),
-      }
+      },
     ],
   },
   {
@@ -285,6 +292,15 @@ export const navItems: NavItem[] = [
         icon: <ClipboardList size={18} />,
         permission: buildPermission(
           RESOURCES.ASSESSMENT_CATEGORY,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Point Rules",
+        path: "/point_rules",
+        icon: <Coins size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT,
           PERMISSIONS.BASE.INDEX,
         ),
       },

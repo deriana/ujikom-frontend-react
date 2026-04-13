@@ -358,6 +358,7 @@ export default function AttendanceTable({
         loading={isLoading}
         label="Attendance"
         handleExport={handleExport}
+        baseNamePermission={RESOURCES.ATTENDANCE}
         newFilterComponent={
           <>
             {StartDateFilter}

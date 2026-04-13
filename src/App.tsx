@@ -88,6 +88,7 @@ import AttendancePresence from "./pages/Attendance/AttendanceMenu";
 import ManualAttendance from "./pages/Attendance/ManualAttendance";
 import AttendanceDetailMobile from "./pages/Mobile/AttendanceDetail";
 import { useAuth } from "./hooks/useAuth";
+import PointRule from "./pages/PointRule/Index";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -293,6 +294,13 @@ export default function App() {
       path: "/assessments",
       element: <AssessmentPage />,
       resource: RESOURCES.ASSESSMENT,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/point_rules",
+      element: <PointRule />,
+      resource: RESOURCES.POINT,
       permission: PERMISSIONS.BASE.INDEX,
     },
 
