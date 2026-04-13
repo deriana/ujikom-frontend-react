@@ -12,7 +12,6 @@ export const createPointRule = async (payload: PointRuleInput) => {
 };
 
 export const updatePointRule = async (uuid: string, payload: PointRuleInput) => {
-  console.log("Ini Data Payload", payload)
   const res = await api.put<ApiResponse<PointRule[]>>(`point_rules/${uuid}`,payload);
   return res.data.data;
 };
