@@ -1,5 +1,3 @@
-import React from "react";
-
 interface MyPositionCardProps {
   rank?: number | string;
   userName?: string;
@@ -15,7 +13,7 @@ export default function MyPositionCard({
 }: MyPositionCardProps) {
   return (
     <div
-      className={`relative p-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-700 text-white shadow-xl flex items-center justify-between ${className}`}
+      className={`relative p-4 rounded-2xl bg-linear-to-r from-indigo-600 to-blue-700 text-white shadow-xl flex items-center justify-between ${className}`}
     >
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center font-black">
