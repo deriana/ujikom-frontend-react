@@ -88,6 +88,15 @@ import AttendancePresence from "./pages/Attendance/AttendanceMenu";
 import ManualAttendance from "./pages/Attendance/ManualAttendance";
 import AttendanceDetailMobile from "./pages/Mobile/AttendanceDetail";
 import { useAuth } from "./hooks/useAuth";
+import PointRule from "./pages/PointRule/Index";
+import PointLeaderboard from "./pages/Points/Leaderboard";
+import PointItems from "./pages/PointItems/Index";
+import PointMarketplace from "./pages/PointItems/MarketPlace";
+import PointInventories from "./pages/PointItems/Inventories";
+import PointMutations from "./pages/PointItems/Mutation";
+import PointLog from "./pages/Points/Index";
+import CreatePoint from "./pages/Points/Create";
+import WalletHome from "./pages/Mobile/WalletHome";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -103,6 +112,10 @@ export default function App() {
     {
       path: "/divisions/all",
       element: <DivisionWithTeamAndEmployee />,
+    },
+    {
+      path: "/point-leaderboard",
+      element: <PointLeaderboard />
     },
     {
       path: "/attendance/menu",
@@ -296,6 +309,49 @@ export default function App() {
       permission: PERMISSIONS.BASE.INDEX,
     },
 
+    {
+      path: "/point_rules",
+      element: <PointRule />,
+      resource: RESOURCES.POINT_RULE,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/point_items",
+      element: <PointItems />,
+      resource: RESOURCES.POINT_ITEM,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/point-log",
+      element: <PointLog />,
+      resource: RESOURCES.POINT,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/point-entry",
+      element: <CreatePoint />,
+      resource: RESOURCES.POINT,
+      permission: PERMISSIONS.BASE.CREATE,
+    },
+
+    {
+      path: "/reward-catalog",
+      element: <PointMarketplace />,
+    },
+
+    {
+      path: "/my-inventory",
+      element: <PointInventories />,
+    },
+
+    {
+      path: "/point-mutations",
+      element: <PointMutations />,
+    },
+
     /** Approval Route */
     {
       path: "/approval/leave",
@@ -403,6 +459,11 @@ export default function App() {
       element: <LeaveBalances />,
       isMobileOnly: true,
     },
+    {
+      path: "/wallet",
+      element: <WalletHome />,
+      isMobileOnly: true,
+    }
   ];
 
   const renderRoutes = (

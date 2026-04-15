@@ -60,6 +60,12 @@ export default function QuickActionGrid() {
           bg: "bg-indigo-50",
           path: "/attendances/report",
         },
+        {
+          name: "Wallet",
+          icon: <Wallet size={22} className="text-yellow-600" />,
+          bg: "bg-yellow-50",
+          path: "/wallet",
+        }
       ];
 
     const displayedActions = isExpanded ? quickActions : quickActions.slice(0, 7);

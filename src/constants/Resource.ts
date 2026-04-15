@@ -21,4 +21,7 @@ export const RESOURCES = {
   DASHBOARD: "dashboard",
   ASSESSMENT_CATEGORY: "assessment-category",
   ASSESSMENT: "assessment",
+  POINT_RULE: "point-rule",
+  POINT_ITEM: "point-item",
+  POINT: "point",
 } as const;
