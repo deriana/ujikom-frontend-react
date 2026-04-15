@@ -1,13 +1,16 @@
 import { useState, useMemo } from "react";
 import PageMeta from "@/components/common/PageMeta";
 import { usePointInventories, useUsePointItem } from "@/hooks/usePointItem";
-import { Star, Package, Search, Trophy, Calendar, Zap, ChevronRight, Box } from "lucide-react";
+import { Package, Search, Trophy, Calendar, Zap, ChevronRight, Box } from "lucide-react";
 import PointItemShowModal from "./ShowModal";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import EmptyState from "@/components/tables/Point/EmptyState";
 import { formatDateID } from "@/utils/date";
 import { useShowModal } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
+import { Modal } from "@/components/ui/modal";
+import WalletInfoDetail from "@/components/tables/Point/WalletInfoDetail";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 
 export default function PointInventories() {
   const { data: items = [], isLoading } = usePointInventories();
@@ -16,6 +19,7 @@ export default function PointInventories() {
   
   const [searchQuery, setSearchQuery] = useState("");
   const show = useShowModal<string>();
+  const [confirmUseUuid, setConfirmUseUuid] = useState<string | null>(null);
 
   const filteredItems = useMemo(() => 
     items.filter(item => 
@@ -27,13 +31,15 @@ export default function PointInventories() {
       loading: "Activating item...",
       success: "Item used successfully!",
       error: "Failed to use item",
+      onSuccess: () => setConfirmUseUuid(null),
     });
   };
 
   return (
     <>
       <PageMeta title="My Inventories" />
-      
+      <PageBreadcrumb pageTitle="My Inventories" />
+
       <div className={`min-h-screen ${isMobile ? 'pb-24' : 'p-8'}`}>
         {/* Gamified Inventory Header */}
         <div className="mb-10">
@@ -129,19 +135,22 @@ export default function PointInventories() {
                 </p>
                 
                 <div className="flex gap-2">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); handleUseItem(item.uuid); }}
-                    disabled={isUsing || item.is_used}
-                    className={`flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 
-                      ${item.is_used ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-500/20'}`}
-                  >
-                    {item.is_used ? 'Already Used' : 'Use Item'}
-                  </button>
+                  {!item.power_up_type && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); !item.is_used && setConfirmUseUuid(item.uuid); }}
+                      disabled={isUsing || item.is_used}
+                      className={`flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 
+                        ${item.is_used ? 'bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-500/20'}`}
+                    >
+                      {item.is_used ? 'Already Used' : 'Use Item'}
+                    </button>
+                  )}
                   <button 
                     onClick={(e) => { e.stopPropagation(); show.open(item.item_uuid); }}
-                    className="px-4 py-3 rounded-2xl bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center justify-center"
+                    className={`${item.power_up_type ? 'px-4' : 'flex-1'} py-3 rounded-2xl bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2`}
                   >
-                    <ChevronRight size={16} />
+                    {item.power_up_type && "View Details"}
+                    <ChevronRight size={item.power_up_type ? 16 : 14} />
                   </button>
                 </div>
               </div>
@@ -154,17 +163,45 @@ export default function PointInventories() {
             <EmptyState />
         )}
 
-        {/* Floating Action for Mobile (Points Balance) */}
-        {isMobile && (
-          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40">
-            <div className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-white/10">
-              <div className="bg-amber-400 p-1 rounded-full">
-                <Star size={14} className="text-gray-900 fill-gray-900" />
-              </div>
-              <span className="text-sm font-black tracking-tight">Your Balance: 2,450 Pts</span>
+        {/* Floating Point Wallet Info */}
+        <WalletInfoDetail />
+       
+
+        {/* Confirmation Modal */}
+        <Modal isOpen={!!confirmUseUuid} onClose={() => setConfirmUseUuid(null)} className="max-w-sm m-4">
+          <div className="p-8 text-center">
+            <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Zap size={40} className="text-indigo-600 dark:text-indigo-400" fill="currentColor" />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Use this item?</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+              Once activated, this item will be marked as used and its benefits will be applied to your account.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => confirmUseUuid && handleUseItem(confirmUseUuid)}
+                disabled={isUsing}
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
+              >
+                {isUsing ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Processing...
+                  </div>
+                ) : (
+                  "Yes, Activate Now"
+                )}
+              </button>
+              <button
+                onClick={() => setConfirmUseUuid(null)}
+                disabled={isUsing}
+                className="w-full py-4 bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all"
+              >
+                Cancel
+              </button>
             </div>
           </div>
-        )}
+        </Modal>
 
         {/* Detail Modal */}
         <PointItemShowModal 

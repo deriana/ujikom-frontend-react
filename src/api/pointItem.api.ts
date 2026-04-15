@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/types";
 import api from "./axios";
-import { PointInventory, PointItem, PointItemInput } from "@/types/pointItem.types";
+import { PointBalanceSummary, PointInventory, PointItem, PointItemInput, PointMutation } from "@/types/pointItem.types";
 
 export const getPointItems = async () => {
   const res = await api.get<ApiResponse<PointItem[]>>("point_items");
@@ -14,6 +14,16 @@ export const getPointItemByUuid = async (uuid: string) => {
 
 export const getPointInventories = async () => {
   const res = await api.get<ApiResponse<PointInventory[]>>("point_items/inventories");
+  return res.data.data;
+};
+
+export const getPointWallet = async () => {
+  const res = await api.get<ApiResponse<PointBalanceSummary>>("point_items/wallet");
+  return res.data.data;
+};
+
+export const getPointMutations = async () => {
+  const res = await api.get<ApiResponse<PointMutation[]>>("point_items/mutations");
   return res.data.data;
 };
 

@@ -93,6 +93,10 @@ import PointLeaderboard from "./pages/Points/Leaderboard";
 import PointItems from "./pages/PointItems/Index";
 import PointMarketplace from "./pages/PointItems/MarketPlace";
 import PointInventories from "./pages/PointItems/Inventories";
+import PointMutations from "./pages/PointItems/Mutation";
+import PointLog from "./pages/Points/Index";
+import CreatePoint from "./pages/Points/Create";
+import WalletHome from "./pages/Mobile/WalletHome";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -320,6 +324,20 @@ export default function App() {
     },
 
     {
+      path: "/point-log",
+      element: <PointLog />,
+      resource: RESOURCES.POINT,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/point-entry",
+      element: <CreatePoint />,
+      resource: RESOURCES.POINT,
+      permission: PERMISSIONS.BASE.CREATE,
+    },
+
+    {
       path: "/reward-catalog",
       element: <PointMarketplace />,
     },
@@ -327,6 +345,11 @@ export default function App() {
     {
       path: "/my-inventory",
       element: <PointInventories />,
+    },
+
+    {
+      path: "/point-mutations",
+      element: <PointMutations />,
     },
 
     /** Approval Route */
@@ -436,6 +459,11 @@ export default function App() {
       element: <LeaveBalances />,
       isMobileOnly: true,
     },
+    {
+      path: "/wallet",
+      element: <WalletHome />,
+      isMobileOnly: true,
+    }
   ];
 
   const renderRoutes = (

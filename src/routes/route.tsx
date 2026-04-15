@@ -30,6 +30,8 @@ import {
   HandCoins,
   BriefcaseBusiness,
   Box,
+  History,
+  Plus,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -176,6 +178,24 @@ export const navItems: NavItem[] = [
     icon: <Wallet size={20} />,
     subItems: [
       {
+        name: "Point Log",
+        path: "/point-log",
+        icon: <History size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Manual Point Entry",
+        path: "/point-entry",
+        icon: <Plus size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT,
+          PERMISSIONS.BASE.CREATE,
+        ),
+      },
+      {
         name: "Leaderboard",
         path: "/point-leaderboard",
         icon: <HandCoins size={18} />,
@@ -189,6 +209,11 @@ export const navItems: NavItem[] = [
         name: "Inventory",
         path: "/my-inventory",
         icon: <BriefcaseBusiness size={18} />,
+      },
+      {
+        name: "Mutations",
+        path: "/point-mutations",
+        icon: <DollarSign size={18} />,
       }
     ],
   },

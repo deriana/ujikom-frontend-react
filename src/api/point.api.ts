@@ -1,29 +1,29 @@
 import api from "./axios";
-import { ApiResponse, PointRule, PointRuleInput, PointLeaderboardResponse, PointLeaderboardDetailResponse } from "@/types";
+import { ApiResponse, Point, PointInput, PointLeaderboardResponse, PointLeaderboardDetailResponse } from "@/types";
 
-export const getPointRule = async () => {
-  const res = await api.get<ApiResponse<PointRule[]>>("points");
+export const getPoint = async () => {
+  const res = await api.get<ApiResponse<Point[]>>("points");
   return res.data.data;
 };
 
-export const createPointRule = async (payload: PointRuleInput) => {
-  const res = await api.post<ApiResponse<PointRule[]>>("points", payload);
+export const createPoint = async (payload: PointInput) => {
+  const res = await api.post<ApiResponse<Point[]>>("points", payload);
   return res.data.data;
 };
 
-export const updatePointRule = async (uuid: string, payload: PointRuleInput) => {
-  const res = await api.put<ApiResponse<PointRule[]>>(`points/${uuid}`, payload);
+export const updatePoint = async (uuid: string, payload: PointInput) => {
+  const res = await api.put<ApiResponse<Point[]>>(`points/${uuid}`, payload);
   return res.data.data;
 };
 
-export const deletePointRule = async (uuid: string) => {
-  const res = await api.delete<ApiResponse<PointRule[]>>(`points/${uuid}`);
+export const deletePoint = async (uuid: string) => {
+  const res = await api.delete<ApiResponse<Point[]>>(`points/${uuid}`);
   return res.data.data;
 };
 
 export const getLeaderboard = async () => {
   const res = await api.get<PointLeaderboardResponse>("points/leaderboard");
-  return res.data.data;
+  return res.data;
 };
 
 export const getLeaderboardDetail = async (nik: string) => {

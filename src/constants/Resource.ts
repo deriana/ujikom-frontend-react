@@ -23,4 +23,5 @@ export const RESOURCES = {
   ASSESSMENT: "assessment",
   POINT_RULE: "point-rule",
   POINT_ITEM: "point-item",
+  POINT: "point",
 } as const;

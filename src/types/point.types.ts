@@ -72,25 +72,23 @@ export interface LeaderboardUser {
  */
 export interface PointLeaderboard {
     nik: string;
-    employee_name: string;
-    position: string | null;
+    name: string;
+    position: string;
     total_points: number;
-    photo_url: string;
-    rank?: number; // Opsional, ada jika dihitung di backend
+    photo_url: string | null;
+    rank: number;
 }
 
 /**
  * Response API untuk Leaderboard List
  */
 export interface PointLeaderboardResponse {
-    data: {
-        meta: {
-            period: string;
-            my_rank: number | null;
-            my_points: number;
-        };
-        list: PointLeaderboard[];
+    meta: {
+        period: string;
+        my_rank: number | null;
+        my_points: number;
     };
+    list: PointLeaderboard[];
 }
 
 /**
@@ -127,4 +125,33 @@ export interface PointLeaderboardDetailResponse {
         employee: PointEmployeeSummary;
         transactions: PointTransactionDetail[];
     };
+}
+
+/**
+ * Representasi Point dari PointResource (Laravel)
+ */
+export interface Point {
+    uuid: UUID;
+    points: number;
+    type: 'reward' | 'penalty';
+    employee: {
+        nik: string;
+        name: string;
+        photo: string;
+    };
+    rule: {
+        event_name: string;
+        description: string | null;
+    };
+    period: {
+        name: string;
+        is_active: boolean;
+    };
+    created_at: string;
+}
+
+export interface PointInput {
+    employee_nik: string;
+    rule_uuid: string;
+    current_points: number;
 }

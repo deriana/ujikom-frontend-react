@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import UserProfile from "@/components/UserProfile";
 import { DataTable } from "../BasicTables/DataTable";
-import { Column } from "@/types";
+import { Column, PointLeaderboard } from "@/types";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useLeaderboard } from "@/hooks/usePoint";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,11 +22,11 @@ export default function PointLeaderboardTable() {
   const meta = leaderboardData?.meta;
 
   // --- DESKTOP COLUMNS CONFIG ---
-  const columns: Column<any>[] = [
+  const columns: Column<PointLeaderboard>[] = [
     {
       header: "Rank",
       render: (row) => (
-        <span className={`font-black text-sm ${row.rank <= 3 ? "text-indigo-600 dark:text-indigo-400" : "text-gray-400"}`}>
+        <span className={`font-black text-sm ${(row.rank ?? 0) <= 3 ? "text-indigo-600 dark:text-indigo-400" : "text-gray-400"}`}>
           #{String(row.rank).padStart(3, '0')}
         </span>
       ),
@@ -36,13 +36,13 @@ export default function PointLeaderboardTable() {
       render: (row) => (
         <div className="flex items-center gap-3">
           <UserProfile
-            src={row.photo_url}
-            alt={row.employee_name}
+            src={row.photo_url ?? undefined}
+            alt={row.name}
             size={32}
             className="rounded-lg"
           />
           <div className="flex flex-col">
-            <span className="font-bold text-gray-800 dark:text-gray-200 leading-none">{row.employee_name}</span>
+            <span className="font-bold text-gray-800 dark:text-gray-200 leading-none">{row.name}</span>
             <span className="text-[10px] text-gray-500 mt-1">{row.position}</span>
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function PointLeaderboardTable() {
 
         {isMobile ? (
           <div className="divide-y divide-gray-50 dark:divide-white/5">
-            {list.map((row) => (
+            {list.map((row: PointLeaderboard) => (
               <div 
                 key={row.nik} 
                 className="flex items-center justify-between p-4 active:bg-gray-50 dark:active:bg-white/5 transition-colors"
@@ -92,13 +92,13 @@ export default function PointLeaderboardTable() {
                     #{row.rank ?? "???"}
                   </span>
                   <UserProfile
-                    src={row.photo_url}
-                    alt={row.employee_name}
+                    src={row.photo_url ?? undefined}
+                    alt={row.name}
                     size={36}
                     className="rounded-xl"
                   />
                   <div>
-                    <p className="font-bold text-gray-800 dark:text-gray-200 text-sm leading-none">{row.employee_name || "Unknown Employee"}</p>
+                    <p className="font-bold text-gray-800 dark:text-gray-200 text-sm leading-none">{row.name || "Unknown Employee"}</p>
                     <div className="flex items-center gap-1 mt-1">
                        <p className="text-[9px] text-gray-400 uppercase font-medium">{row.position || "No Position"}</p>
                     </div>
@@ -125,7 +125,7 @@ export default function PointLeaderboardTable() {
             data={list}
             columns={columns}
             loading={isLoading}
-            searchableKeys={["employee_name", "position"]}
+            searchableKeys={["name", "position"]}
           />
         )}
       </div>

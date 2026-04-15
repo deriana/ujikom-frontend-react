@@ -10,6 +10,8 @@ import {
   getPointInventories,
   usePointItem as usePointItemApi,
   redeemPointItem,
+  getPointWallet,
+  getPointMutations,
   exportPointItems,
 } from "@/api/pointItem.api";
 import { PointItemInput } from "@/types/pointItem.types";
@@ -43,6 +45,22 @@ export const usePointInventories = () => {
   return useQuery({
     queryKey: ["point", "inventories"],
     queryFn: getPointInventories,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const usePointWallet = () => {
+  return useQuery({
+    queryKey: ["point", "wallet"],
+    queryFn: getPointWallet,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const usePointMutations = () => {
+  return useQuery({
+    queryKey: ["point", "mutations"],
+    queryFn: getPointMutations,
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -138,6 +156,12 @@ export const useRedeemPointItem = () => {
   return useMutation({
     mutationFn: ({ uuid, quantity }: { uuid: string; quantity: number }) =>
       redeemPointItem(uuid, quantity),
-    onSettled: () => qc.invalidateQueries({ queryKey: ["point", "items"] }),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["point", "items"] });
+      qc.invalidateQueries({ queryKey: ["point", "inventories"] });
+      qc.invalidateQueries({ queryKey: ["point", "wallet"] });
+      qc.invalidateQueries({ queryKey: ["point", "mutations"] });
+      qc.invalidateQueries({ queryKey: ["point", "leaderboard"] });
+    },
   });
 };

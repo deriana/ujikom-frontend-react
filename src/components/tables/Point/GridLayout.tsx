@@ -7,6 +7,7 @@ interface GridLayoutProps {
   setSelectedItem: (uuid: string) => void;
   setRedeemItemUuid: (uuid: string) => void;
   setQuantity: (q: number) => void;
+  userBalance?: number;
 }
 
 export default function GridLayout({
@@ -15,6 +16,7 @@ export default function GridLayout({
   setSelectedItem,
   setRedeemItemUuid,
   setQuantity,
+  userBalance = 0,
 }: GridLayoutProps) {
   return (
     <div className="px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -22,7 +24,9 @@ export default function GridLayout({
             Array(6).fill(0).map((_, i) => (
               <div key={i} className="h-64 bg-gray-200 dark:bg-gray-800 animate-pulse rounded-3xl" />
             ))
-          ) : filteredItems.map((item) => (
+          ) : filteredItems.map((item) => {
+            const isInsufficientBalance = userBalance < item.required_points;
+            return (
             <div 
               key={item.uuid}
               onClick={() => setSelectedItem(item.uuid)}
@@ -81,14 +85,16 @@ export default function GridLayout({
                 
                 <div className="flex gap-2">
                   <button
+                    disabled={isInsufficientBalance}
                     onClick={(e) => {
                       e.stopPropagation();
                       setRedeemItemUuid(item.uuid);
                       setQuantity(1);
                     }}
-                    className="flex-1 py-3 rounded-2xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20 active:scale-95"
+                    className={`flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 
+                      ${isInsufficientBalance ? 'bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed shadow-none' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-500/20'}`}
                   >
-                    Redeem
+                    {isInsufficientBalance ? 'Insufficient' : 'Redeem'}
                   </button>
                   <button
                     className="px-4 py-3 rounded-2xl bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 dark:hover:bg-white/10 transition-colors flex items-center justify-center"
@@ -98,7 +104,7 @@ export default function GridLayout({
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
   );
 }

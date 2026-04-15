@@ -43,3 +43,21 @@ export interface PointInventory {
   obtained_at: string;
   expired_at: string | null;
 }
+
+export interface PointMutation {
+  uuid: UUID;
+  item_uuid: UUID;
+  item_name: string;
+  type: "incoming" | "outgoing";
+  amount: number;
+  description: string;
+  date: string;
+  date_human?: string;
+}
+
+export interface PointBalanceSummary {
+  current_balance: number;
+  period_name: string;
+  total_earned: number;
+  total_used: number;
+}

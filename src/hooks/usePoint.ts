@@ -1,20 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getPointRule,
-  createPointRule,
-  updatePointRule,
-  deletePointRule,
+  getPoint,
+  createPoint,
+  updatePoint,
+  deletePoint,
   getLeaderboard,
   getLeaderboardDetail,
   exportPoints,
 } from "@/api/point.api";
-import { PointRuleInput } from "@/types/point.types";
+import { PointInput } from "@/types/point.types";
 import toast from "react-hot-toast";
 
 export const usePoint = (options = {}) => {
   return useQuery({
     queryKey: ["point"],
-    queryFn: getPointRule,
+    queryFn: getPoint,
     staleTime: 1000 * 60 * 5,
     ...options
   });
@@ -25,7 +25,7 @@ export const useCreatePoint = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: PointRuleInput) => createPointRule(data),
+    mutationFn: (data: PointInput) => createPoint(data),
     onMutate: async (newCategory) => {
       await qc.cancelQueries({ queryKey: ["point"] });
       const previous = qc.getQueryData(["point"]);
@@ -44,7 +44,7 @@ export const useUpdatePoint = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uuid, data }: { uuid: string; data: PointRuleInput }) => updatePointRule(uuid, data),
+    mutationFn: ({ uuid, data }: { uuid: string; data: PointInput }) => updatePoint(uuid, data),
     onMutate: async ({ uuid, data }) => {
       await qc.cancelQueries({ queryKey: ["point"] });
       const previous = qc.getQueryData(["point"]);
@@ -116,7 +116,7 @@ export const useDeletePoint = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (uuid: string) => deletePointRule(uuid),
+    mutationFn: (uuid: string) => deletePoint(uuid),
     onMutate: async (uuid) => {
       await qc.cancelQueries({ queryKey: ["point"] });
       const previous = qc.getQueryData(["point"]);
