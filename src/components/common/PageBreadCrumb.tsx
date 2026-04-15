@@ -23,7 +23,6 @@ const PageBreadcrumb: React.FC<BreadcrumbProps> = ({
   if (isMobile) {
     return (
       <PageHeader
-        to="/home"
         title={pageTitle || "Page"}
         subtitle={`${pageTitle} Management`}
         align="center"

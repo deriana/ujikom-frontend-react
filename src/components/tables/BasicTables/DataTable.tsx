@@ -320,15 +320,17 @@ export function DataTable<T extends object>({
               No {label.toLowerCase()} found.
             </div>
           ) : (
-            <DataTableCard
-              data={paginatedData}
-              columns={columns}
-              getRowId={(row, index) => getRowId(row, (page - 1) * limit + index)}
-              enableSelection={enableSelection}
-              selectedIds={currentSelectedIds}
-              onSelectRow={handleSelectRow}
-              hideCheckbox={hideChecbox}
-            />
+            <div className="flex flex-col gap-4 p-4">
+              <DataTableCard
+                data={paginatedData}
+                columns={columns}
+                getRowId={(row, index) => getRowId(row, (page - 1) * limit + index)}
+                enableSelection={enableSelection}
+                selectedIds={currentSelectedIds}
+                onSelectRow={handleSelectRow}
+                hideCheckbox={hideChecbox}
+              />
+            </div>
           )}
         </div>
 

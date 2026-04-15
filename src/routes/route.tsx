@@ -26,6 +26,12 @@ import {
   ClipboardList,
   ChartBar,
   Activity,
+  Coins,
+  HandCoins,
+  BriefcaseBusiness,
+  Box,
+  History,
+  Plus,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -53,20 +59,26 @@ export type NavMobileItem = {
   path: string;
   permission?: string;
   primary?: boolean;
-}
+};
 
 export const navItems: NavItem[] = [
   {
     icon: <LayoutGrid size={20} />,
     name: "Admin Dashboard",
     path: "/dashboard/admin",
-    permission: buildPermission(RESOURCES.DASHBOARD, PERMISSIONS.DASHBOARD.admin),
+    permission: buildPermission(
+      RESOURCES.DASHBOARD,
+      PERMISSIONS.DASHBOARD.admin,
+    ),
   },
   {
     icon: <LayoutDashboard size={20} />,
     name: "Employee Dashboard",
     path: "/dashboard/employee",
-    permission: buildPermission(RESOURCES.DASHBOARD, PERMISSIONS.DASHBOARD.employee),
+    permission: buildPermission(
+      RESOURCES.DASHBOARD,
+      PERMISSIONS.DASHBOARD.employee,
+    ),
     hideForAdmin: true,
   },
   {
@@ -77,7 +89,10 @@ export const navItems: NavItem[] = [
         name: "Attendance Report",
         path: "/attendances/report",
         icon: <FileSpreadsheet size={18} />,
-        permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.INDEX),
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE,
+          PERMISSIONS.BASE.INDEX,
+        ),
       },
       {
         name: "Attendance Requests",
@@ -126,10 +141,7 @@ export const navItems: NavItem[] = [
     name: "Leave Balances",
     path: "/employee-leave-balances",
     icon: <Wallet size={20} />,
-    permission: buildPermission(
-      RESOURCES.LEAVE_TYPES,
-      PERMISSIONS.BASE.INDEX,
-    ),
+    permission: buildPermission(RESOURCES.LEAVE_TYPES, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Leaves",
@@ -160,6 +172,50 @@ export const navItems: NavItem[] = [
     path: "/assessments",
     icon: <ClipboardList size={20} />,
     permission: buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Integrity Wallet",
+    icon: <Wallet size={20} />,
+    subItems: [
+      {
+        name: "Point Log",
+        path: "/point-log",
+        icon: <History size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Manual Point Entry",
+        path: "/point-entry",
+        icon: <Plus size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT,
+          PERMISSIONS.BASE.CREATE,
+        ),
+      },
+      {
+        name: "Leaderboard",
+        path: "/point-leaderboard",
+        icon: <HandCoins size={18} />,
+      },
+      {
+        name: "Reward Catalog",
+        path: "/reward-catalog",
+        icon: <Box size={18} />,
+      },
+      {
+        name: "Inventory",
+        path: "/my-inventory",
+        icon: <BriefcaseBusiness size={18} />,
+      },
+      {
+        name: "Mutations",
+        path: "/point-mutations",
+        icon: <DollarSign size={18} />,
+      }
+    ],
   },
   {
     name: "Approval",
@@ -206,7 +262,7 @@ export const navItems: NavItem[] = [
           RESOURCES.ATTENDANCE_CORRECTION,
           PERMISSIONS.BASE.APPROVE,
         ),
-      }
+      },
     ],
   },
   {
@@ -288,6 +344,24 @@ export const navItems: NavItem[] = [
           PERMISSIONS.BASE.INDEX,
         ),
       },
+      {
+        name: "Point Rules",
+        path: "/point_rules",
+        icon: <Coins size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT_RULE,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      },
+      {
+        name: "Point Items",
+        path: "/point_items",
+        icon: <Box size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT_ITEM,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      }
     ],
   },
   {

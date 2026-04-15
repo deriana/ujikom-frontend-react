@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { AuthContext } from "@/context/AuthContext";
+import { useMemo } from "react";
+// import { AuthContext } from "@/context/AuthContext";
 import { 
   Palmtree, 
   Info, 
@@ -35,7 +35,7 @@ const getLeaveIcon = (name: string) => {
 };
 
 export default function LeaveBalances() {
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
   const { data: employeeData, isLoading } = useGetMyLeaveBalances();
   const currentYear = new Date().getFullYear();
 
@@ -43,7 +43,7 @@ export default function LeaveBalances() {
   const totalRemaining = useMemo(() => {
     if (!employeeData?.leave_balances) return 0;
     return employeeData.leave_balances.reduce((acc, curr) => 
-      curr.is_unlimited ? acc : acc + curr.remaining_days, 0
+      curr.is_unlimited ? acc : acc + (Number(curr.remaining_days) || 0), 0
     );
   }, [employeeData]);
 
@@ -72,12 +72,12 @@ export default function LeaveBalances() {
       <main className="px-6 space-y-6">
         {/* Greeting & Summary Card */}
         <section className="space-y-4">
-          <div className="px-1">
+          {/* <div className="px-1">
             <h2 className="text-xl font-black text-gray-800 dark:text-white">
               Hello, {employeeData?.name?.split(" ")[0] || user?.name?.split(" ")[0] || "Employee"}! 👋
             </h2>
             <p className="text-xs text-gray-500 font-medium">Here is a summary of your leave balance.</p>
-          </div>
+          </div> */}
 
           <div className="relative overflow-hidden bg-linear-to-br from-blue-600 to-indigo-700 rounded-[2.5rem] p-8 text-white shadow-xl shadow-blue-200 dark:shadow-none">
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />

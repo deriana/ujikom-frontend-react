@@ -19,30 +19,6 @@ export default function NotificationDropdown() {
 
   const appLogo = general?.logo || "/placeholder_img.jpg";
 
-
-
-  // useEffect(() => {
-  //   if ("Notification" in window && Notification.permission === "default") {
-  //     Notification.requestPermission();
-  //   }
-  // }, []);
-  
-  // useEffect(() => {
-  //   if (unreadNotifications.length > prevCountRef.current) {
-  //     const newestNotif = unreadNotifications[0]; 
-
-  //     if (Notification.permission === "granted" || isMobile) {
-  //       new Notification(newestNotif.data.title, {
-  //         body: newestNotif.data.message,
-  //         icon: appLogo, 
-  //       });
-  //     }
-  //   }
-
-  //   // Update nilai ref untuk pengecekan berikutnya
-  //   prevCountRef.current = unreadNotifications.length;
-  // }, [unreadNotifications]);
-
   const markAsReadMutation = useMarkAsRead();
   const markAllAsReadMutation = useMarkAllAsRead();
 

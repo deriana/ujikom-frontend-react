@@ -4,12 +4,12 @@ import "./index.css";
 import "swiper/swiper-bundle.css";
 import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
-import AppSServiceProvider from "./providers/AppServiceProviders.tsx";
+import AppServiceProvider from "./providers/AppServiceProviders.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AppSServiceProvider>
+    <AppServiceProvider>
       <App />
-    </AppSServiceProvider>
+    </AppServiceProvider>
   </StrictMode>,
 );
