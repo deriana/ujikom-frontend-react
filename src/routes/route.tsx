@@ -27,6 +27,7 @@ import {
   ChartBar,
   Activity,
   Coins,
+  HandCoins,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -169,6 +170,11 @@ export const navItems: NavItem[] = [
     permission: buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.INDEX),
   },
   {
+    name: "Point Leaderboard",
+    path: "/point-leaderboard",
+    icon: <HandCoins size={20} />,
+  },
+  {
     name: "Approval",
     icon: <FileCheck2 size={20} />,
     subItems: [
@@ -300,7 +306,7 @@ export const navItems: NavItem[] = [
         path: "/point_rules",
         icon: <Coins size={18} />,
         permission: buildPermission(
-          RESOURCES.POINT,
+          RESOURCES.POINT_RULE,
           PERMISSIONS.BASE.INDEX,
         ),
       },

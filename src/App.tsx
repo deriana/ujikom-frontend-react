@@ -89,6 +89,7 @@ import ManualAttendance from "./pages/Attendance/ManualAttendance";
 import AttendanceDetailMobile from "./pages/Mobile/AttendanceDetail";
 import { useAuth } from "./hooks/useAuth";
 import PointRule from "./pages/PointRule/Index";
+import PointLeaderboard from "./pages/Points/Leaderboard";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -104,6 +105,10 @@ export default function App() {
     {
       path: "/divisions/all",
       element: <DivisionWithTeamAndEmployee />,
+    },
+    {
+      path: "/point-leaderboard",
+      element: <PointLeaderboard />
     },
     {
       path: "/attendance/menu",
@@ -300,7 +305,7 @@ export default function App() {
     {
       path: "/point_rules",
       element: <PointRule />,
-      resource: RESOURCES.POINT,
+      resource: RESOURCES.POINT_RULE,
       permission: PERMISSIONS.BASE.INDEX,
     },
 

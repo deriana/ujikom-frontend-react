@@ -1,4 +1,4 @@
-import { Calendar, ClipboardList, Clock, FileClock, LayoutGrid, Palmtree, Timer, Wallet, Scale, ClipboardCheck, ChevronRight } from "lucide-react";
+import { Calendar, ClipboardList, Clock, FileClock, LayoutGrid, Palmtree, Timer, Wallet, Scale, ClipboardCheck, ChevronRight, Coins } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -60,6 +60,12 @@ export default function QuickActionGrid() {
           bg: "bg-indigo-50",
           path: "/attendances/report",
         },
+        {
+          name: "Leaderboard",
+          icon: <Coins size={22} className="text-yellow-600" />,
+          bg: "bg-yellow-50",
+          path: "/point-leaderboard",
+        }
       ];
 
     const displayedActions = isExpanded ? quickActions : quickActions.slice(0, 7);

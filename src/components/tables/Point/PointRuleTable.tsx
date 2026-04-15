@@ -13,7 +13,8 @@ import Badge from "@/components/ui/badge/Badge";
 import { useCrudModalForm } from "@/hooks/useCrudForm";
 import { handleMutation } from "@/utils/handleMutation";
 import PointRuleModal from "@/pages/PointRule/Modal";
-import { ClipboardList, Power, PowerOff, Star } from "lucide-react";
+import { ClipboardList, Power, PowerOff, Star, Lock } from "lucide-react";
+import { POINT_CATEGORY } from "@/constants/PointCategory";
 
 export default function PointRuleTable() {
   // 1. Fetch data menggunakan interface PointRule
@@ -33,16 +34,24 @@ export default function PointRuleTable() {
   const crud = useCrudModalForm<PointRuleInput, any>({
     label: "Point Rule",
     emptyForm: {
+      category: POINT_CATEGORY.ATTENDANCE,
       event_name: "",
       description: "",
       points: 0,
+      operator: "==",
+      min_value: null,
+      max_value: null,
       is_active: true,
     },
 
     mapToPayload: (form) => ({
+      category: form.category,
       event_name: form.event_name.trim(),
       description: form.description?.trim() || "",
       points: Number(form.points), // Pastikan dikiim sebagai angka
+      operator: form.operator,
+      min_value: form.min_value !== null ? Number(form.min_value) : null,
+      max_value: form.max_value !== null ? Number(form.max_value) : null,
       is_active: form.is_active,
     }),
 
@@ -56,9 +65,13 @@ export default function PointRuleTable() {
 
     crud.openEdit({
       uuid: rule.uuid,
+      category: rule.category,
       event_name: rule.event_name, // Ganti dari name ke event_name
       description: rule.description || "",
       points: rule.points, // Tambahkan points
+      operator: rule.operator,
+      min_value: rule.min_value,
+      max_value: rule.max_value,
       is_active: rule.is_active,
     });
   };
@@ -85,14 +98,42 @@ export default function PointRuleTable() {
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
             <ClipboardList size={20} />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-gray-900 capitalize dark:text-gray-100">
-              {row.event_name}
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-gray-900 capitalize dark:text-gray-100 truncate">
+                {row.event_name}
+              </span>
+              {row.system_reserve && (
+                <Lock size={12} className="text-amber-500 shrink-0" />
+              )}
+            </div>
+            <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
+              {row.category.replace(/_/g, " ")}
             </span>
-            <span className="text-xs text-gray-500 line-clamp-1 max-w-50">
+            <span className="text-xs text-gray-500 line-clamp-1 mt-0.5">
               {row.description || "No description provided"}
             </span>
           </div>
+        </div>
+      ),
+    },
+    {
+      header: "Logic Condition",
+      render: (row) => (
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5">
+            <Badge variant="light" color="primary">
+              {row.operator}
+            </Badge>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {row.operator === "BETWEEN" 
+                ? `${row.min_value} - ${row.max_value}` 
+                : row.min_value ?? "-"}
+            </span>
+          </div>
+          <p className="text-[9px] text-gray-400 italic">
+            Trigger logic
+          </p>
         </div>
       ),
     },
@@ -136,7 +177,7 @@ export default function PointRuleTable() {
               onClick: (uuid) => handleToggleStatus(uuid),
             },
           ]}
-          baseNamePermission={RESOURCES.POINT} // Pastikan RESOURCE nya sesuai
+          baseNamePermission={RESOURCES.POINT_RULE} // Pastikan RESOURCE nya sesuai
         />
       ),
     },
@@ -154,7 +195,7 @@ export default function PointRuleTable() {
         loading={isLoading}
         handleCreate={() => crud.openCreate()}
         label="Point Rule"
-        baseNamePermission={RESOURCES.POINT}
+        baseNamePermission={RESOURCES.POINT_RULE}
       />
 
       <PointRuleModal

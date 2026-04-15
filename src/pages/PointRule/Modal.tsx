@@ -3,8 +3,10 @@ import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import Input from "@/components/form/input/InputField";
 import { PointRuleInput } from "@/types";
-import { Star, Activity, Award } from "lucide-react";
+import { Star, Activity, Award, Settings2, Layers } from "lucide-react";
 import Checkbox from "@/components/form/input/Checkbox";
+import Select from "@/components/form/Select";
+import { POINT_CATEGORY } from "@/constants/PointCategory";
 
 interface PointRuleModalProps {
   isOpen: boolean;
@@ -24,6 +26,16 @@ export default function PointRuleModal({
   isLoading = false,
 }: PointRuleModalProps) {
   const isEdit = Boolean(data.uuid);
+  const [showCondition, setShowCondition] = React.useState(
+    Boolean(data.min_value !== null || data.max_value !== null)
+  );
+
+  const categoryOptions = Object.values(POINT_CATEGORY).map((cat) => ({
+    value: cat,
+    label: cat.replace(/_/g, " "),
+  }));
+
+  const operatorOptions = ["==", "<", "<=", ">", ">=", "BETWEEN"].map((op) => ({ value: op, label: op }));
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-lg m-4">
@@ -53,6 +65,24 @@ export default function PointRuleModal({
             onSubmit();
           }}
         >
+          {/* Category */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+              Category
+            </label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400">
+                <Layers size={16} />
+              </div>
+              <Select
+                options={categoryOptions}
+                value={data.category}
+                onChange={(val) => setData({ ...data, category: val as any })}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
           {/* Event Name */}
           <div className="space-y-2">
             <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
@@ -67,7 +97,6 @@ export default function PointRuleModal({
             />
           </div>
 
-          {/* Points Value */}
           {/* Points Value */}
           <div className="space-y-2">
             <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
@@ -94,6 +123,67 @@ export default function PointRuleModal({
             <p className="text-[10px] text-gray-400">
               Use negative values (e.g. -5) for penalties.
             </p>
+          </div>
+
+          {/* Condition Toggle */}
+          <div className="space-y-4">
+            <div 
+              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => setShowCondition(!showCondition)}
+            >
+              <Checkbox checked={showCondition} onChange={() => {}} />
+              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                Add Logic Condition
+              </span>
+            </div>
+
+            {showCondition && (
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase">Operator</label>
+                    <Select
+                      options={operatorOptions}
+                      value={data.operator}
+                      onChange={(val) => setData({ ...data, operator: val as any })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase">
+                      {data.operator === "BETWEEN" ? "Min Value" : "Value"}
+                    </label>
+                    <Input
+                      type="number"
+                      value={data.min_value ?? ""}
+                      onChange={(e) => setData({ ...data, min_value: e.target.value === "" ? null : Number(e.target.value) })}
+                      placeholder="0"
+                      // @ts-ignore - system_reserve check
+                      disabled={data.system_reserve}
+                    />
+                  </div>
+                </div>
+
+                {data.operator === "BETWEEN" && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase">Max Value</label>
+                    <Input
+                      type="number"
+                      value={data.max_value ?? ""}
+                      onChange={(e) => setData({ ...data, max_value: e.target.value === "" ? null : Number(e.target.value) })}
+                      placeholder="0"
+                    />
+                  </div>
+                )}
+                
+                {/* @ts-ignore */}
+                {data.system_reserve && (
+                   <div className="flex items-center gap-2 text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                     <Settings2 size={12} />
+                     System reserved: Min value is locked.
+                   </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Description */}

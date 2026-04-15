@@ -12,7 +12,7 @@ export const ConnectionAlert = ({ isOnline, isServerError }: ConnectionAlertProp
     <div className="sticky top-15 z-40 bg-red-500 text-white px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium animate-pulse shadow-md">
       <WifiOff size={16} />
       <span>
-        {!isOnline ? "No internet connection" : "Server is unreachable (Ngrok Off)"}
+        {!isOnline ? "No internet connection" : "Server is unreachable"}
       </span>
       <button 
         onClick={() => window.location.reload()}
