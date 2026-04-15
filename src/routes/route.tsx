@@ -28,6 +28,8 @@ import {
   Activity,
   Coins,
   HandCoins,
+  BriefcaseBusiness,
+  Box,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -170,9 +172,25 @@ export const navItems: NavItem[] = [
     permission: buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.INDEX),
   },
   {
-    name: "Point Leaderboard",
-    path: "/point-leaderboard",
-    icon: <HandCoins size={20} />,
+    name: "Integrity Wallet",
+    icon: <Wallet size={20} />,
+    subItems: [
+      {
+        name: "Leaderboard",
+        path: "/point-leaderboard",
+        icon: <HandCoins size={18} />,
+      },
+      {
+        name: "Reward Catalog",
+        path: "/reward-catalog",
+        icon: <Box size={18} />,
+      },
+      {
+        name: "Inventory",
+        path: "/my-inventory",
+        icon: <BriefcaseBusiness size={18} />,
+      }
+    ],
   },
   {
     name: "Approval",
@@ -310,6 +328,15 @@ export const navItems: NavItem[] = [
           PERMISSIONS.BASE.INDEX,
         ),
       },
+      {
+        name: "Point Items",
+        path: "/point_items",
+        icon: <Box size={18} />,
+        permission: buildPermission(
+          RESOURCES.POINT_ITEM,
+          PERMISSIONS.BASE.INDEX,
+        ),
+      }
     ],
   },
   {

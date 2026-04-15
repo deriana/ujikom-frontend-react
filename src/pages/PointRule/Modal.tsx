@@ -3,7 +3,7 @@ import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import Input from "@/components/form/input/InputField";
 import { PointRuleInput } from "@/types";
-import { Star, Activity, Award, Settings2, Layers } from "lucide-react";
+import { Star, Activity, Award, Settings2, Layers, Sparkles, ArrowRight } from "lucide-react";
 import Checkbox from "@/components/form/input/Checkbox";
 import Select from "@/components/form/Select";
 import { POINT_CATEGORY } from "@/constants/PointCategory";
@@ -37,6 +37,13 @@ export default function PointRuleModal({
 
   const operatorOptions = ["==", "<", "<=", ">", ">=", "BETWEEN"].map((op) => ({ value: op, label: op }));
 
+  const getStatementPreview = () => {
+    const cat = data.category.replace(/_/g, " ").toLowerCase();
+    const op = data.operator === "==" ? "is exactly" : data.operator.toLowerCase();
+    const val = data.operator === "BETWEEN" ? `${data.min_value} and ${data.max_value}` : data.min_value;
+    return `If ${cat} ${op} ${val ?? '...'}, then award ${data.points || 0} points.`;
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-lg m-4">
       <div className="w-full overflow-hidden rounded-4xl bg-white dark:bg-[#0B0F1A] shadow-2xl border border-gray-100 dark:border-gray-800/50">
@@ -65,6 +72,27 @@ export default function PointRuleModal({
             onSubmit();
           }}
         >
+          {/* AI Statement Builder Preview */}
+          <div className="p-4 rounded-3xl bg-indigo-600 dark:bg-indigo-500 shadow-xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:rotate-12 transition-transform">
+              <Sparkles size={40} className="text-white" />
+            </div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+                <span className="text-[10px] font-black text-indigo-100 uppercase tracking-[0.2em]">Rule Preview</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-1">
+                  <ArrowRight size={16} className="text-indigo-200" />
+                </div>
+                <p className="text-sm font-bold text-white leading-relaxed italic">
+                  "{getStatementPreview()}"
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Category */}
           <div className="space-y-2">
             <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
@@ -83,46 +111,45 @@ export default function PointRuleModal({
             </div>
           </div>
 
-          {/* Event Name */}
-          <div className="space-y-2">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-              Event Name
-            </label>
-            <Input
-              type="text"
-              value={data.event_name}
-              onChange={(e) => setData({ ...data, event_name: e.target.value })}
-              placeholder="e.g. On Time, Late, Completed Task"
-              className="bg-gray-50 dark:bg-white/5"
-            />
-          </div>
-
-          {/* Points Value */}
-          <div className="space-y-2">
-            <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-              Points Value
-            </label>
-            <div className="relative flex items-center">
-              <div className="absolute left-3 text-gray-400">
-                <Award size={16} />
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Event Name */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                Event Name
+              </label>
               <Input
-                type="number"
-                value={data.points === 0 && !isEdit ? "" : data.points}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setData({
-                    ...data,
-                    points: val === "" ? "" : parseInt(val),
-                  } as any);
-                }}
-                placeholder="e.g. 5 or -5"
-                className="bg-gray-50 dark:bg-white/5 pl-10"
+                type="text"
+                value={data.event_name}
+                onChange={(e) => setData({ ...data, event_name: e.target.value })}
+                placeholder="e.g. On Time"
+                className="bg-gray-50 dark:bg-white/5"
               />
             </div>
-            <p className="text-[10px] text-gray-400">
-              Use negative values (e.g. -5) for penalties.
-            </p>
+
+            {/* Points Value */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                Points Value
+              </label>
+              <div className="relative flex items-center">
+                <div className="absolute left-3 text-gray-400">
+                  <Award size={16} />
+                </div>
+                <Input
+                  type="number"
+                  value={data.points === 0 && !isEdit ? "" : data.points}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setData({
+                      ...data,
+                      points: val === "" ? "" : parseInt(val),
+                    } as any);
+                  }}
+                  placeholder="e.g. 5"
+                  className="bg-gray-50 dark:bg-white/5 pl-10"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Condition Toggle */}

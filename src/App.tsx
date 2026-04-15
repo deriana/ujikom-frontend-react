@@ -90,6 +90,9 @@ import AttendanceDetailMobile from "./pages/Mobile/AttendanceDetail";
 import { useAuth } from "./hooks/useAuth";
 import PointRule from "./pages/PointRule/Index";
 import PointLeaderboard from "./pages/Points/Leaderboard";
+import PointItems from "./pages/PointItems/Index";
+import PointMarketplace from "./pages/PointItems/MarketPlace";
+import PointInventories from "./pages/PointItems/Inventories";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -307,6 +310,23 @@ export default function App() {
       element: <PointRule />,
       resource: RESOURCES.POINT_RULE,
       permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/point_items",
+      element: <PointItems />,
+      resource: RESOURCES.POINT_ITEM,
+      permission: PERMISSIONS.BASE.INDEX,
+    },
+
+    {
+      path: "/reward-catalog",
+      element: <PointMarketplace />,
+    },
+
+    {
+      path: "/my-inventory",
+      element: <PointInventories />,
     },
 
     /** Approval Route */

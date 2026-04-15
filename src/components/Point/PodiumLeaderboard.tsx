@@ -1,4 +1,3 @@
-import React from "react";
 import { Crown } from "lucide-react";
 import UserProfile from "@/components/UserProfile";
 import { useIsMobile } from "@/hooks/useIsMobile";
