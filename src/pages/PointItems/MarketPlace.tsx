@@ -6,12 +6,12 @@ import { handleMutation } from "@/utils/handleMutation";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import RedeemModal from "@/components/tables/Point/RedeemModal";
 import EmptyState from "@/components/tables/Point/EmptyState";
-import GridLayout from "@/components/tables/Point/GridLayout";
 import CategoriesMarketplace from "@/components/tables/Point/CategoriesMarketplace";
 import HeaderMarketplace from "@/components/tables/Point/HeaderMarketplace";
 import WalletInfoDetail from "@/components/tables/Point/WalletInfoDetail";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { PointBalanceSummary, PointItemCategory } from "@/types";
+import GridLayoutMarketplace from "@/components/tables/Point/GridLayout";
 
 export default function PointMarketplace() {
   const { data: items = [], isLoading: isItemsLoading } = usePointItems();
@@ -64,7 +64,7 @@ export default function PointMarketplace() {
         <CategoriesMarketplace activeCategory={activeCategory} onCategoryChange={(cat) => setActiveCategory(cat as PointItemCategory)} />
 
         {/* Grid Layout */}
-          <GridLayout 
+          <GridLayoutMarketplace
             filteredItems={filteredItems} 
             isLoading={isItemsLoading} 
             userBalance={wallet?.current_balance || 0}

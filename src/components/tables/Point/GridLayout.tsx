@@ -10,7 +10,7 @@ interface GridLayoutProps {
   userBalance?: number;
 }
 
-export default function GridLayout({
+export default function GridLayoutMarketplace({
   isLoading,
   filteredItems,
   setSelectedItem,

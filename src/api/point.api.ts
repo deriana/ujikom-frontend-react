@@ -22,8 +22,8 @@ export const deletePoint = async (uuid: string) => {
 };
 
 export const getLeaderboard = async () => {
-  const res = await api.get<PointLeaderboardResponse>("points/leaderboard");
-  return res.data;
+  const res = await api.get<ApiResponse<PointLeaderboardResponse>>("points/leaderboard");
+  return res.data.data;
 };
 
 export const getLeaderboardDetail = async (nik: string) => {
