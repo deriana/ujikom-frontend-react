@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapPin, Camera, Navigation, Clock as ClockIcon, ShieldAlert } from "lucide-react";
+import { MapPin, Camera, Navigation, Clock as ClockIcon, ShieldAlert, AlertCircle } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Circle, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import PageHeader from "@/components/Mobile/PageHeader";
 import { Home } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 // Fix Leaflet icon issue
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -39,12 +40,16 @@ function MapController({ coords }: { coords: [number, number] | null }) {
 
 export default function AttendancePresence() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [time, setTime] = useState(new Date());
   const [targetCoords, setTargetCoords] = useState<[number, number]>(DEFAULT_LOCATION);
   const [userCoords, setUserCoords] = useState<[number, number] | null>(null);
   const [address, setAddress] = useState("Fetching location...");
   const [locationPermission, setLocationPermission] = useState<PermissionState | "prompt">("prompt");
   const isMobile = useIsMobile();
+
+  const isLocked = location.state?.isLocked;
+  const lockReason = location.state?.lockReason;
 
   const getPosition = () => {
     if ("geolocation" in navigator) {
@@ -171,11 +176,29 @@ export default function AttendancePresence() {
           </div>
         </div>
 
+        {/* Lock Reason Alert */}
+        {isLocked && (
+          <div className={`p-5 rounded-3xl border flex items-start gap-4 animate-in slide-in-from-top-4 duration-500 ${lockReason === 'absent' ? 'bg-red-50 border-red-100 dark:bg-red-500/10 dark:border-red-500/20' : 'bg-emerald-50 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20'}`}>
+            <AlertCircle className={lockReason === 'absent' ? 'text-red-500' : 'text-emerald-500'} size={24} />
+            <div className="space-y-1">
+              <p className={`text-sm font-black uppercase tracking-tight ${lockReason === 'absent' ? 'text-red-700 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                {lockReason === 'absent' ? "Access Restricted: Marked Absent" : "Attendance Cycle Completed"}
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                {lockReason === 'absent' 
+                  ? "You have been marked as absent for today. If you believe this is a system error, please submit an Attendance Adjustment for correction." 
+                  : "You have completed your clock-in and clock-out for today. No further actions are required."}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Action Cards with Clearer Hover */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button
+            disabled={isLocked}
             onClick={() => navigate("/attendance/single", { state: { coords: userCoords } })}
-            className="group relative overflow-hidden bg-white dark:bg-white/3 p-8 rounded-4xl shadow-sm border border-gray-100 dark:border-white/10 hover:border-indigo-500 dark:hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 text-left"
+            className={`group relative overflow-hidden bg-white dark:bg-white/3 p-8 rounded-4xl shadow-sm border border-gray-100 dark:border-white/10 transition-all duration-300 text-left ${isLocked ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:border-indigo-500 dark:hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1'}`}
           >
             <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-10 group-hover:scale-110 transition-all duration-500">
               <Camera size={140} className="text-indigo-600 dark:text-white" />
@@ -184,12 +207,17 @@ export default function AttendancePresence() {
               <Camera className="text-indigo-600 dark:text-indigo-400 group-hover:text-white" size={32} />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white/90 mb-2">Face Recognition</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[80%]">Secure identity verification using biometric scanning technology.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[80%]">
+              {isLocked 
+                ? (lockReason === "absent" ? "Access locked: You are marked as absent." : "Access locked: Attendance completed.") 
+                : "Secure identity verification using biometric scanning technology."}
+            </p>
           </button>
 
           <button
+            disabled={isLocked}
             onClick={() => navigate("/attendance/manual")} 
-            className="group relative overflow-hidden bg-white dark:bg-white/3 p-8 rounded-4xl shadow-sm border border-gray-100 dark:border-white/10 hover:border-emerald-500 dark:hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300 text-left"
+            className={`group relative overflow-hidden bg-white dark:bg-white/3 p-8 rounded-4xl shadow-sm border border-gray-100 dark:border-white/10 transition-all duration-300 text-left ${isLocked ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:border-emerald-500 dark:hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:-translate-y-1'}`}
           >
             <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-10 group-hover:scale-110 transition-all duration-500">
               <MapPin size={140} className="text-emerald-600 dark:text-white" />
@@ -198,7 +226,11 @@ export default function AttendancePresence() {
               <MapPin className="text-emerald-600 dark:text-emerald-400 group-hover:text-white" size={32} />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white/90 mb-2">Manual Presence</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[80%]">Clock in based on your current GPS location and office proximity.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[80%]">
+              {isLocked 
+                ? (lockReason === "absent" ? "Access locked: You are marked as absent." : "Access locked: Attendance completed.") 
+                : "Clock in based on your current GPS location and office proximity."}
+            </p>
           </button>
         </div>
 

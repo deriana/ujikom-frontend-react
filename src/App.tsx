@@ -97,6 +97,8 @@ import PointMutations from "./pages/PointItems/Mutation";
 import PointLog from "./pages/Points/Index";
 import CreatePoint from "./pages/Points/Create";
 import WalletHome from "./pages/Mobile/WalletHome";
+import AttendanceLogs from "./pages/AttendanceReport/Log";
+import AttendanceSummary from "./pages/AttendanceReport/Summary";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -151,6 +153,18 @@ export default function App() {
       element: <AttendancCorrections />,
       resource: RESOURCES.ATTENDANCE_CORRECTION,
       permission: PERMISSIONS.BASE.INDEX,
+    },
+    {
+      path : "/attendances/logs",
+      element: <AttendanceLogs />,
+      resource: RESOURCES.ATTENDANCE,
+      permission: PERMISSIONS.ATTENDANCE.recap,
+    },
+    {
+      path: "/attendances/summary",
+      element: <AttendanceSummary />,
+      resource: RESOURCES.ATTENDANCE,
+      permission: PERMISSIONS.ATTENDANCE.recap,
     },
     {
       path: "/roles",

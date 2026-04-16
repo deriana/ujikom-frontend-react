@@ -8,6 +8,7 @@ import {
   ManualAttendanceInput,
   ManualAttendanceResponse,
   AttendanceLogs,
+  AttendanceSummary,
 } from "@/types/attendance.types";
 import api from "./axios";
 
@@ -34,6 +35,16 @@ export const sendBulkAttendance = async (payload: BulkAttendanceInput) => {
     formData,
   );
 
+  return res.data.data;
+};
+
+export const getAttendanceSummary = async (params?: {
+  start_date?: string;
+  end_date?: string;
+}) => {
+  const res = await api.get<ApiResponse<AttendanceSummary[]>>("/attendances/summary", {
+    params,
+  });
   return res.data.data;
 };
 

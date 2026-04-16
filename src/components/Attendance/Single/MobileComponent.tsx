@@ -79,17 +79,21 @@ export default function AttendanceMobileComponent({
             </div>
             
             <div className="flex flex-col gap-1">
-              <h2 className="text-2xl font-black text-white">
+              <h2 className={`text-2xl font-black ${attendanceStatus?.status === "absent" ? "text-red-500" : "text-white"}`}>
                 {!isLocationReady ? "Detecting Location..." : (
                   <>
-                    {attendanceStatus?.status === "absent" && "Clock In"}
-                    {attendanceStatus?.status === "clocked_in" && "Clock Out"}
-                    {attendanceStatus?.status === "completed" && "Completed"}
+                    {attendanceStatus?.status === "absent" && "✓ Marked Absent"}
+                    {attendanceStatus?.status === "clocked_in" && "Clock Out Now"}
+                    {attendanceStatus?.status === "completed" && "Attendance Completed"}
                   </>
                 )}
               </h2>
               <p className="text-white/70 text-xs leading-relaxed max-w-xs">
-                {!isLocationReady ? "Please wait while we verify your GPS coordinates." : (errorMessage || "Ensure your face is clearly visible and within a well-lit area.")}
+                {!isLocationReady 
+                  ? "Please wait while we verify your GPS coordinates." 
+                  : attendanceStatus?.status === "absent" 
+                    ? "You have been marked as absent for today. Please contact HR or submit an Attendance Adjustment if this is an error."
+                    : (errorMessage || "Ensure your face is clearly visible and within a well-lit area.")}
               </p>
             </div>
           </div>
@@ -102,11 +106,13 @@ export default function AttendanceMobileComponent({
               </div>
             ) : isSuccess === null ? (
               <button
-                disabled={!isModelsLoaded || isProcessing || attendanceStatus?.status === "completed" || !isLocationReady}
+                disabled={!isModelsLoaded || isProcessing || attendanceStatus?.status === "completed" || attendanceStatus?.status === "absent" || !isLocationReady}
                 onClick={handleCapture}
-                className="w-full py-5 bg-white text-black rounded-2xl font-black text-lg shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-95 transition-transform disabled:opacity-50"
+                className={`w-full py-5 rounded-2xl font-black text-lg shadow-[0_0_20px_rgba(255,255,255,0.3)] active:scale-95 transition-transform disabled:opacity-50 ${attendanceStatus?.status === "absent" ? "bg-red-600 text-white" : "bg-white text-black"}`}
               >
-                {attendanceStatus?.status === "completed" ? "ALREADY CLOCKED" : "TAKE ATTENDANCE"}
+                {attendanceStatus?.status === "completed" ? "COMPLETED" : 
+                 attendanceStatus?.status === "absent" ? "MARKED ABSENT" : 
+                 "VERIFY IDENTITY"}
               </button>
             ) : (
               <button

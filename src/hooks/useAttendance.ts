@@ -8,6 +8,7 @@ import {
   attendanceStatusToday,
   sendManualAttendance,
   getAttendenceLogs,
+  getAttendanceSummary,
 } from "@/api/attendance.api";
 import { BulkAttendanceInput, ManualAttendanceInput, SingleAttendanceInput } from "@/types";
 
@@ -94,6 +95,18 @@ export const useAttendanceLogs = (params?: {
     refetchOnMount: false,
   });
 }
+
+export const useAttendanceSummary = (params?: {
+  start_date?: string;
+  end_date?: string;
+}) => {
+  return useQuery({
+    queryKey: ["attendanceSummary", params?.start_date, params?.end_date],
+    queryFn: () => getAttendanceSummary(params),
+    enabled: !!params?.start_date && !!params?.end_date,
+    staleTime: 1000 * 60 * 5,
+  });
+};
 
 export const useDetailAttendance = (id: number) => {
   return useQuery({

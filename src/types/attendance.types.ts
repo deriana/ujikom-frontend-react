@@ -181,3 +181,48 @@ export interface AttendanceLogs {
   created_at: string;
   time_ago: any;
 }
+
+export interface AttendanceSummary {
+  employee: {
+    id: number;
+    nik: string;
+    name: string;
+    position: string | null;
+    profile_photo: string | null;
+    team: string | null;
+  };
+  attendance_stats: {
+    total_days: number;
+    total_present: number;
+    on_time: number;
+    late: {
+      count: number;
+      total_minutes: number;
+      formatted: string;
+    };
+    early_leave: {
+      count: number;
+      total_minutes: number;
+      formatted: string;
+    };
+    absent: number;
+    leave: {
+      total_days: number;
+      details: Array<{
+        type: string;
+        days: number;
+        status: string;
+      }>;
+    };
+  };
+  work_stats: {
+    work_time: {
+      total_minutes: number;
+      formatted: string;
+    };
+    overtime: {
+      total_minutes: number;
+      formatted: string;
+    };
+  };
+}

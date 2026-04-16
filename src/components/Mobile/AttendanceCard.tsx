@@ -1,6 +1,5 @@
 import { MapPin, ScanFace, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
 import { MobileHomeData } from "@/types";
 
 interface AttendanceCardProps {
@@ -13,8 +12,17 @@ export default function AttendanceCard({
   const navigate = useNavigate();
   const isCheckedIn = attendanceData?.attendance_status.is_checked_in;
   const isCheckedOut = attendanceData?.attendance_status.is_checked_out;
+  const isAbsent = attendanceData?.attendance_status.is_absent;
 
   const getAttendanceHeader = () => {
+    if (isAbsent)       
+      return {
+        text: "Marked Absent",
+        color: "bg-red-500",
+        shadow: "shadow-red-200",
+        icon: <ScanFace size={16} />,
+      };
+      
     if (isCheckedOut)
       return {
         text: "Attendance Completed",
@@ -38,17 +46,18 @@ export default function AttendanceCard({
   };
 
   const handleAttendanceClick = () => {
-    if (isCheckedIn && isCheckedOut) {
-      toast.error("You have completed your attendance for today.");
-      return;
-    }
-    navigate("/attendance/menu");
+    navigate("/attendance/menu", { 
+      state: { 
+        isLocked: isAbsent || isCheckedOut,
+        lockReason: isAbsent ? "absent" : isCheckedOut ? "completed" : null
+      } 
+    });
   };
 
   return (
     <div
     onClick={handleAttendanceClick}
-    className={`${getAttendanceHeader().color} ${getAttendanceHeader().shadow} rounded-4xl p-6 text-white shadow-xl dark:shadow-none relative overflow-hidden transition-all active:scale-[0.98] cursor-pointer`}
+    className={`${getAttendanceHeader().color} ${getAttendanceHeader().shadow} rounded-4xl p-6 text-white shadow-xl dark:shadow-none relative overflow-hidden transition-all ${isAbsent || isCheckedOut ? 'opacity-90 grayscale-[0.2]' : 'active:scale-[0.98] cursor-pointer'}`}
   >
     <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
 

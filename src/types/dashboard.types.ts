@@ -173,6 +173,7 @@ export interface MobileHomeData {
   attendance_status: {
     is_checked_in: boolean;
     is_checked_out: boolean;
+    is_absent: boolean;
     clock_in_time: string;
     clock_out_time: string;
     attendance_id: number | null;

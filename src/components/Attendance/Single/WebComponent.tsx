@@ -126,6 +126,9 @@ export default function AttendanceWebComponent({
                   "Face the camera and ensure there's enough lighting for instant verification."}
                 {attendanceStatus?.status === "clocked_in" &&
                   "You've already clocked in. Please face the camera to clock out."}
+                {attendanceStatus?.status === "absent" && (
+                  <p className="mt-2 text-red-500 font-bold">If this is a mistake, please submit an Attendance Adjustment.</p>
+                )}
                 {attendanceStatus?.status === "completed" &&
                   "Your attendance for today is complete. See you tomorrow!"}
               </p>
@@ -179,7 +182,8 @@ export default function AttendanceWebComponent({
                 disabled={
                   !isModelsLoaded ||
                   isProcessing ||
-                  attendanceStatus?.status === "completed" ||
+                  attendanceStatus?.status === "completed" || 
+                  attendanceStatus?.status === "absent" ||
                   !isLocationReady
                 }
                 onClick={handleCapture}
@@ -198,6 +202,11 @@ export default function AttendanceWebComponent({
                   <>
                     <CheckCircle2 size={24} />
                     <span>ATTENDANCE COMPLETED</span>
+                  </>
+                ) : attendanceStatus?.status === "absent" ? (
+                  <>
+                    <XCircle size={24} />
+                    <span>MARKED ABSENT</span>
                   </>
                 ) : attendanceStatus?.status === "clocked_in" ? (
                   <>

@@ -55,7 +55,7 @@ export default function MobileBentoGrid() {
             } bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 flex group active:scale-[0.98] transition-all overflow-hidden relative shadow-sm`}
           >
             {item.isLarge && (
-              <div className="absolute right-0 top-0 mt-2 mr-2 opacity-5">
+              <div className="absolute right-0 top-0 mt-2 mr-2 opacity-5 dark:opacity-10 dark:text-amber-500">
                 <item.icon size={100} />
               </div>
             )}

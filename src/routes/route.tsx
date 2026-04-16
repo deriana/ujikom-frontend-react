@@ -95,7 +95,25 @@ export const navItems: NavItem[] = [
         ),
       },
       {
-        name: "Attendance Requests",
+        name: "Attendance Logs",
+        path: "/attendances/logs",
+        icon: <History size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE,
+          PERMISSIONS.BASE.LOG,
+        ),
+      },
+      {
+        name: "Attendance Summary",
+        path: "/attendances/summary",
+        icon: <ChartBar size={18} />,
+        permission: buildPermission(
+          RESOURCES.ATTENDANCE,
+          PERMISSIONS.ATTENDANCE.recap,
+        ),
+      },
+      {
+        name: "Change Shift/Schedule Requests",
         path: "/attendance-requests",
         icon: <FileText size={18} />,
         permission: buildPermission(

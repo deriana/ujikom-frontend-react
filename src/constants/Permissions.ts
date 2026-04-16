@@ -11,7 +11,8 @@ export const PERMISSIONS = {
     IMPORT: "import",
     ARCHIVE: "archive",
     UNARCHIVE: "unarchive",
-    APPROVE: "approve"
+    APPROVE: "approve",
+    LOG: "log",
   },
   PAYROLL: {
     pay: "pay"
@@ -22,10 +23,17 @@ export const PERMISSIONS = {
   },
   POINT: {
     addPoint: "addPoint",
+  },
+  ATTENDANCE: {
+    recap: "recap",
   }
 } as const;
 
+type AllActions = {
+  [K in keyof typeof PERMISSIONS]: (typeof PERMISSIONS)[K][keyof (typeof PERMISSIONS)[K]];
+}[keyof typeof PERMISSIONS];
+
 export const buildPermission = (
   resource: string,
-  action: (typeof PERMISSIONS.BASE)[keyof typeof PERMISSIONS.BASE] | (typeof PERMISSIONS.DASHBOARD)[keyof typeof PERMISSIONS.DASHBOARD]
+  action: AllActions,
 ) => `${resource}.${action}`;
