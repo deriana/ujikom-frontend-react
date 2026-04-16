@@ -88,7 +88,8 @@ export interface PointLeaderboardResponse {
         my_rank: number | null;
         my_points: number;
     };
-    list: PointLeaderboard[];
+    highest: PointLeaderboard[];
+    lowest: PointLeaderboard[];
 }
 
 /**

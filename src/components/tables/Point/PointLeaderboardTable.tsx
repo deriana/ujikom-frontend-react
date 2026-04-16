@@ -1,6 +1,7 @@
 import { 
   ArrowUpRight, 
   ChevronRight,
+  Trophy,
   Sparkles
 } from "lucide-react";
 import UserProfile from "@/components/UserProfile";
@@ -11,6 +12,7 @@ import { useLeaderboard } from "@/hooks/usePoint";
 import { useAuth } from "@/hooks/useAuth";
 import MyPositionCard from "@/components/Point/MyPositionCard";
 import PodiumLeaderboard from "@/components/Point/PodiumLeaderboard";
+import { useState } from "react";
 import HeaderLeaderboard from "@/components/Point/HeaderLeaderboard";
 
 export default function PointLeaderboardTable() {
@@ -18,8 +20,12 @@ export default function PointLeaderboardTable() {
   const { user: currentUser } = useAuth();
   const { data: leaderboardData, isLoading, isError, error } = useLeaderboard(); 
 
-  const list = leaderboardData?.list || [];
+  const [activeTab, setActiveTab] = useState<"highest" | "lowest">("highest");
+
+  const highest = leaderboardData?.highest || [];
+  const lowest = leaderboardData?.lowest || [];
   const meta = leaderboardData?.meta;
+  const currentList = activeTab === "highest" ? highest : lowest;
 
   // --- DESKTOP COLUMNS CONFIG ---
   const columns: Column<PointLeaderboard>[] = [
@@ -68,7 +74,7 @@ export default function PointLeaderboardTable() {
       <HeaderLeaderboard  period={meta?.period} />
 
       {/* --- PODIUM / HERO CARDS --- */}
-      <PodiumLeaderboard list={list} isLoading={isLoading} />
+      <PodiumLeaderboard list={highest} isLoading={isLoading} />
 
       {/* --- MY POSITION CARD (MOBILE OPTIMIZED) --- */}
       <MyPositionCard rank={meta?.my_rank || '-'} userName={currentUser?.name || "You"} points={meta?.my_points || 0} />
@@ -76,13 +82,36 @@ export default function PointLeaderboardTable() {
       {/* --- MAIN STANDINGS SECTION --- */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-white/5 shadow-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-50 dark:border-white/5 flex justify-between items-center bg-gray-50/50 dark:bg-white/2">
-          <h2 className="text-xs font-black uppercase tracking-widest text-gray-500">Global Standings</h2>
+          <div className="flex items-center gap-1 p-1 bg-gray-100 dark:bg-white/5 rounded-xl">
+            <button
+              onClick={() => setActiveTab("highest")}
+              className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                activeTab === "highest"
+                  ? "bg-white dark:bg-white/10 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <Trophy size={12} />
+              Top Performers
+            </button>
+            <button
+              onClick={() => setActiveTab("lowest")}
+              className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                activeTab === "lowest"
+                  ? "bg-white dark:bg-white/10 text-red-600 dark:text-red-400 shadow-sm"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <ArrowUpRight size={12} className="rotate-180" />
+              Needs Improvement
+            </button>
+          </div>
           {isMobile && <Sparkles size={14} className="text-yellow-500" />}
         </div>
 
         {isMobile ? (
           <div className="divide-y divide-gray-50 dark:divide-white/5">
-            {list.map((row: PointLeaderboard) => (
+            {currentList.map((row: PointLeaderboard) => (
               <div 
                 key={row.nik} 
                 className="flex items-center justify-between p-4 active:bg-gray-50 dark:active:bg-white/5 transition-colors"
@@ -122,7 +151,7 @@ export default function PointLeaderboardTable() {
           </div>
         ) : (
           <DataTable
-            data={list}
+            data={currentList}
             columns={columns}
             loading={isLoading}
             searchableKeys={["name", "position"]}
