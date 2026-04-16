@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import PageMeta from "@/components/common/PageMeta";
-import { usePointInventories, useUsePointItem } from "@/hooks/usePointItem";
+import { usePointInventories, useUsePointItem, usePointWallet } from "@/hooks/usePointItem";
 import PointItemShowModal from "./ShowModal";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import EmptyState from "@/components/tables/Point/EmptyState";
@@ -11,10 +11,15 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ConfirmationModalInventory from "@/components/tables/Point/ConfirmationModalInventory";
 import GridLayoutInventory from "@/components/tables/Point/GridLayoutInventory";
 import InventoryHeader from "@/components/tables/Point/InventoryHeader";
+import { PointBalanceSummary } from "@/types";
 
 export default function PointInventories() {
   const { data: items = [], isLoading } = usePointInventories();
   const { mutateAsync: useItem, isPending: isUsing } = useUsePointItem();
+  const { data: wallet, isLoading: isWalletLoading } = usePointWallet() as { 
+    data: PointBalanceSummary | undefined, 
+    isLoading: boolean 
+  };
   const isMobile = useIsMobile();
   
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,7 +58,7 @@ export default function PointInventories() {
         )}
 
         {/* Floating Point Wallet Info */}
-        <WalletInfoDetail />
+        <WalletInfoDetail wallet={wallet} isLoading={isWalletLoading} />
        
 
         {/* Confirmation Modal */}

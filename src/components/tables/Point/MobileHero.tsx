@@ -38,7 +38,10 @@ export default function MobileHero({ wallet, isLoading, rank, progress, balance,
                     {rank.name}
                   </span>
                 </div>
-                <button className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 active:scale-90 transition-transform">
+                <button 
+                  onClick={() => setShowBenefits(true)}
+                  className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 active:scale-90 transition-transform"
+                >
                   <HelpCircle size={18} className="opacity-60" />
                 </button>
               </div>
