@@ -99,6 +99,7 @@ import CreatePoint from "./pages/Points/Create";
 import WalletHome from "./pages/Mobile/WalletHome";
 import AttendanceLogs from "./pages/AttendanceReport/Log";
 import AttendanceSummary from "./pages/AttendanceReport/Summary";
+import SystemLogs from "./pages/Log/Index";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -141,6 +142,12 @@ export default function App() {
       element: <EmployeeDashboard />,
       resource: RESOURCES.DASHBOARD,
       permission: PERMISSIONS.DASHBOARD.employee,
+    },
+    {
+      path: "/logs",
+      element: <SystemLogs />,
+      resource: RESOURCES.LOG,
+      permission: PERMISSIONS.BASE.INDEX,
     },
     {
       path: "/attendances/report",

@@ -13,6 +13,7 @@ export const PERMISSIONS = {
     UNARCHIVE: "unarchive",
     APPROVE: "approve",
     LOG: "log",
+    DOWNLOAD: "download",
   },
   PAYROLL: {
     pay: "pay"

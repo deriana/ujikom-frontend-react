@@ -24,4 +24,5 @@ export const RESOURCES = {
   POINT_RULE: "point-rule",
   POINT_ITEM: "point-item",
   POINT: "point",
+  LOG: "log",
 } as const;

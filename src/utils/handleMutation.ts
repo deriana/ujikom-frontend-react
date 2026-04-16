@@ -22,6 +22,7 @@ export async function handleMutation<T>(
   } catch (err: any) {
     if (id) toast.dismiss(id);
     let errorMessage = err?.response?.data?.message || err?.message || config.error || "Something went wrong"
+    console.log(err)
     const validationErrors = err?.response?.data?.errors;
     if (validationErrors) {
       const detailedMessages = Object.values(validationErrors)

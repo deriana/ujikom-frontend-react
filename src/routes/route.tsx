@@ -82,6 +82,12 @@ export const navItems: NavItem[] = [
     hideForAdmin: true,
   },
   {
+    name: "System Logs",
+    path: "/logs",
+    icon: <FileText size={20} />,
+    permission: buildPermission(RESOURCES.LOG, PERMISSIONS.BASE.INDEX),
+  },
+  {
     name: "Attendances",
     icon: <ClipboardCheck size={20} />,
     subItems: [
