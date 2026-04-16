@@ -17,13 +17,22 @@ export const CurrencyInput = ({
 }: CurrencyInputProps) => {
   
   const formatDisplay = (val: number) => {
-    if (!val) return "";
+    if (val === 0) return ""; 
     return new Intl.NumberFormat("id-ID").format(val);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/\D/g, ""); 
-    const numericValue = rawValue === "" ? 0 : Number(rawValue);
+    let inputVal = e.target.value;
+
+    const isNegative = inputVal.startsWith('-');
+    const rawValue = inputVal.replace(/\D/g, ""); 
+    
+    let numericValue = rawValue === "" ? 0 : Number(rawValue);
+    
+    if (isNegative && numericValue !== 0) {
+      numericValue = numericValue * -1;
+    }
+
     onChange(numericValue);
   };
 
@@ -31,7 +40,7 @@ export const CurrencyInput = ({
     <div className={`relative ${className}`}>
       <Input
         type="text"
-        value={formatDisplay(value)}
+        value={value === 0 ? "" : formatDisplay(value)}
         onChange={handleChange}
         placeholder={placeholder}
         className="pl-14 no-spinner" 
