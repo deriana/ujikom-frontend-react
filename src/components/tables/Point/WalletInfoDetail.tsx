@@ -3,6 +3,7 @@ import { Star, ChevronRight, Info, TrendingUp, ShieldCheck, Zap } from "lucide-r
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { PointBalanceSummary } from "@/types";
 import { Modal } from "@/components/ui/modal";
+import { calculateRankProgress, getRankInfo } from "@/constants/Rank";
 
 interface WalletInfoDetailProps {
   wallet?: PointBalanceSummary;
@@ -13,24 +14,10 @@ export default function WalletInfoDetail({ wallet, isLoading }: WalletInfoDetail
   const isMobile = useIsMobile();
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  const getRankInfo = (points: number) => {
-    if (points >= 10000) return { name: "Discipline Legend", level: 50, min: 10000, next: 20000 };
-    if (points >= 5000) return { name: "Discipline Elite", level: 25, min: 5000, next: 10000 };
-    if (points >= 2500) return { name: "Discipline Master", level: 15, min: 2500, next: 5000 };
-    if (points >= 1000) return { name: "Discipline Pro", level: 10, min: 1000, next: 2500 };
-    return { name: "Discipline Starter", level: 1, min: 0, next: 1000 };
-  };
+  if (isMobile || isLoading) return null;
 
   const rank = getRankInfo(wallet?.total_earned || 0);
-  const progress = Math.min(
-    100,
-    Math.max(
-      0,
-      (((wallet?.total_earned || 0) - rank.min) / (rank.next - rank.min)) * 100
-    )
-  );
-
-  if (isMobile || isLoading) return null;
+  const progress = calculateRankProgress(wallet?.total_earned || 0);
 
   return (
     <>

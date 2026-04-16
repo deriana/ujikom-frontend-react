@@ -20,8 +20,10 @@ export default function UrgencyBanner({ wallet }: UrgencyBannerProps) {
             Points Expiring!
           </h4>
           <p className="text-[10px] font-medium opacity-90 leading-tight mt-0.5">
-            {wallet?.total_earned ? "450 pts" : "Some pts"} will expire on Dec
-            31. Use them before they're gone!
+            {wallet?.current_balance
+              ? `${wallet.current_balance.toLocaleString()} pts`
+              : "Your points"}{" "}
+            will expire on Dec 31, {new Date().getFullYear()}. Use them before they're gone!
           </p>
         </div>
         <ChevronRight size={20} className="opacity-50" />

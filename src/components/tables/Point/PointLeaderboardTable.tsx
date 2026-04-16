@@ -65,13 +65,13 @@ export default function PointLeaderboardTable() {
   return (
     <div className={`max-w-6xl mx-auto space-y-6 ${isMobile ? 'p-3' : 'p-6'}`}>
       
-    <HeaderLeaderboard  period={meta?.period} />
+      <HeaderLeaderboard  period={meta?.period} />
 
       {/* --- PODIUM / HERO CARDS --- */}
-      <PodiumLeaderboard list={list} />
+      <PodiumLeaderboard list={list} isLoading={isLoading} />
 
       {/* --- MY POSITION CARD (MOBILE OPTIMIZED) --- */}
-        <MyPositionCard rank={meta?.my_rank || '-'} userName={currentUser?.name || "You"} points={meta?.my_points || 0} />
+      <MyPositionCard rank={meta?.my_rank || '-'} userName={currentUser?.name || "You"} points={meta?.my_points || 0} />
 
       {/* --- MAIN STANDINGS SECTION --- */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-white/5 shadow-xl overflow-hidden">

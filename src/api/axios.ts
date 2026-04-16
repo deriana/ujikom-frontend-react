@@ -21,7 +21,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (!error.response) {
-      console.error("Server tidak merespons atau masalah CORS");
+      console.error("Server not responding or CORS issue");
       window.dispatchEvent(new Event("server-down"));
       return Promise.reject(error);
     }
@@ -29,7 +29,7 @@ api.interceptors.response.use(
     const status = error.response.status;
 
     if (status === 401) {
-      console.warn("Sesi berakhir (401). Menghapus token...");
+      console.warn("Session expired (401). Removing token...");
       localStorage.removeItem("token");
     }
 

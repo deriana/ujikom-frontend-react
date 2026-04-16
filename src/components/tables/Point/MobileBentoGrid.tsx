@@ -1,13 +1,40 @@
 import { useNavigate } from "react-router-dom";
-import { Trophy, History, Package, ArrowUpRight } from "lucide-react";
-import { PointBalanceSummary } from "@/types";
+import { Trophy, History, Package, ArrowUpRight, LucideIcon } from "lucide-react";
 
-interface MobileBentoGridProps {
-  wallet?: PointBalanceSummary;
-}
-
-export default function MobileBentoGrid({ wallet }: MobileBentoGridProps) {
+export default function MobileBentoGrid() {
   const navigate = useNavigate();
+
+  const menuItems: {
+    title: string;
+    subtitle: string;
+    path: string;
+    icon: LucideIcon;
+    color: string;
+    isLarge?: boolean;
+  }[] = [
+    {
+      title: "Leaderboard",
+      subtitle: "Global Standings",
+      path: "/point-leaderboard",
+      icon: Trophy,
+      color: "bg-amber-500",
+      isLarge: true,
+    },
+    {
+      title: "Mutations",
+      subtitle: "History Log",
+      path: "/point-mutations",
+      icon: History,
+      color: "bg-blue-500",
+    },
+    {
+      title: "Inventory",
+      subtitle: "My Collection",
+      path: "/my-inventory",
+      icon: Package,
+      color: "bg-purple-500",
+    },
+  ];
 
   return (
     <section className="space-y-4">
@@ -19,67 +46,43 @@ export default function MobileBentoGrid({ wallet }: MobileBentoGridProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {/* Leaderboard - Large Box */}
-        <div
-          onClick={() => navigate("/point-leaderboard")}
-          className="col-span-2 bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 flex items-center justify-between group active:scale-[0.98] transition-all overflow-hidden relative shadow-sm"
-        >
-          <div className="absolute right-0 top-0 mt-2 mr-2 opacity-5">
-            <Trophy size={100} />
-          </div>
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 bg-amber-500 rounded-[1.2rem] flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
-              <Trophy size={28} />
+        {menuItems.map((item) => (
+          <div
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            className={`${
+              item.isLarge ? "col-span-2 flex-row items-center justify-between" : "flex-col space-y-4"
+            } bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 flex group active:scale-[0.98] transition-all overflow-hidden relative shadow-sm`}
+          >
+            {item.isLarge && (
+              <div className="absolute right-0 top-0 mt-2 mr-2 opacity-5">
+                <item.icon size={100} />
+              </div>
+            )}
+            <div className={`flex items-center ${item.isLarge ? "gap-5" : "gap-0"}`}>
+              <div className={`${item.isLarge ? "w-14 h-14 rounded-[1.2rem]" : "w-12 h-12 rounded-2xl"} ${item.color} flex items-center justify-center text-white shadow-lg shadow-black/5`}>
+                <item.icon size={item.isLarge ? 28 : 24} />
+              </div>
+              {item.isLarge && (
+                <div>
+                  <h4 className="text-base font-black text-slate-900 dark:text-white">{item.title}</h4>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{item.subtitle}</p>
+                </div>
+              )}
             </div>
-            <div>
-              <h4 className="text-base font-black text-slate-900 dark:text-white">
-                Leaderboard
-              </h4>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                Rank #12 • Top 5%
-              </p>
-            </div>
+            {!item.isLarge && (
+              <div>
+                <h4 className="text-sm font-black text-slate-900 dark:text-white">{item.title}</h4>
+                <p className="text-[9px] font-bold text-slate-400 uppercase">{item.subtitle}</p>
+              </div>
+            )}
+            {item.isLarge && (
+              <div className="w-10 h-10 rounded-full bg-slate-50 text-slate-400 dark:bg-slate-800 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
+                <ArrowUpRight size={20} />
+              </div>
+            )}
           </div>
-          <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
-            <ArrowUpRight size={20} />
-          </div>
-        </div>
-
-        {/* Mutation - Small Box */}
-        <div
-          onClick={() => navigate("/point-mutations")}
-          className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 space-y-4 active:scale-[0.96] transition-all shadow-sm"
-        >
-          <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white">
-            <History size={24} />
-          </div>
-          <div>
-            <h4 className="text-sm font-black text-slate-900 dark:text-white">
-              Mutations
-            </h4>
-            <p className="text-[9px] font-bold text-slate-400 uppercase">
-              History Log
-            </p>
-          </div>
-        </div>
-
-        {/* Inventory - Small Box */}
-        <div
-          onClick={() => navigate("/my-inventory")}
-          className="bg-white dark:bg-slate-900/50 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 space-y-4 active:scale-[0.96] transition-all shadow-sm"
-        >
-          <div className="w-12 h-12 bg-purple-500 rounded-2xl flex items-center justify-center text-white">
-            <Package size={24} />
-          </div>
-          <div>
-            <h4 className="text-sm font-black text-slate-900 dark:text-white">
-              Inventory
-            </h4>
-            <p className="text-[9px] font-bold text-slate-400 uppercase">
-              {wallet?.total_used ? "8 Items" : "0 Items"}
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );

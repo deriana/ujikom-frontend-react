@@ -1,4 +1,4 @@
-import { Trophy, HelpCircle, ShoppingBag, Gift } from "lucide-react";
+import { Trophy, HelpCircle, ShoppingBag, Gift, TrendingUp, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PointBalanceSummary } from "@/types";
 
@@ -44,11 +44,11 @@ export default function MobileHero({ wallet, isLoading, rank, progress, balance,
               </div>
 
               <div className="mb-8">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center justify-between mb-1">
                   <p className="text-indigo-200/60 text-[10px] font-black uppercase tracking-[0.2em]">
-                    Available Balance
+                    {wallet?.period_name || "Available Balance"}
                   </p>
-                  <div className="h-1 w-1 rounded-full bg-green-400 animate-pulse" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
                 </div>
                 <div className="flex items-baseline gap-2">
                   <h2 className="text-5xl font-black tracking-tighter">
@@ -57,6 +57,24 @@ export default function MobileHero({ wallet, isLoading, rank, progress, balance,
                   <span className="text-xl font-bold text-indigo-300/50 italic">
                     Pts
                   </span>
+                </div>
+              </div>
+
+              {/* Stats Mini Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-3">
+                  <div className="flex items-center gap-1.5 text-emerald-400 mb-1">
+                    <TrendingUp size={12} />
+                    <span className="text-[8px] font-black uppercase tracking-wider">Earned</span>
+                  </div>
+                  <p className="text-sm font-black">{(wallet?.total_earned || 0).toLocaleString()}</p>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-3">
+                  <div className="flex items-center gap-1.5 text-amber-400 mb-1">
+                    <Zap size={12} />
+                    <span className="text-[8px] font-black uppercase tracking-wider">Used</span>
+                  </div>
+                  <p className="text-sm font-black">{(wallet?.total_used || 0).toLocaleString()}</p>
                 </div>
               </div>
 
