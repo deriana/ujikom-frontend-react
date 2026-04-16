@@ -56,10 +56,10 @@ export default function PointTable() {
           </div>
           <div className="flex flex-col min-w-0">
             <span className="font-bold text-gray-900 dark:text-gray-100 truncate">
-              {row.rule.event_name}
+              {row.rule?.event_name || "Manual Adjustment"}
             </span>
             <span className="text-xs text-gray-500 line-clamp-1 mt-0.5">
-              {row.rule.description || "No description"}
+              {row.rule?.description || "No description provided"}
             </span>
           </div>
         </div>

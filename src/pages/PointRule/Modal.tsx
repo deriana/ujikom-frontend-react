@@ -73,25 +73,27 @@ export default function PointRuleModal({
           }}
         >
           {/* AI Statement Builder Preview */}
-          <div className="p-4 rounded-3xl bg-indigo-600 dark:bg-indigo-500 shadow-xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:rotate-12 transition-transform">
-              <Sparkles size={40} className="text-white" />
-            </div>
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-[10px] font-black text-indigo-100 uppercase tracking-[0.2em]">Rule Preview</span>
+          {showCondition && (
+            <div className="p-4 rounded-3xl bg-indigo-600 dark:bg-indigo-500 shadow-xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group animate-in fade-in zoom-in duration-300">
+              <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:rotate-12 transition-transform">
+                <Sparkles size={40} className="text-white" />
               </div>
-              <div className="flex items-start gap-3">
-                <div className="mt-1">
-                  <ArrowRight size={16} className="text-indigo-200" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-[10px] font-black text-indigo-100 uppercase tracking-[0.2em]">Rule Preview</span>
                 </div>
-                <p className="text-sm font-bold text-white leading-relaxed italic">
-                  "{getStatementPreview()}"
-                </p>
+                <div className="flex items-start gap-3">
+                  <div className="mt-1">
+                    <ArrowRight size={16} className="text-indigo-200" />
+                  </div>
+                  <p className="text-sm font-bold text-white leading-relaxed italic">
+                    "{getStatementPreview()}"
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Category */}
           <div className="space-y-2">
