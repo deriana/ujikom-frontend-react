@@ -52,4 +52,18 @@ export default defineConfig({
   server: {
     allowedHosts: [".ngrok-free.app"],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Memisahkan library di node_modules agar tidak jadi satu file besar
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          }
+        },
+      },
+    },
+    // Opsional: naikkan limit sedikit jika masih ada satu library yang sangat besar
+    chunkSizeWarningLimit: 1000,
+  },
 });
