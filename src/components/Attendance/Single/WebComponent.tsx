@@ -117,6 +117,7 @@ export default function AttendanceWebComponent({
 
             <div>
               <h2 className="text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
+                {attendanceStatus?.status === "not_started" && "Clock In"}
                 {attendanceStatus?.status === "absent" && "Quick Scan"}
                 {attendanceStatus?.status === "clocked_in" && "Clock Out"}
                 {attendanceStatus?.status === "completed" && "All Set!"}
@@ -124,6 +125,8 @@ export default function AttendanceWebComponent({
               <p className="text-zinc-500 mt-2 text-sm leading-relaxed">
                 {attendanceStatus?.status === "absent" &&
                   "Face the camera and ensure there's enough lighting for instant verification."}
+                {attendanceStatus?.status === "not_started" &&
+                  "Ready to start your day? Please face the camera to clock in."}
                 {attendanceStatus?.status === "clocked_in" &&
                   "You've already clocked in. Please face the camera to clock out."}
                 {attendanceStatus?.status === "absent" && (

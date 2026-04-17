@@ -83,6 +83,7 @@ export default function AttendanceMobileComponent({
                 {!isLocationReady ? "Detecting Location..." : (
                   <>
                     {attendanceStatus?.status === "absent" && "✓ Marked Absent"}
+                    {attendanceStatus?.status === "not_started" && "Clock In Now"}
                     {attendanceStatus?.status === "clocked_in" && "Clock Out Now"}
                     {attendanceStatus?.status === "completed" && "Attendance Completed"}
                   </>
