@@ -94,7 +94,7 @@ export default function SystemLogTable() {
           </div>
           <button
             onClick={() => downloadLog(selectedDate)}
-            disabled={isDownloading}
+            disabled={isDownloading || (isError && (error as any)?.response?.status === 404)}
             className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 disabled:opacity-50 transition-all"
           >
             <Download size={16} />
@@ -104,8 +104,16 @@ export default function SystemLogTable() {
       </div>
 
       {isError ? (
-        <div className="p-8 text-center bg-red-50 dark:bg-red-500/5 rounded-3xl border border-red-100 dark:border-red-500/10">
-          <p className="text-red-600 dark:text-red-400 font-bold">Error loading logs: {(error as Error).message}</p>
+        <div className="p-12 text-center bg-gray-50 dark:bg-white/5 rounded-3xl border border-dashed border-gray-200 dark:border-white/10">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-12 w-12 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center text-gray-400">
+              <Terminal size={24} />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">No Logs Found</h3>
+            <p className="text-sm text-gray-500 max-w-xs mx-auto">
+              There are no system logs recorded for {formatDateID(new Date(selectedDate))}.
+            </p>
+          </div>
         </div>
       ) : (
         <DataTable
