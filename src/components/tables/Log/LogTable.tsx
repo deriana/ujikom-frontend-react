@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSystemLogs, useDownloadSystemLog } from "@/hooks/useSystemLog";
 import { Column, SystemLog } from "@/types";
 import { DataTable } from "../BasicTables/DataTable";
-import { FileText, Download, Terminal, Calendar as CalendarIcon } from "lucide-react";
+import { FileText, Download, Terminal } from "lucide-react";
 import Badge from "@/components/ui/badge/Badge";
 import { formatDateID } from "@/utils/date";
 import { Modal } from "@/components/ui/modal";
@@ -85,7 +85,6 @@ export default function SystemLogTable() {
 
         <div className="flex items-center gap-3">
           <div className="relative">
-            <CalendarIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
             <DatePicker
               id="system-log-date"
               mode="single"
