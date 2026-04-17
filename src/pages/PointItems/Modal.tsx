@@ -151,16 +151,34 @@ export default function PointItemModal({
             <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
               Item Image
             </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400">
-                <ImageIcon size={16} />
+            <div className="space-y-3">
+              {data.image && (
+                <div className="relative w-full h-32 rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
+                  <img
+                    src={URL.createObjectURL(data.image as File)}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setData({ ...data, image: null })}
+                    className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                  >
+                    <ImageIcon size={14} />
+                  </button>
+                </div>
+              )}
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400">
+                  <ImageIcon size={16} />
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setData({ ...data, image: e.target.files?.[0] || null })}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-xs text-gray-600 dark:text-gray-300 outline-none focus:border-indigo-500 transition-all file:hidden cursor-pointer"
+                />
               </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setData({ ...data, image: e.target.files?.[0] || null })}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-white border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-xs outline-none focus:border-indigo-500 transition-all"
-              />
             </div>
           </div>
 
