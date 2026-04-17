@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import { VitePWA } from "vite-plugin-pwa"; // 1. Import plugin-nya
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -43,6 +44,7 @@ export default defineConfig({
         ],
       },
     }),
+    visualizer({ open: true, filename: "bundle-stats.html" }) as any,
   ],
   resolve: {
     alias: {
@@ -56,14 +58,25 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Memisahkan library di node_modules agar tidak jadi satu file besar
-          if (id.includes('node_modules')) {
-            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+          if (id.includes("node_modules")) {
+            if (id.includes("react-dom") || id.includes("react-router")) {
+              return "react-core";
+            }
+            if (id.includes("lucide-react")) {
+              return "icons";
+            }
+            if (id.includes("axios") || id.includes("tanstack")) {
+              return "network";
+            }
+            if (id.includes("apexcharts")) return "vendor-charts";
+            if (id.includes("leaflet")) return "vendor-maps";
+            if (id.includes("face-api.js")) return "vendor-ai-face";
+            if (id.includes("chart.js")) return "vendor-charts";
+            return "vendor";
           }
         },
       },
     },
-    // Opsional: naikkan limit sedikit jika masih ada satu library yang sangat besar
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
   },
 });
