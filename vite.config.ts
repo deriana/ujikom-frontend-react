@@ -1,10 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
-import { VitePWA } from "vite-plugin-pwa"; // 1. Import plugin-nya
+import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -15,11 +14,10 @@ export default defineConfig({
         namedExport: "ReactComponent",
       },
     }),
-    // 2. Tambahkan konfigurasi PWA di sini
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
-        maximumFileSizeToCacheInBytes: 5000000, // Kita set jadi 5MB
+        maximumFileSizeToCacheInBytes: 5000000,
       },
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
       manifest: {
@@ -59,19 +57,24 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
-            if (id.includes("react-dom") || id.includes("react-router")) {
+            // FIX: Gabungkan semua core dependencies React agar tidak "unstable_now"
+            if (
+              id.includes("react") || 
+              id.includes("react-dom") || 
+              id.includes("scheduler") || 
+              id.includes("react-router")
+            ) {
               return "react-core";
             }
-            if (id.includes("lucide-react")) {
-              return "icons";
-            }
-            if (id.includes("axios") || id.includes("tanstack")) {
-              return "network";
-            }
-            if (id.includes("apexcharts")) return "vendor-charts";
-            if (id.includes("leaflet")) return "vendor-maps";
+            
+            // Pisahkan library raksasa sesuai kebutuhan
             if (id.includes("face-api.js")) return "vendor-ai-face";
-            if (id.includes("chart.js")) return "vendor-charts";
+            if (id.includes("leaflet")) return "vendor-maps";
+            if (id.includes("apexcharts") || id.includes("chart.js")) return "vendor-charts";
+            if (id.includes("lucide-react")) return "icons";
+            if (id.includes("axios") || id.includes("tanstack")) return "network";
+            
+            // Sisanya masuk ke vendor umum
             return "vendor";
           }
         },
