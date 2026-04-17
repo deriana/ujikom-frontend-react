@@ -6,6 +6,7 @@ import { FileText, Download, Terminal, Calendar as CalendarIcon } from "lucide-r
 import Badge from "@/components/ui/badge/Badge";
 import { formatDateID } from "@/utils/date";
 import { Modal } from "@/components/ui/modal";
+import DatePicker from "@/components/form/date-picker";
 
 export default function SystemLogTable() {
   const [selectedDate, setSelectedDate] = useState<string>(
@@ -84,12 +85,12 @@ export default function SystemLogTable() {
 
         <div className="flex items-center gap-3">
           <div className="relative">
-            <CalendarIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="date"
+            <CalendarIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
+            <DatePicker
+              id="system-log-date"
+              mode="single"
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm font-bold text-gray-900 dark:text-gray-300 outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+              onChange={(dates) => dates[0] && setSelectedDate(dates[0].toLocaleDateString("en-CA"))}
             />
           </div>
           <button
