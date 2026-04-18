@@ -28,7 +28,7 @@ export interface PointItemInput {
   power_up_type?: PowerUpType | null;
   category?: PointItemCategory | null;
   is_active?: boolean;
-  image?: File | null;
+  image?: File | string | null;
 }
 
 export interface PointInventory {

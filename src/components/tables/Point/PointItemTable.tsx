@@ -73,6 +73,7 @@ export default function PointItemTable() {
       stock: item.stock,
       category: item.category,
       is_active: item.is_active,
+      image: item.image_url,
     });
   };
 
