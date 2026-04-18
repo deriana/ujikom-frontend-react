@@ -148,7 +148,7 @@ export default function SystemLogTable() {
             </div>
           </div>
           
-          <div className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl border border-gray-100 dark:border-white/5">
+          <div className="bg-gray-50 dark:bg-black/20 p-4 rounded-2xl border border-gray-100 dark:border-white/5 max-h-[60vh] overflow-y-auto custom-scrollbar">
             <pre className="text-xs font-mono text-gray-800 dark:text-gray-300 whitespace-pre-wrap wrap-break-word leading-relaxed">
               {selectedLog?.message}
             </pre>
