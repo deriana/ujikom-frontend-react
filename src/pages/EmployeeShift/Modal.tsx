@@ -2,7 +2,7 @@ import React from "react";
 import { Modal } from "@/components/ui/modal";
 import { EmployeeShiftInput } from "@/types";
 import Button from "@/components/ui/button/Button";
-import { User, CalendarDays, Clock, Info, Briefcase } from "lucide-react";
+import { User, CalendarDays, Info, Briefcase, Clock9 } from "lucide-react";
 import Select from "@/components/form/Select";
 import DatePicker from "@/components/form/date-picker";
 import { useShiftTemplates } from "@/hooks/useShiftTemplate";
@@ -30,10 +30,6 @@ export default function EmployeeShiftModal({
   const isEdit = Boolean(data.uuid);
   const { employees, isLoading: loadingEmployees } = useEmployeeOptions()
 
-  // const { data: employees = [], isLoading: loadingEmployees } = (useGetEmployeeForInput as any)({
-  //   enabled: isOpen,
-  // })
-
   const { data: shifts = [], isLoading: loadingShifts } = (useShiftTemplates as any)({
     enabled: isOpen,
   })
@@ -41,28 +37,28 @@ export default function EmployeeShiftModal({
   const isInitialLoading = loadingEmployees || loadingShifts;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-md m-4">
-      <div className="w-full overflow-hidden rounded-3xl bg-white dark:bg-[#0B0F1A] shadow-2xl border border-gray-100 dark:border-gray-800/50">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-lg m-4">
+      <div className="relative w-full rounded-4xl bg-white p-1 dark:bg-gray-900 shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
         <div className="p-7">
-          
           {isInitialLoading ? (
-            <GlobalModalSkeleton inputsCount={2} hasDateRange={false} />
+            <GlobalModalSkeleton inputsCount={2} hasDateRange={true} />
           ) : (
             <>
-              {/* Header Section */}
-              <div className="relative mb-6">
-                <div className="flex items-center gap-3 mb-1">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                    <Briefcase size={20} />
+              {/* --- Header Section --- */}
+              <div className="flex justify-between items-start mb-8">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-[0.2em]">
+                    <Clock9 size={14} />
+                    <span>Scheduling System</span>
                   </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
-                      {isEdit ? "Update Schedule" : "New Assignment"}
-                    </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                      {isEdit ? "Modify existing shift" : "Assign template to employee"}
-                    </p>
-                  </div>
+                  <h4 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                    {isEdit ? "Update Schedule" : "Assign Shift"}
+                  </h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                    {isEdit
+                      ? "Adjusting shift assignment for the employee."
+                      : "Set up a new daily shift assignment."}
+                  </p>
                 </div>
               </div>
 
@@ -71,14 +67,14 @@ export default function EmployeeShiftModal({
                   e.preventDefault();
                   onSubmit();
                 }}
-                className="space-y-5"
+                className="space-y-6"
               >
-                {/* Employee Selection */}
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
-                    <User size={12} className="text-blue-500" /> Employee
-                  </label>
-                  <div className={`transition-opacity ${isEdit ? "opacity-60" : "opacity-100"}`}>
+                {/* --- Assignment Card (Main Info) --- */}
+                <div className="grid grid-cols-1 gap-5 p-6 rounded-3xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 shadow-inner">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
+                      <User size={14} /> Target Employee
+                    </label>
                     <Select
                       value={data.employee_nik || ""}
                       onChange={(val) => setData((prev) => ({ ...prev, employee_nik: val }))}
@@ -90,20 +86,16 @@ export default function EmployeeShiftModal({
                       disabled={isEdit}
                       className="w-full"
                     />
+                    {isEdit && (
+                      <p className="text-[10px] text-gray-400 italic">
+                        Employee cannot be changed during update
+                      </p>
+                    )}
                   </div>
-                  {isEdit && (
-                    <p className="text-[10px] text-gray-400 italic">
-                      Employee cannot be changed during update
-                    </p>
-                  )}
-                </div>
 
-                {/* Grid for Shift & Date */}
-                <div className="grid grid-cols-1 gap-5 pt-2">
-                  {/* Shift Template */}
                   <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
-                      <Clock size={12} className="text-purple-500" /> Shift Template
+                    <label className="text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
+                      <Briefcase size={14} /> Shift Template
                     </label>
                     <Select
                       value={data.shift_template_uuid || ""}
@@ -118,34 +110,35 @@ export default function EmployeeShiftModal({
                         value: s.uuid,
                       }))}
                       placeholder="Select shift..."
+                      className="w-full"
                       disabled={isEdit}
                     />
                     {isEdit && (
                       <p className="text-[10px] text-gray-400 italic">
-                        Shift cannot be changed during update
+                        Shift template cannot be changed during update
                       </p>
                     )}
                   </div>
+                </div>
 
-                  {/* Shift Date */}
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-2">
-                      <CalendarDays size={12} className="text-emerald-500" /> Assignment Date
-                    </label>
-                    <div className="relative group">
-                      <DatePicker
-                        id="shift-date-picker"
-                        value={data.shift_date}
-                        onChange={(_, dateStr) =>
-                          setData((prev) => ({
-                            ...prev,
-                            shift_date: dateStr,
-                          }))
-                        }
-                        placeholder="Select date"
-                      />
-                    </div>
-                  </div>
+                {/* --- Validity Period Section --- */}
+                <div className="space-y-4">
+                  <h5 className="px-1 text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    <CalendarDays size={16} className="text-blue-500" />
+                    Assignment Date
+                  </h5>
+
+                  <DatePicker
+                    id="shift-date-picker"
+                    value={data.shift_date}
+                    onChange={(_, dateStr) =>
+                      setData((prev) => ({
+                        ...prev,
+                        shift_date: dateStr,
+                      }))
+                    }
+                    placeholder="YYYY-MM-DD"
+                  />
                 </div>
 
                 {/* Alert/Info Note */}
@@ -159,29 +152,29 @@ export default function EmployeeShiftModal({
                   </p>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800/50">
+                {/* --- Action Section --- */}
+                <div className="flex items-center justify-end gap-3 pt-2">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                    className="group px-6 py-3 rounded-2xl text-sm font-bold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
                   >
-                    Cancel
+                    Dismiss
                   </button>
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="px-8 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+                    className="px-8 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-xl shadow-blue-500/20 dark:shadow-none border border-blue-500 transition-all active:scale-95 disabled:opacity-50"
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Saving...
-                      </div>
+                      <span className="flex items-center gap-2">
+                        <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Processing...
+                      </span>
                     ) : isEdit ? (
-                      "Update Assignment"
+                      "Update Shift"
                     ) : (
-                      "Confirm Assignment"
+                      "Confirm Shift"
                     )}
                   </Button>
                 </div>

@@ -49,7 +49,7 @@ export const getAttendanceSummary = async (params?: {
 };
 
 export const sendSingleAttendance = async (payload: SingleAttendanceInput) => {
-  console.log(payload);
+  // console.log(payload);
   const formData = new FormData();
   formData.append("latitude", payload.latitude.toString());
   formData.append("longitude", payload.longitude.toString());

@@ -75,7 +75,7 @@ export default function SearchAndGrid({
               <div key={row.nik} className="group bg-white dark:bg-gray-900 p-5 rounded-3xl border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-none transition-all duration-300">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <UserProfile src={row.image} alt={row.name} size={48} className="ring-2 ring-gray-50 dark:ring-gray-800" />
+                    <UserProfile src={row.profile_photo} alt={row.name} size={48} className="ring-2 ring-gray-50 dark:ring-gray-800" />
                     <div>
                       <h4 className="font-bold text-gray-900 dark:text-white leading-tight">{row.name}</h4>
                       <p className="text-xs text-gray-500 font-medium">NIK: {row.nik}</p>

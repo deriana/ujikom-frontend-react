@@ -7,12 +7,12 @@ import {
 } from "@/hooks/useAssessment";
 import { useCrudModalForm } from "@/hooks/useCrudModalForm";
 import { handleMutation } from "@/utils/handleMutation";
-import { useGetEmployeeForInput } from "@/hooks/useUser";
+import { useEmployeeOptions } from "@/hooks/useEmployeeInput";
 import ConfirmModal from "@/components/ui/modal/ConfirmModal";
 import HeaderAnalytycSection from "@/components/Assessments/HeaderAnalytycSection";
 import SearchAndGrid from "@/components/Assessments/SearchAndGrid";
 import Pagination from "@/components/Assessments/Pagination";
-import { Assessment, AssessmentInput, AssessmentScoreDetail, EmployeeLite, User } from "@/types";
+import { Assessment, AssessmentInput, AssessmentScoreDetail, EmployeeLite } from "@/types";
 import AssessmentModal from "@/pages/Assessment/Modal";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useShowModal } from "@/hooks/useShowModal";
@@ -42,9 +42,7 @@ export default function AssessmentsTable() {
   const isMobile = useIsMobile();
 
   // Pakai isLoading dan isFetching agar skeleton muncul saat pindah periode/refresh
-  const { data: employees = [] as User[], isLoading: loadingEmployees } = (
-    useGetEmployeeForInput as any
-  )();
+  const { employees, isLoading: loadingEmployees } = useEmployeeOptions();
   const { 
     data: assessments = [] as Assessment[],
     isLoading: loadingAssessments,

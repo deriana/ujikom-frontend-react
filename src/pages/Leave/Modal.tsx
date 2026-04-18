@@ -18,6 +18,7 @@ import Select from "@/components/form/Select";
 import { useLeaveTypes } from "@/hooks/useLeaveType";
 import { useEmployeeOptions } from "@/hooks/useEmployeeInput";
 import { GlobalModalSkeleton } from "@/components/skeleton/ModalSkeleton";
+import Checkbox from "@/components/form/input/Checkbox";
 
 interface LeaveModalProps {
   isOpen: boolean;
@@ -116,7 +117,7 @@ export default function LeaveModal({
                             : "Select Employee (Admin/HR Only)"}
                         </span>
                       </div>
-                      {showEmployeeSelect ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      {showEmployeeSelect ? <ChevronUp className="dark:text-white" size={16} /> : <ChevronDown className="dark:text-white" size={16} />}
                     </button>
 
                     {showEmployeeSelect && (
@@ -210,13 +211,12 @@ export default function LeaveModal({
               {/* Half Day Checkbox */}
               <div className="md:col-span-2 flex items-center gap-6 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
                 <label className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={leaveData.is_half_day}
-                    onChange={(e) =>
+                  <Checkbox
+                    checked={!!leaveData.is_half_day}
+                    onChange={(checked) =>
                       setLeaveData({
                         ...leaveData,
-                        is_half_day: e.target.checked,
+                        is_half_day: checked,
                       })
                     }
                     className="w-5 h-5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700"

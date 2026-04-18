@@ -41,6 +41,19 @@ export default function PointItemShowModal({
 }: PointItemShowModalProps) {
   const { data: item, isLoading, isError, error } = usePointItemByUuid(uuid || "");
 
+  const getVoucherStyle = (category?: string) => {
+    switch (category) {
+      case "GOODS":
+        return "from-emerald-600 to-teal-700";
+      case "SERVICE":
+        return "from-amber-500 to-orange-600";
+      case "VOUCHER":
+        return "from-indigo-600 to-purple-700";
+      default:
+        return "from-gray-600 to-gray-700";
+    }
+  };
+
   if (!uuid) return null;
 
   return (
@@ -57,10 +70,10 @@ export default function PointItemShowModal({
               {item.image_url ? (
                 <div className="relative h-full w-full">
                    <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
-                   <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-60" />
+                   <div className={`absolute inset-0 bg-linear-to-t ${getVoucherStyle(item.category)} opacity-40`} />
                 </div>
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-indigo-500/10 to-purple-500/10">
+                <div className={`flex h-full w-full items-center justify-center bg-linear-to-br ${getVoucherStyle(item.category)}`}>
                   <Ticket size={80} strokeWidth={1} className="text-indigo-200 dark:text-indigo-900/40 rotate-12" />
                 </div>
               )}
@@ -85,16 +98,16 @@ export default function PointItemShowModal({
             </div>
 
             {/* Ticket Decoration (Lubang di samping) */}
-            {/* <div className="relative">
-                <div className="absolute -left-4 -top-4 w-8 h-8 rounded-full bg-gray-500/10 dark:bg-black/50 z-20" />
-                <div className="absolute -right-4 -top-4 w-8 h-8 rounded-full bg-gray-500/10 dark:bg-black/50 z-20" />
-                <div className="absolute left-6 right-6 -top-0.5 border-t-2 border-dashed border-gray-100 dark:border-gray-800 z-10" />
-            </div> */}
+            <div className="relative">
+                <div className="absolute -left-4 -top-4 w-8 h-8 rounded-full bg-white dark:bg-[#0B0F1A] z-20 shadow-inner" />
+                <div className="absolute -right-4 -top-4 w-8 h-8 rounded-full bg-white dark:bg-[#0B0F1A] z-20 shadow-inner" />
+                <div className="absolute left-6 right-6 -top-0.5 border-t-2 border-dashed border-gray-100 dark:border-gray-800 z-0" />
+            </div>
 
             <div className="p-8 space-y-8 relative">
               {/* Floating Point Badge */}
-              <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white dark:bg-indigo-600 px-6 py-3 rounded-3xl shadow-2xl border-4 border-gray-50 dark:border-[#0B0F1A] flex items-center gap-3">
-                 <div className="bg-amber-100 dark:bg-amber-400/20 p-1.5 rounded-full">
+              <div className={`absolute -top-12 left-1/2 -translate-x-1/2 bg-linear-to-br ${getVoucherStyle(item.category)} px-6 py-3 rounded-3xl shadow-2xl border-4 border-white dark:border-[#0B0F1A] flex items-center gap-3`}>
+                 <div className="bg-white/20 backdrop-blur-md p-1.5 rounded-full">
                     <Star size={18} className="text-amber-500 fill-amber-500" />
                  </div>
                  <div className="flex flex-col">
@@ -107,7 +120,7 @@ export default function PointItemShowModal({
 
               {/* Title & Category */}
               <div className="pt-4 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-3">
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-linear-to-r ${getVoucherStyle(item.category)} text-white text-[10px] font-black uppercase tracking-[0.2em] mb-3`}>
                   <Layers size={12} /> {item.category}
                 </div>
                 <h4 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
@@ -187,7 +200,7 @@ export default function PointItemShowModal({
               {/* Action Button */}
               <button
                 onClick={onClose}
-                className="w-full py-5 rounded-4xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-indigo-500/20 dark:hover:shadow-white/10 transition-all active:scale-[0.97]"
+                className={`w-full py-5 rounded-4xl bg-linear-to-r ${getVoucherStyle(item.category)} text-white text-xs font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:opacity-90 transition-all active:scale-[0.97]`}
               >
                 Close Details
               </button>

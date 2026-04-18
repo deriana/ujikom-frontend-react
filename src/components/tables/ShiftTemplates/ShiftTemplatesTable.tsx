@@ -192,13 +192,13 @@ export default function ShiftTemplatesTable() {
   return (
     <>
       <DataTable
-        tableTitle="ShiftTemplate Table"
+        tableTitle="Shift Template Table"
         data={shiftTemplates}
         columns={columns}
         searchableKeys={["name"]}
         loading={isLoading}
         handleCreate={handleCreate}
-        label="ShiftTemplates"
+        label="Shift Templates"
         baseNamePermission={RESOURCES.SHIFT_TEMPLATE}
         extraFilters={{ cross_day: crossDayFilter }}
         newFilterComponent={

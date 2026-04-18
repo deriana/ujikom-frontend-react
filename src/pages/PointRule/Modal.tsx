@@ -1,9 +1,8 @@
 import React from "react";
-import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+import CrudModal from "@/components/ui/modal/CrudModal";
 import Input from "@/components/form/input/InputField";
 import { PointRuleInput } from "@/types";
-import { Star, Activity, Award, Settings2, Layers, Sparkles, ArrowRight } from "lucide-react";
+import { Star, Activity, Award, Settings2, Layers, Sparkles, ArrowRight, LucideIcon } from "lucide-react";
 import Checkbox from "@/components/form/input/Checkbox";
 import Select from "@/components/form/Select";
 import { POINT_CATEGORY } from "@/constants/PointCategory";
@@ -45,33 +44,20 @@ export default function PointRuleModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-lg m-4">
-      <div className="w-full overflow-hidden rounded-4xl bg-white dark:bg-[#0B0F1A] shadow-2xl border border-gray-100 dark:border-gray-800/50">
-        {/* Header */}
-        <div className="relative p-8 pb-0">
-          <div className="flex items-center gap-4 mb-1">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
-              <Star size={24} />
-            </div>
-            <div>
-              <h4 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">
-                {isEdit ? "Update Point Rule" : "New Point Rule"}
-              </h4>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">
-                Define how points are awarded or deducted based on employee
-                events.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <form
-          className="p-8 space-y-6"
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit();
-          }}
-        >
+    <CrudModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={onSubmit}
+      title={isEdit ? "Update Point Rule" : "New Point Rule"}
+      description="Define how points are awarded or deducted based on employee events."
+      icon={Star as LucideIcon}
+      iconColorClass="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400"
+      isEdit={isEdit}
+      isLoading={isLoading}
+      maxWidth="max-w-lg"
+      submitLabel={isLoading ? "Saving..." : isEdit ? "Update Rule" : "Create Rule"}
+    >
+      <div className="space-y-6">
           {/* AI Statement Builder Preview */}
           {showCondition && (
             <div className="p-4 rounded-3xl bg-indigo-600 dark:bg-indigo-500 shadow-xl shadow-indigo-200 dark:shadow-none relative overflow-hidden group animate-in fade-in zoom-in duration-300">
@@ -265,26 +251,7 @@ export default function PointRuleModal({
               />
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-white/5">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all"
-            >
-              Cancel
-            </button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="px-8 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-indigo-500/20 active:scale-95 transition-all"
-            >
-              {isLoading ? "Saving..." : isEdit ? "Update Rule" : "Create Rule"}
-            </Button>
-          </div>
-        </form>
       </div>
-    </Modal>
+    </CrudModal>
   );
 }

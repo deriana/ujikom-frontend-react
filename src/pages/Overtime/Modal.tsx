@@ -69,7 +69,7 @@ export default function OvertimeModal({
             onSubmit();
           }}
         >
-          <div className="custom-scrollbar max-h-[65vh] overflow-y-auto px-1 space-y-6">
+          <div className="custom-scrollbar max-h-[65vh] px-1 space-y-6">
                 {isUserAdminOrHR && (
                   <div className="bg-gray-50 dark:bg-gray-800/40 rounded-2xl border border-gray-100 dark:border-gray-800">
                     <button
@@ -79,13 +79,13 @@ export default function OvertimeModal({
                     >
                       <div className="flex items-center gap-2">
                         <UserCircle size={18} className="text-gray-500" />
-                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-white">
                           {overtimeData.employee_nik 
                             ? `Employee: ${overtimeData.employee_nik}` 
                             : "Select Employee (Admin/HR Only)"}
                         </span>
                       </div>
-                      {showEmployeeSelect ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      {showEmployeeSelect ? <ChevronUp className="dark:text-white" size={16} /> : <ChevronDown className="dark:text-white" size={16} />}
                     </button>
 
                     {showEmployeeSelect && (

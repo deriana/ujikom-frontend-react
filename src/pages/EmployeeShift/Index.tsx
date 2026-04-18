@@ -6,10 +6,10 @@ import EmployeeShiftsTable from "@/components/tables/EmployeeShift/EmployeeShift
 export default function EmployeeShifts() {
   return (
     <>
-      <PageMeta title="EmployeeShifts" />
-      <PageBreadcrumb pageTitle="EmployeeShifts" />
+      <PageMeta title="Employee Shifts" />
+      <PageBreadcrumb pageTitle="Employee Shifts" />
       <div className="space-y-6">
-        <ComponentCard title="EmployeeShifts Page">
+        <ComponentCard title="Employee Shifts Page">
             <EmployeeShiftsTable />
         </ComponentCard>
       </div>

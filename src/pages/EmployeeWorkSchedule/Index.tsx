@@ -6,10 +6,10 @@ import EmployeeWorkScheduleTable from "@/components/tables/EmployeeWorkSchedule/
 export default function EmployeeWorkSchedule() {
   return (
     <>
-      <PageMeta title="EmployeeWorkSchedule" />
-      <PageBreadcrumb pageTitle="EmployeeWorkSchedule" />
+      <PageMeta title="Employee Work Schedule" />
+      <PageBreadcrumb pageTitle="Employee Work Schedule" />
       <div className="space-y-6">
-        <ComponentCard title="EmployeeWorkSchedule Page">
+        <ComponentCard title="Employee Work Schedule Page">
             <EmployeeWorkScheduleTable />
         </ComponentCard>
       </div>

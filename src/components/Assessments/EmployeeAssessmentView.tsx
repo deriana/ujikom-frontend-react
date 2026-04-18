@@ -16,7 +16,7 @@ export default function EmployeeAssessmentView({ row }: { row: any }) {
 
   const details = row.assessment_data.assessment_details;
 
-  console.log(details)
+  // console.log(details)
 
   return (
     <div className="space-y-3">
