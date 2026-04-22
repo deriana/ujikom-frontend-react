@@ -38,8 +38,8 @@ export default function TicketsTable() {
     return {
       total: tickets.length,
       open: tickets.filter((t) => t.status === "open").length,
-      pending: tickets.filter((t) => t.status === "pending").length,
-      resolved: tickets.filter((t) => t.status === "resolved").length,
+      inProgress: tickets.filter((t) => t.status === "in progress").length,
+      closed: tickets.filter((t) => t.status === "closed").length,
     };
   }, [tickets]);
 
@@ -47,8 +47,7 @@ export default function TicketsTable() {
     return [
       { label: "All", value: "all" },
       { label: "Open", value: "open" },
-      { label: "Pending", value: "pending" },
-      { label: "Resolved", value: "resolved" },
+      { label: "In Progress", value: "in progress" },
       { label: "Closed", value: "closed" },
     ];
   }, []);
@@ -75,6 +74,7 @@ export default function TicketsTable() {
     }),
 
     createFn: async (payload) => {
+      setDuplicateTicket(null);
       try {
         return await createTicket(payload);
       } catch (error: any) {
@@ -89,6 +89,7 @@ export default function TicketsTable() {
 
   const handleEdit = (uuid: string) => {
     const ticket = tickets.find((p) => p.uuid === uuid);
+    console.log("Ticket data:", ticket);
     if (!ticket) return;
 
     crud.openEdit({
@@ -125,7 +126,7 @@ export default function TicketsTable() {
             {row.subject}
           </span>
           <span className="text-xs text-gray-500 dark:text-gray-400 wrap-break-word line-clamp-2 leading-relaxed">
-            {row.description}
+            {row.description.replace(/<[^>]*>/g, "")}
           </span>
         </div>
       ),
@@ -209,7 +210,6 @@ export default function TicketsTable() {
     {
       header: "Action",
       render: (row) => (
-        <div className="flex justify-end">
           <TableActions
             id={row.uuid}
             dataName={row.subject}
@@ -219,7 +219,6 @@ export default function TicketsTable() {
             baseNamePermission={RESOURCES.TICKET}
             can={row.can}
           />
-        </div>
       ),
     },
   ];
@@ -272,10 +271,10 @@ export default function TicketsTable() {
             </div>
             <div>
               <p className="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase">
-                Pending
+                In Progress
               </p>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                {stats.pending}
+                {stats.inProgress}
               </h3>
             </div>
           </div>
@@ -287,10 +286,10 @@ export default function TicketsTable() {
             </div>
             <div>
               <p className="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase">
-                Resolved
+                Closed
               </p>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                {stats.resolved}
+                {stats.closed}
               </h3>
             </div>
           </div>

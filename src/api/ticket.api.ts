@@ -46,3 +46,8 @@ export const updateTicketStatus = async (
   const res = await api.put<ApiResponse<Ticket>>(`ticketing/${uuid}/status`, { status });
   return res.data.data;
 };
+
+export const getTicketDashboard = async () => {
+  const res = await api.get<ApiResponse<any>>("ticketing/dashboard");
+  return res.data.data;
+};

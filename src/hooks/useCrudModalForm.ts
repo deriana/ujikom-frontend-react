@@ -48,7 +48,19 @@ export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
       if (error) return;
     }
 
-    const payload = { ...mapToPayload(form), ...extraPayload };
+    const mapped = mapToPayload(form);
+    let payload: any;
+
+    if (mapped instanceof FormData) {
+      payload = mapped;
+      Object.entries(extraPayload).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          payload.append(key, value as string | Blob);
+        }
+      });
+    } else {
+      payload = { ...mapped, ...extraPayload };
+    }
 
     setLoading(true);
     try {

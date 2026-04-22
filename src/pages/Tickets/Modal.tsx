@@ -1,11 +1,14 @@
+import { useEffect } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import Input from "@/components/form/input/InputField";
 import { Ticket as TicketType, TicketInput } from "@/types";
-import { Ticket, AlertCircle, User, Calendar, ExternalLink } from "lucide-react";
+import { Ticket, AlertCircle, User, Calendar, ExternalLink, Bold, Italic, List, ImageIcon } from "lucide-react";
 import CrudModal from "@/components/ui/modal/CrudModal";
 import Select from "@/components/form/Select";
 import Badge from "@/components/ui/badge/Badge";
 import Checkbox from "@/components/form/input/Checkbox";
-
 interface TicketModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,13 +35,66 @@ export default function TicketModal({
   const existingTicket = duplicateTicket;
   const isEdit = Boolean(ticketData.uuid);
 
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Image.configure({
+        allowBase64: true,
+        inline: true,
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded-lg border border-gray-200',
+        },
+      }),
+    ],
+    content: ticketData.description,
+    onUpdate: ({ editor }) => {
+      setTicketData({ ...ticketData, description: editor.getHTML() });
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm dark:prose-invert focus:outline-none p-4 min-h-[150px] max-h-[300px] overflow-y-auto',
+      },
+    },
+  });
+
+  useEffect(() => {
+    // Hanya jalankan jika editor ada dan modal baru saja dibuka
+    if (editor && isOpen) {
+      const currentEditorContent = editor.getHTML();
+
+      // Bandingkan konten. Jika di editor kosong tapi di data ada isinya, baru kita set.
+      // Gunakan timeout kecil (0ms) untuk memastikan Tiptap sudah selesai inisialisasi internal
+      if (ticketData.description !== currentEditorContent) {
+        setTimeout(() => {
+          editor.commands.setContent(ticketData.description || "<p></p>");
+        }, 0);
+      }
+    }
+  }, [isOpen, editor]); // Hapus ticketData.description dari sini untuk mencegah loop/reset saat mengetik
+
+  const addImage = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = () => {
+      if (input.files?.length) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          editor?.chain().focus().setImage({ src: reader.result as string }).run();
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  };
+
   return (
     <CrudModal
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={onSubmit}
       title={isEdit ? "Update Ticket" : "Create New Ticket"}
-      // Ubah teks tombol jika ada duplikat
       submitLabel={isEdit ? "Update" : "Create"}
       icon={Ticket}
       isEdit={isEdit}
@@ -87,17 +143,54 @@ export default function TicketModal({
             <label className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Description
             </label>
-            <div className="relative">
-              <textarea
-                value={ticketData.description}
-                onChange={(e) =>
-                  setTicketData({ ...ticketData, description: e.target.value })
-                }
-                placeholder="Describe your issue in detail..."
-                rows={4}
-                className="w-full px-4 py-3 rounded-xl border dark:text-white  border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              />
-              <AlertCircle size={16} className="absolute top-3 right-3 text-gray-400" />
+            <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-900">
+              <div className="flex items-center gap-1 p-2 border-b border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800/50">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    editor?.chain().focus().toggleBold().run();
+                  }}
+                  className={`p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${editor?.isActive('bold') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 dark:text-gray-400'}`}
+                >
+                  <Bold size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    editor?.chain().focus().toggleItalic().run();
+                  }}
+                  className={`p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${editor?.isActive('italic') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 dark:text-gray-400'}`}
+                >
+                  <Italic size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    editor?.chain().focus().toggleBulletList().run();
+                  }}
+                  className={`p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${editor?.isActive('bulletList') ? 'bg-blue-100 text-blue-600' : 'text-gray-600 dark:text-gray-400'}`}
+                >
+                  <List size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addImage();
+                  }}
+                  className="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
+                >
+                  <ImageIcon size={16} />
+                </button>
+              </div>
+              <EditorContent editor={editor} className="text-gray-900 dark:text-gray-100" />
             </div>
           </div>
         </div>
@@ -116,9 +209,10 @@ export default function TicketModal({
                   <h5 className="font-bold text-gray-900 dark:text-white line-clamp-1">{existingTicket.subject}</h5>
                   <Badge size="sm" color="warning" variant="solid">{existingTicket.status.toUpperCase()}</Badge>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 leading-relaxed">
-                  {existingTicket.description}
-                </p>
+                <div 
+                  className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: existingTicket.description }}
+                />
                 
                 <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-2">

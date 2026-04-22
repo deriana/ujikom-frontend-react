@@ -28,6 +28,7 @@ export interface TicketPermission {
 
 export interface TicketDetail extends Ticket {
   id: number;
+  response_time: any;
   responses?: {
     id: number;
     uuid: UUID;

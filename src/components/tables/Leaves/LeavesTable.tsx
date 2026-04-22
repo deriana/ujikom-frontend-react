@@ -114,6 +114,7 @@ export default function LeavesTable({ onDataLoaded }: LeavesTableProps) {
     // },
 
     mapToPayload: (form) => {
+      console.log("Mapping form to payload:", form);
       const formData = new FormData();
       formData.append("leave_type_uuid", form.leave_type_uuid);
       formData.append("date_start", form.date_start);

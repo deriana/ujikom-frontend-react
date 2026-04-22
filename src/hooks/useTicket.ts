@@ -8,6 +8,7 @@ import {
   replyTicket,
   rateTicket,
   updateTicketStatus,
+  getTicketDashboard,
 } from "@/api/ticket.api";
 import { TicketInput, ReplyTicketInput, RateTicketInput } from "@/types";
 
@@ -24,6 +25,16 @@ export const useTicketByUuid = (uuid: string) => {
     queryKey: ["tickets", uuid],
     queryFn: () => getTicketByUuid(uuid),
     enabled: !!uuid,
+    refetchInterval: 3000, 
+    refetchIntervalInBackground: true, 
+  });
+};
+
+export const useTicketDashboard = () => {
+  return useQuery({
+    queryKey: ["tickets", "dashboard"],
+    queryFn: getTicketDashboard,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
@@ -66,21 +77,36 @@ export const useUpdateTicketStatus = () => {
 
 export const useReplyTicket = () => {
   const qc = useQueryClient();
+
   return useMutation({
-    mutationFn: ({
-      uuid,
-      payload,
-    }: {
-      uuid: string;
-      payload: ReplyTicketInput;
-    }) => replyTicket(uuid, payload),
+    mutationFn: ({ uuid, payload }: { uuid: string; payload: ReplyTicketInput }) => 
+      replyTicket(uuid, payload),
+    
+    onMutate: async (newReply) => {
+      await qc.cancelQueries({ queryKey: ["tickets", newReply.uuid] });
+
+      const previousTicket = qc.getQueryData(["tickets", newReply.uuid]);
+
+      qc.setQueryData(["tickets", newReply.uuid], (old: any) => {
+        return {
+          ...old,
+          replies: [...(old?.replies || []), { ...newReply.payload, createdAt: new Date().toISOString() }]
+        };
+      });
+
+      return { previousTicket };
+    },
+
+    onError: (_err, newReply, context) => {
+      qc.setQueryData(["tickets", newReply.uuid], context?.previousTicket);
+    },
+
     onSettled: (_data, _error, variables) => {
       qc.invalidateQueries({ queryKey: ["tickets"] });
       qc.invalidateQueries({ queryKey: ["tickets", variables.uuid] });
     },
   });
 };
-
 export const useRateTicket = () => {
   const qc = useQueryClient();
   return useMutation({

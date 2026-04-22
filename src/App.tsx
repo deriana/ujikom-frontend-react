@@ -102,6 +102,8 @@ import AttendanceSummary from "./pages/AttendanceReport/Summary";
 import SystemLogs from "./pages/Log/Index";
 import Tickets from "./pages/Tickets/Index";
 import TicketShow from "./pages/Tickets/Show";
+import TicketsDashboard from "./pages/Tickets/Dashboard";
+import TicketMobileChat from "./pages/Tickets/MobileChat";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -145,6 +147,12 @@ export default function App() {
       resource: RESOURCES.DASHBOARD,
       permission: PERMISSIONS.DASHBOARD.employee,
     },
+    {
+      path: "/dashboard/tickets",
+      element: <TicketsDashboard />,
+      resource: RESOURCES.TICKET,
+      permission: PERMISSIONS.TICKET.dashboard,
+        },
     {
       path: "/logs",
       element: <SystemLogs />,
@@ -385,6 +393,13 @@ export default function App() {
       element: <TicketShow />,
       resource: RESOURCES.TICKET,
       permission: PERMISSIONS.BASE.SHOW,
+    },
+    {
+      path: "/tickets/:uuid/chat",
+      element: <TicketMobileChat />,
+      resource: RESOURCES.TICKET,
+      permission: PERMISSIONS.BASE.SHOW,
+      isMobileOnly: true,
     },
 
     /** Approval Route */

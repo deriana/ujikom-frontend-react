@@ -33,6 +33,7 @@ import {
   History,
   Plus,
   Ticket,
+  TicketCheck,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -83,6 +84,12 @@ export const navItems: NavItem[] = [
     hideForAdmin: true,
   },
   {
+    icon: <TicketCheck size={20} />,
+    name: "Tickets Dashboard",
+    path: "/dashboard/tickets",
+    permission: buildPermission(RESOURCES.TICKET, PERMISSIONS.TICKET.dashboard),
+  },
+  {
     name: "System Logs",
     path: "/logs",
     icon: <FileText size={20} />,
@@ -105,10 +112,7 @@ export const navItems: NavItem[] = [
         name: "Attendance Logs",
         path: "/attendances/logs",
         icon: <History size={18} />,
-        permission: buildPermission(
-          RESOURCES.ATTENDANCE,
-          PERMISSIONS.BASE.LOG,
-        ),
+        permission: buildPermission(RESOURCES.ATTENDANCE, PERMISSIONS.BASE.LOG),
       },
       {
         name: "Attendance Summary",
@@ -212,19 +216,13 @@ export const navItems: NavItem[] = [
         name: "Point Log",
         path: "/point-log",
         icon: <History size={18} />,
-        permission: buildPermission(
-          RESOURCES.POINT,
-          PERMISSIONS.BASE.INDEX,
-        ),
+        permission: buildPermission(RESOURCES.POINT, PERMISSIONS.BASE.INDEX),
       },
       {
         name: "Manual Point Entry",
         path: "/point-entry",
         icon: <Plus size={18} />,
-        permission: buildPermission(
-          RESOURCES.POINT,
-          PERMISSIONS.BASE.CREATE,
-        ),
+        permission: buildPermission(RESOURCES.POINT, PERMISSIONS.BASE.CREATE),
       },
       {
         name: "Leaderboard",
@@ -245,7 +243,7 @@ export const navItems: NavItem[] = [
         name: "Mutations",
         path: "/point-mutations",
         icon: <DollarSign size={18} />,
-      }
+      },
     ],
   },
   {
@@ -392,7 +390,7 @@ export const navItems: NavItem[] = [
           RESOURCES.POINT_ITEM,
           PERMISSIONS.BASE.INDEX,
         ),
-      }
+      },
     ],
   },
   {

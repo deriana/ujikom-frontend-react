@@ -9,8 +9,8 @@ import { TableList } from "./Table";
 
 type NestedKeys<T> = {
   [K in keyof T & (string | number)]: T[K] extends object
-    ? `${K}` | `${K}.${NestedKeys<T[K]>}`
-    : `${K}`;
+  ? `${K}` | `${K}.${NestedKeys<T[K]>}`
+  : `${K}`;
 }[keyof T & (string | number)];
 
 interface DataTableProps<T> {
@@ -216,22 +216,20 @@ export function DataTable<T extends object>({
     <div className="flex items-center p-1 bg-gray-100 dark:bg-white/5 rounded-lg">
       <button
         onClick={() => setViewMode("table")}
-        className={`p-1.5 rounded-md transition-all ${
-          viewMode === "table"
+        className={`p-1.5 rounded-md transition-all ${viewMode === "table"
             ? "bg-white dark:bg-white/10 shadow-sm text-blue-600"
             : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-        }`}
+          }`}
         title="Table View"
       >
         <List size={18} />
       </button>
       <button
         onClick={() => setViewMode("grid")}
-        className={`p-1.5 rounded-md transition-all ${
-          viewMode === "grid"
+        className={`p-1.5 rounded-md transition-all ${viewMode === "grid"
             ? "bg-white dark:bg-white/10 shadow-sm text-blue-600"
             : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-        }`}
+          }`}
         title="Grid View"
       >
         <LayoutGrid size={18} />

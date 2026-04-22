@@ -22,11 +22,13 @@ export const getLeaveByUuid = async (uuid: string) => {
 };
 
 export const createLeave = async (payload: LeaveInput) => {
-  const res = await api.post<ApiResponse<Leave[]>>("/leaves", payload);
+  console.log(payload)
+  const res = await api.post<ApiResponse<Leave>>("/leaves", payload);
   return res.data.data;
 };
 
 export const updateLeave = async (uuid: string, payload: FormData) => {
+  console.log(payload)
   const res = await api.post(`/leaves/${uuid}`, payload);
   return res.data.data;
 };

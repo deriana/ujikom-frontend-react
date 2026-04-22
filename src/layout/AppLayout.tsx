@@ -42,10 +42,10 @@ const LayoutContent: React.FC = () => {
       >
         <AppHeader />
         
-        <ConnectionAlert 
+        {/* <ConnectionAlert 
           isOnline={isOnline} 
           isServerError={serverDown} 
-        />
+        /> */}
 
         <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
           <Outlet key={location.pathname} />
