@@ -18,6 +18,13 @@ export const PERMISSIONS = {
   PAYROLL: {
     pay: "pay"
   },
+  TICKET: {
+    reply: "reply",
+    status: "status",
+    assign: "assign",
+    rate: "rate",
+    dashboard: "dashboard",
+  },
   DASHBOARD: {
     admin: "admin",
     employee: "employee"

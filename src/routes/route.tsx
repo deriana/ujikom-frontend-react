@@ -32,6 +32,7 @@ import {
   Box,
   History,
   Plus,
+  Ticket,
 } from "lucide-react";
 
 export type NavSubItem = {
@@ -196,6 +197,12 @@ export const navItems: NavItem[] = [
     path: "/assessments",
     icon: <ClipboardList size={20} />,
     permission: buildPermission(RESOURCES.ASSESSMENT, PERMISSIONS.BASE.INDEX),
+  },
+  {
+    name: "Tickets",
+    path: "/tickets",
+    icon: <Ticket size={20} />,
+    permission: buildPermission(RESOURCES.TICKET, PERMISSIONS.BASE.INDEX),
   },
   {
     name: "Integrity Wallet",

@@ -13,6 +13,13 @@ export const useSystemLogs = (params?: SystemLogParams) => {
     queryFn: () => getSystemLogs(params),
     enabled: !!params?.date,
     staleTime: 1000 * 60 * 1, // 1 minute
+    retry: (failureCount, error: any) => {
+      // Don't retry if the error is a 404 (Log file not found for that date)
+      if (error?.response?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

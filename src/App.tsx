@@ -100,6 +100,8 @@ import WalletHome from "./pages/Mobile/WalletHome";
 import AttendanceLogs from "./pages/AttendanceReport/Log";
 import AttendanceSummary from "./pages/AttendanceReport/Summary";
 import SystemLogs from "./pages/Log/Index";
+import Tickets from "./pages/Tickets/Index";
+import TicketShow from "./pages/Tickets/Show";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -371,6 +373,18 @@ export default function App() {
     {
       path: "/point-mutations",
       element: <PointMutations />,
+    },
+
+    {
+      path: "/tickets",
+      element: <Tickets />
+    },
+
+      {
+      path: "/tickets/:uuid/show",
+      element: <TicketShow />,
+      resource: RESOURCES.TICKET,
+      permission: PERMISSIONS.BASE.SHOW,
     },
 
     /** Approval Route */

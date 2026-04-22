@@ -25,4 +25,5 @@ export const RESOURCES = {
   POINT_ITEM: "point-item",
   POINT: "point",
   LOG: "log",
+  TICKET: "ticketing",
 } as const;

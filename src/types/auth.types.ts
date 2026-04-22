@@ -2,6 +2,7 @@ import { UUID } from "./common";
 import { Role } from "./role.types";
 
 export interface User {
+  id?: number;
   uuid: UUID;
   name: string;
   email: string;

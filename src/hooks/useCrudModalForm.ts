@@ -8,6 +8,7 @@ interface CrudConfig<TForm, TPayload> {
   validate?: (form: TForm) => string | null;
   createFn?: (payload: TPayload) => Promise<any>;
   updateFn?: (id: string, payload: TPayload) => Promise<any>;
+  onSubmitOverride?: (payload: TPayload) => Promise<any>;
 }
 
 export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
@@ -41,18 +42,19 @@ export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
     setIsEdit(false);
   };
 
-  const submit = async () => {
+  const submit = async (extraPayload = {}) => {
     if (validate) {
       const error = validate(form);
       if (error) return;
     }
 
-    const payload = mapToPayload(form);
+    const payload = { ...mapToPayload(form), ...extraPayload };
 
     setLoading(true);
     try {
+      let response;
       if (isEdit && form.uuid && updateFn) {
-        await handleMutation(
+        response = await handleMutation(
           () => updateFn(form.uuid!, payload),
           {
             loading: `Updating ${label}...`,
@@ -61,7 +63,7 @@ export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
           }
         );
       } else if (!isEdit && createFn) {
-        await handleMutation(
+        response = await handleMutation(
           () => createFn(payload),
           {
             loading: `Creating ${label}...`,
@@ -70,8 +72,10 @@ export function useCrudModalForm<TForm extends { uuid?: string }, TPayload>({
           }
         );
       }
-
       close();
+      return response;
+    } catch (error) {
+      throw error;
     } finally {
       setLoading(false);
     }

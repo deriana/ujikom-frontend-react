@@ -14,7 +14,12 @@ export default function SystemLogTable() {
   );
   const [selectedLog, setSelectedLog] = useState<SystemLog | null>(null);
 
-  const { data: logs = [], isLoading, isError, error } = useSystemLogs({ date: selectedDate });
+  const { 
+    data: logs = [], 
+    isLoading, 
+    isError, 
+    error 
+  } = useSystemLogs({ date: selectedDate });
   const { mutate: downloadLog, isPending: isDownloading } = useDownloadSystemLog();
 
   const columns: Column<SystemLog>[] = [

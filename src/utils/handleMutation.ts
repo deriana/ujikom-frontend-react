@@ -5,11 +5,12 @@ type Messages = {
   success?: string;
   error?: string;
   onSuccess?: (data?: any) => void;
+  ignoreStatuses?: number[];
 };
 
 export async function handleMutation<T>(
   action: () => Promise<T>,
-  config: Messages
+  config: Messages & { ignoreStatuses?: number[] }
 ): Promise<T | undefined> {
   const id = config.loading ? toast.loading(config.loading) : undefined;
 
@@ -21,6 +22,12 @@ export async function handleMutation<T>(
     return result;
   } catch (err: any) {
     if (id) toast.dismiss(id);
+
+    const status = err?.response?.status;
+    if (config.ignoreStatuses?.includes(status)) {
+      throw err;
+    }
+
     let errorMessage = err?.response?.data?.message || err?.message || config.error || "Something went wrong"
     console.log(err)
     const validationErrors = err?.response?.data?.errors;

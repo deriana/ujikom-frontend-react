@@ -11,7 +11,7 @@ export const useNotificationPermission = () => {
         if (permission !== "granted") return;
 
         const registration = await navigator.serviceWorker.register("/sw.js");
-        console.log("Service Worker terdaftar:", registration);
+        // console.log("Service Worker terdaftar:", registration);
 
         let subscription = await registration.pushManager.getSubscription();
         
@@ -25,10 +25,10 @@ export const useNotificationPermission = () => {
 
         // --- BAGIAN PENTING: Kirim ke Laravel ---
         await subscribeWebPush(subscription);
-        console.log("PWA Terdaftar di Backend!");
+        // console.log("PWA Terdaftar di Backend!");
 
       } catch (error) {
-        console.error("Gagal setup push notification:", error);
+        console.error("Failed Setup Push Notification", error);
       }
     };
 
